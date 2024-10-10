@@ -1,23 +1,28 @@
-package de.christian2003.smarthome;
+package de.christian2003.smarthome.view;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
-
+import de.christian2003.smarthome.R;
+import de.christian2003.smarthome.utils.framework.SmartHomeActivity;
+import de.christian2003.smarthome.viewmodel.MainViewModel;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends SmartHomeActivity<MainViewModel> {
+
+    public MainActivity() {
+        super(MainViewModel.class, R.layout.activity_main);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
     }
+
 
     public void GetData(View view) {
         // Check that button on click works.
@@ -54,4 +59,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
 }
