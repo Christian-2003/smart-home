@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SmartHome</string>
+    <string name="btnGetData">Get Data</string>
 </resources>
