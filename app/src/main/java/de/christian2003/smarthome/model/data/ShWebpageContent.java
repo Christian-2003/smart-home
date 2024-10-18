@@ -116,12 +116,9 @@ public class ShWebpageContent {
         Elements elements = content.select("body > div.flex-container");
 
         // Find all the rooms that are located in the div and return them with all their properties.
-        /*
         for (Element element: elements) {
-            System.out.println("2");
             ShRoom.findRoomInDivContext(element);
-        }*/
-        ShRoom.findRoomInDivContext(elements.get(0));
+        }
 
         System.out.println("Elements Länge: " + elements.size());
         System.out.println("Element Content: " + elements.get(0).text());

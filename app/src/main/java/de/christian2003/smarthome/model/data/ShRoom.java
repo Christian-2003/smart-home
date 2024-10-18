@@ -22,6 +22,12 @@ public class ShRoom {
     private final String name;
 
     /**
+     * Attribute stores the temperature of the room.
+     */
+    @Nullable
+    private final String temperature;
+
+    /**
      * Attribute stores a list of info texts for the room. Exemplary info texts could include
      * temperature, humidity, air pressure, ...
      */
@@ -42,8 +48,9 @@ public class ShRoom {
      * @param infos     List of info texts for the room.
      * @param devices   List of smart home devices for the room.
      */
-    public ShRoom(@Nullable String name, @Nullable ArrayList<ShInfoText> infos, @Nullable ArrayList<ShGenericDevice> devices) {
+    public ShRoom(@Nullable String name, @Nullable String temperature, @Nullable ArrayList<ShInfoText> infos, @Nullable ArrayList<ShGenericDevice> devices) {
         this.name = name;
+        this.temperature = temperature;
         this.infos = infos != null ? infos : new ArrayList<>();
         this.devices = devices != null ? devices : new ArrayList<>();
     }
@@ -83,15 +90,48 @@ public class ShRoom {
         Elements rooms = element.select("div > div[class^=c]");
 
         for (Element room: rooms) {
-            String roomName = findRoomName(room);
-            System.out.println("roomName: " + roomName);
-        }
+            Element roomNameEl = findRoomName(room);
+            String roomName;
 
+            // Check if a name was found for the room.
+            if (roomNameEl != null) {
+                roomName = roomNameEl.ownText();
+
+                // Get the temperature of the room.
+                String temperature = findRoomTemperature(room);
+                System.out.println("Raum: " + roomName + ", Temperatur: " + temperature);
+
+            }
+        }
         return null;
     }
 
-    public static String findRoomName(Element room) {
-        return room.select("div > td").text();
+    /**
+     * Finds the node in the html code which contains the name of the room.
+     *
+     * @param room          The room element.
+     * @return              Returns the elements which contains the name of the room.
+     */
+    public static Element findRoomName(Element room) {
+        return room.select("div").first();
+    }
+
+    /**
+     * Finds the temperature of the room.
+     *
+     * @param room          The room element.
+     * @return              Returns a String which contains the read temperature or a hyphen if no temperature was found.
+     */
+    public static String findRoomTemperature(Element room) {
+        Element temperatureEl = room.select("div > table td[class^=tc] + td").first();
+
+        if (temperatureEl != null) {
+            return temperatureEl.text();
+        }
+        else {
+            return "-";
+        }
+
     }
 
 }
