@@ -5,14 +5,13 @@ import android.app.Application;
 import android.content.Context;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.christian2003.smarthome.model.data.ShWebpageContent;
-import de.christian2003.smarthome.model.data.rooms.ShLivingRoom;
 
 
 /**
@@ -42,10 +41,18 @@ public class App extends Application {
         context = this;
 
         // Get the webpage and if it the content was retrieved successfully get the information of the rooms and their devices.
-        Document document = ShWebpageContent.getWebpageHtml();
+        // Try catch only needed temporary until we have access to the smart home webpage.
+        Document document = null;
+        try {
+            document = ShWebpageContent.getWebpageHtml(this);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         try {
             ShWebpageContent shWebpageContent = new ShWebpageContent(document);
-            ShLivingRoom.getLivingRoomData(document);
+            shWebpageContent.getAllRooms();
         }
         catch (Exception e) {
             throw new RuntimeException(e);

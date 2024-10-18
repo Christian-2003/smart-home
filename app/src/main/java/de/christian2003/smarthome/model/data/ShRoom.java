@@ -2,6 +2,10 @@ package de.christian2003.smarthome.model.data;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.util.ArrayList;
 import de.christian2003.smarthome.model.data.devices.ShGenericDevice;
 
@@ -34,7 +38,7 @@ public class ShRoom {
     /**
      * Constructor instantiates a new room.
      *
-     * @param name      Name for the smart home.
+     * @param name      Name for the room.
      * @param infos     List of info texts for the room.
      * @param devices   List of smart home devices for the room.
      */
@@ -72,6 +76,22 @@ public class ShRoom {
     @NonNull
     public ArrayList<ShGenericDevice> getDevices() {
         return devices;
+    }
+
+    public static ShRoom findRoomInDivContext(Element element) {
+        // Find all rooms of the div-container that was passed.
+        Elements rooms = element.select("div > div[class^=c]");
+
+        for (Element room: rooms) {
+            String roomName = findRoomName(room);
+            System.out.println("roomName: " + roomName);
+        }
+
+        return null;
+    }
+
+    public static String findRoomName(Element room) {
+        return room.select("div > td").text();
     }
 
 }
