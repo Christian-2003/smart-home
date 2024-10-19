@@ -1,67 +1,63 @@
 package de.christian2003.smarthome.view.main;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
+import android.view.MenuItem;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import de.christian2003.smarthome.R;
 import de.christian2003.smarthome.utils.framework.SmartHomeActivity;
-import de.christian2003.smarthome.view.url.UrlActivity;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 
-public class MainActivity extends SmartHomeActivity<MainViewModel> {
+/**
+ * Class implements the main activity for the app.
+ */
+public class MainActivity extends SmartHomeActivity<MainViewModel> implements NavigationBarView.OnItemSelectedListener {
 
+    /**
+     * Constructor instantiates a new main activity.
+     */
     public MainActivity() {
         super(MainViewModel.class, R.layout.activity_main);
     }
 
 
+    /**
+     * Method is called whenever the activity is created.
+     *
+     * @param savedInstanceState    Previously saved state of the instance.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        findViewById(R.id.button_url).setOnClickListener(view -> startActivity(new Intent(this, UrlActivity.class)));
+        BottomNavigationView navigationBarView = findViewById(R.id.menu_bar);
+        navigationBarView.setOnItemSelectedListener(this);
+        navigationBarView.setSelectedItemId(viewModel.getSelectedFragmentId());
     }
 
 
-    public void GetData(View view) {
-        // Check that button on click works.
-        TextView tvHeadline = findViewById(R.id.tvHeadline);
-        tvHeadline.setText("Button clicked");
-
-        // Get data form the website.
-        new Thread(() -> {
-            OkHttpClient client = new OkHttpClient();
-
-            Request request = new Request.Builder()
-                    .url("https://www.google.com")
-                    .build();
-
-            try{
-                Response response = client.newCall(request).execute();
-
-                if (response.isSuccessful() && response.body() != null) {
-                    String htmlContent = response.body().string();
-                    response.close();
-
-                    runOnUiThread(() -> {
-                        TextView tvData = findViewById(R.id.tvData);
-                        tvData.setText(htmlContent);
-                        System.out.println("HTML Content: " + htmlContent);
-                            });
-                }
-                else {
-                    System.out.println("Error body might be null");
-                }
-            }
-            catch (Exception exception) {
-                System.out.println("Exception: " + exception.getMessage());
-            }
-        }).start();
+    /**
+     * Method is called whenever a menu item in the {@linkplain NavigationBarView} is selected and
+     * changes the view that is displayed within this MainActivity to the corresponding fragment.
+     *
+     * @param item  Menu item that was selected.
+     * @return      Whether clicked menu item could change the fragment successfully.
+     */
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_home) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, viewModel.getHomeFragment()).commit();
+            viewModel.setSelectedFragmentId(id);
+            return true;
+        }
+        else if (id == R.id.menu_settings) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, viewModel.getSettingsFragment()).commit();
+            viewModel.setSelectedFragmentId(id);
+            return true;
+        }
+        return false;
     }
 
 }
