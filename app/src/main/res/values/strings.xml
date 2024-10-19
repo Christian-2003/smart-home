@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">SmartHome</string>
     <string name="btnGetData">Get Data</string>
+    <string name="url_title">Configure Server URL</string>
 </resources>

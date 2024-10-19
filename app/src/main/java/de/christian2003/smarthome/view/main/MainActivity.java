@@ -1,11 +1,10 @@
-package de.christian2003.smarthome.view;
+package de.christian2003.smarthome.view.main;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import de.christian2003.smarthome.R;
 import de.christian2003.smarthome.utils.framework.SmartHomeActivity;
-import de.christian2003.smarthome.viewmodel.MainViewModel;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
