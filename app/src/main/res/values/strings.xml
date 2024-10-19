@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">SmartHome</string>
     <string name="btnGetData">Get Data</string>
+
     <string name="url_title">Configure Server URL</string>
+    <string name="url_input_server">Server URL</string>
+    <string name="url_info">In order to connect to your smart home system, please enter the server URL.</string>
+    <string name="url_error">Invalid URL</string>
+
+    <string name="button_cancel">Cancel</string>
+    <string name="button_save">Save</string>
 </resources>

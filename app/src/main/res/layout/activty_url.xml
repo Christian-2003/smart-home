@@ -11,8 +11,7 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/url_title"
-        app:navigationIcon="@drawable/ic_back"/>
+        app:title="@string/url_title"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -21,8 +20,84 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/space_horizontal"
             android:orientation="vertical">
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/md_theme_tertiaryContainer"
+                app:cardCornerRadius="@dimen/corners_default">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/space_vertical"
+                    android:layout_marginHorizontal="@dimen/space_horizontal"
+                    android:text="@string/url_info"
+                    android:textColor="@color/md_theme_onTertiaryContainer"
+                    app:drawableStartCompat="@drawable/ic_info"
+                    app:drawableTint="@color/md_theme_onTertiaryContainer"
+                    android:drawablePadding="@dimen/space_horizontal_between"/>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/space_vertical"
+                android:backgroundTint="@color/md_theme_secondaryContainer"
+                app:cardCornerRadius="@dimen/corners_default">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/space_vertical"
+                    android:layout_marginHorizontal="@dimen/space_horizontal"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/container_url"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/url_input_server">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/input_url"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:singleLine="true"
+                            android:inputType="textUri"
+                            tools:text="http://smarthome.christian2003.de"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_vertical_between"
+                        android:layout_gravity="end"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/button_cancel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/space_horizontal_between"
+                            android:text="@string/button_cancel"
+                            style="@style/Widget.Material3.Button.OutlinedButton"/>
+
+                        <Button
+                            android:id="@+id/button_save"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/button_save"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
 

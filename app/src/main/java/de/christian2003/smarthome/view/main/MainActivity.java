@@ -1,10 +1,12 @@
 package de.christian2003.smarthome.view.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import de.christian2003.smarthome.R;
 import de.christian2003.smarthome.utils.framework.SmartHomeActivity;
+import de.christian2003.smarthome.view.url.UrlActivity;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -20,6 +22,9 @@ public class MainActivity extends SmartHomeActivity<MainViewModel> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        findViewById(R.id.button_url).setOnClickListener(view -> startActivity(new Intent(this, UrlActivity.class)));
     }
 
 
