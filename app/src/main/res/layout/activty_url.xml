@@ -9,8 +9,11 @@
     tools:context=".view.url.UrlActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:navigationIconTint="@color/md_theme_onSurface"
+        app:titleTextColor="@color/md_theme_onSurface"
         app:title="@string/url_title"/>
 
     <ScrollView
@@ -46,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/space_vertical"
-                android:backgroundTint="@color/md_theme_secondaryContainer"
+                android:backgroundTint="@color/md_theme_surfaceContainer"
                 app:cardCornerRadius="@dimen/corners_default">
 
                 <LinearLayout

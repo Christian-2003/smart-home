@@ -1,3 +1,5 @@
+<img src="docs/img/icon.png" height="150" align="right">
+
 # Smart Home
 
 ![GitHub](https://img.shields.io/github/license/Christian-2003/smart-home?color=red)

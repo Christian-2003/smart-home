@@ -6,6 +6,8 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import de.christian2003.smarthome.R;
@@ -14,8 +16,18 @@ import de.christian2003.smarthome.utils.framework.SmartHomeActivity;
 
 /**
  * Class implements the activity through which to enter the URL for the server.
+ * Once the URL is set successfully, the activity returns {@link #RESULT_OK} as result.
+ * Pass a boolean as extra with key {@link #EXTRA_CLOSEABLE} to indicate whether the activity should
+ * display a back button within the app bar.
  */
 public class UrlActivity extends SmartHomeActivity<UrlViewModel> {
+
+    /**
+     * Field stores the key with which to pass the boolean extra indicating whether the app bar
+     * should contain a button to close the activity.
+     */
+    public static final String EXTRA_CLOSEABLE = "extra_closeable";
+
 
     /**
      * Attribute stores the button to save the entered URL.
@@ -49,6 +61,13 @@ public class UrlActivity extends SmartHomeActivity<UrlViewModel> {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey(EXTRA_CLOSEABLE) && extras.getBoolean(EXTRA_CLOSEABLE)) {
+            MaterialToolbar appBar = findViewById(R.id.app_bar);
+            appBar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_back));
+            appBar.setNavigationOnClickListener(view -> finish());
+        }
 
         saveButton = findViewById(R.id.button_save);
         urlContainer = findViewById(R.id.container_url);
@@ -92,6 +111,7 @@ public class UrlActivity extends SmartHomeActivity<UrlViewModel> {
         if (viewModel.updateUrl(urlEditText.getText())) {
             //Entered URL valid:
             viewModel.saveUrl();
+            setResult(RESULT_OK);
             finish();
         }
         else {

@@ -49,5 +49,14 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
     </style>
 
-    <style name="Theme.SmartHome" parent="Base.Theme.SmartHome" />
+    <style name="Theme.SmartHome" parent="Base.Theme.SmartHome">
+        <item name="android:navigationBarColor">@color/md_theme_surface</item>
+        <item name="android:statusBarColor">@color/md_theme_surface</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.SmartHome.MainActivity" parent="Theme.SmartHome">
+        <item name="android:navigationBarColor">@color/md_theme_surfaceContainer</item>
+    </style>
 </resources>

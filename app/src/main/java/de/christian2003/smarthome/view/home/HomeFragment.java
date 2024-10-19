@@ -45,7 +45,11 @@ public class HomeFragment extends SmartHomeFragment<HomeViewModel> {
             return null;
         }
 
-        view.findViewById(R.id.button_url).setOnClickListener(v -> startActivity(new Intent(getActivity(), UrlActivity.class)));
+        view.findViewById(R.id.button_url).setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), UrlActivity.class);
+            intent.putExtra(UrlActivity.EXTRA_CLOSEABLE, true);
+            startActivity(intent);
+        });
 
         return view;
     }
