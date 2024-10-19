@@ -7,6 +7,10 @@
 
     <string name="main_title">Welcome</string>
 
+    <string name="settings_connection">Connection</string>
+    <string name="settings_connection_url">Server URL</string>
+    <string name="settings_connection_url_info">Edit the server URL</string>
+
     <string name="url_title">Configure Server URL</string>
     <string name="url_input_server">Server URL</string>
     <string name="url_info">In order to connect to your smart home system, please enter the server URL.</string>

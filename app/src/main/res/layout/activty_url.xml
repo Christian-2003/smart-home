@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,6 +30,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_vertical"
                 android:backgroundTint="@color/md_theme_tertiaryContainer"
                 app:cardCornerRadius="@dimen/corners_default">
 
@@ -38,17 +40,15 @@
                     android:layout_marginVertical="@dimen/space_vertical"
                     android:layout_marginHorizontal="@dimen/space_horizontal"
                     android:text="@string/url_info"
-                    android:textColor="@color/md_theme_onTertiaryContainer"
                     app:drawableStartCompat="@drawable/ic_info"
-                    app:drawableTint="@color/md_theme_onTertiaryContainer"
-                    android:drawablePadding="@dimen/space_horizontal_between"/>
+                    style="@style/text.info"/>
 
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/space_vertical"
+                android:layout_marginTop="@dimen/space_vertical"
                 android:backgroundTint="@color/md_theme_surfaceContainer"
                 app:cardCornerRadius="@dimen/corners_default">
 
