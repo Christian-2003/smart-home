@@ -7,10 +7,13 @@ import android.content.Context;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.christian2003.smarthome.model.data.ShRoom;
 import de.christian2003.smarthome.model.data.ShWebpageContent;
 
 
@@ -52,7 +55,8 @@ public class App extends Application {
 
         try {
             ShWebpageContent shWebpageContent = new ShWebpageContent(document);
-            shWebpageContent.getAllRooms();
+            ArrayList<ShRoom> allRooms = shWebpageContent.getAllShData();
+            System.out.println("Anzahl Räume: " + allRooms.size());
         }
         catch (Exception e) {
             throw new RuntimeException(e);

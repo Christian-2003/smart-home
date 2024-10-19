@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>SmartHome v2</title>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script type="text/javascript" src="/sh/js/generic.js"></script>
+
+    <style>
+        <!--
+        #table-wrapper {
+            position: relative;
+        }
+
+        #table-scroll {
+            height: 100px;
+            overflow: auto;
+            margin-top: 20px;
+        }
+
+        #table-wrapper table {
+            width: 100%;
+        }
+
+        #table-wrapper table th .texth {
+            position: absolute;
+            top: -20px;
+            z-index: 2;
+            /*
+  height55:20px;
+  width55:35%;
+*/
+            border: 1px solid blue;
+        }
+
+
+        /*Table Column 1 */
+        .tc1 {
+            width: 75px;
+        }
+
+
+        .c1 {
+            width: 385px;
+        }
+
+        .c2 {
+            width: 335px;
+        }
+
+        .c3 {
+            width: 460px;
+        }
+
+        .c4 {
+            width: 220px;
+        }
+
+
+        td {
+            padding: 0.2em;
+            vertical-align: top;
+        }
+        -->
+        table
+        {
+        width:
+        100%;
+        border-collapse:
+        collapse;
+        }
+        /*
+        Zebra
+        striping
+        tr:nth-of-type(odd)
+        {
+        background:
+        #eee;
+        }
+        */
+        th
+        {
+        background:
+        #333;
+        color:
+        white;
+        font-weight:
+        bold;
+        }
+        td,
+        th
+        {
+        padding:
+        2px;
+        border:
+        1px
+        solid
+        #ccc;
+        text-align:
+        left;
+        }
+        img
+        {
+        border:
+        1px
+        solid
+        #ddd;
+        border-radius:
+        2px;
+        padding:
+        0px;
+        }
+        .stable
+        {
+        border:
+        0;
+        cellspacing:
+        0;
+        cellpadding:
+        2;
+        width:
+        200px;
+        }
+        .flex-container
+        {
+        display:
+        flex;
+        flex-wrap:
+        wrap;
+        }
+        .flex-container
+        >
+        div
+        {
+        background-color:
+        #f1f1f1;
+        margin:
+        2px;
+        padding:
+        2px;
+        text-align:
+        left;
+        font-size:
+        16px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <H2>SmartHome</h2><br>
+
+    <script charset="UTF-8">
+        function calc_abs(t, r) {
+            return Math.round(100 * 13.2471 * Math.pow(Math.E, 17.67 * t / (t + 243.5)) * r / (273.15 + t)) / 100;
+        }
+
+        function calc_rel(t, a) {
+            return Math.round(10 * (a * (273.15 + t) / (13.2471 * Math.pow(Math.E, 17.67 * t / (t + 243.5))))) / 10;
+        }
+
+        function docalc() {
+            var t = parseFloat(document.getElementById("te").value.replace(",", "."));
+            var r = parseFloat(document.getElementById("rl").value.replace(",", "."));
+            var a = parseFloat(document.getElementById("al").value.replace(",", "."));
+            if (isNaN(t) || t < -273.15) {
+                alert("Bitte Temperatur eingeben!");
+                return false;
+            }
+            if ((r && a) || (!r && !a)) {
+                alert("Bitte relative oder absolute Luftfeuchtigkeit eingeben, aber nicht beide!");
+                return false;
+            }
+            if (r) {
+                document.getElementById("al").value = calc_abs(t, r);
+            }
+            else if (a) {
+                document.getElementById("rl").value = calc_rel(t, a);
+            }
+        }
+    </script>
+
+
+    <paar links>
+
+    </paar links>
+
+
+    <form>
+        <table class="stable">
+            <tr>
+                <td>Temperatur: </td>
+                <td><input type="number" step="any" id="te" class="vals"></td>
+                <td> &deg;C<br></td>
+                <td><input type="button" value="C" onclick="te.value=''"></td>
+            </tr>
+            <tr>
+                <td>Relative Luftfeuchtigkeit: </td>
+                <td><input type="number" step="any" id="rl" class="vals"></td>
+                <td> %<br></td>
+                <td><input type="button" value="C" onclick="rl.value=''"></td>
+            </tr>
+            <tr>
+                <td>Absolute Luftfeuchtigkeit: </td>
+                <td><input type="number" step="any" id="al" class="vals"></td>
+                <td> g/m&sup3;<br></td>
+                <td><input type="button" value="C" onclick="al.value=''"></td>
+            </tr>
+        </table>
+        <input type="button" value="Ausrechnen" onclick="docalc()"> <input type="reset" value="L&ouml;schen">
+    </form>
+    <br>
+
+    <!-- hier fängt der relevante smarthome-teil an -->
+
+    <div class="flex-container">
+        <div class="c1">Gesamtstatus vom <span id="TIMESTAMP">01-10-2024 20:50:46</span>
+            <table border="1">
+                <!--
+<tr><td>Tag/Nacht<td>Tag</tr>
+<tr><td>Anwesend<td>0|1</tr>
+-->
+                <tr>
+                    <td>Haust&uuml;r
+                    <td>
+                        <div id="EingangTR1"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                </tr>
+                <tr>
+                    <td>Unverriegelte Fenster
+                    <td>
+                        <div id="OpenWindows"></div>
+                </tr>
+                <tr>
+                    <td>Offene T&uuml;ren
+                    <td>
+                        <div id="OpenDoors"></div>
+                </tr>
+                <tr>
+                    <td>Nicht verriegelte T&uuml;ren
+                    <td>
+                        <div id="UnlockedDoors"></div>
+                </tr>
+                <tr>
+                    <td>Strombezug<button onclick="RefreshDevices('','StromP');">&#8635;</button>
+                    <td>
+                        <div id="StromP">-</div>
+                </tr>
+                <tr>
+                    <td>Stromlieferung<button onclick="RefreshDevices('','StromPL');">&#8635;</button>
+                    <td>
+                        <div id="StromPL">-</div>
+                </tr>
+                <tr>
+                    <td>Stromz&auml;hlerstand Bezug<button onclick="RefreshDevices('','StromKWH');">&#8635;</button>
+                    <td>
+                        <div id="StromKWH">-</div>
+                </tr>
+                <tr>
+                    <td>Stromz&auml;hlerstand Lieferung<button
+                            onclick="RefreshDevices('','StromKWHL');">&#8635;</button>
+                    <td>
+                        <div id="StromKWHL">-</div>
+                </tr>
+                <tr>
+                    <td>Solar Leistung
+                    <td>
+                        <div id="SolarLeistung">-</div>
+                </tr>
+                <tr>
+                    <td>Solar Tagesertrag
+                    <td>
+                        <div id="SolarTagesertrag">-</div>
+                </tr>
+                <tr>
+                    <td>Solar Gesamtertrag
+                    <td>
+                        <div id="SolarGesamtertrag">-</div>
+                </tr>
+            </table>
+        </div>
+
+        <div class="c2">Wetter
+            <div id="wcom-14437e89daabd7befdf92e1b5b1b4491"
+                    style="border: 1px solid #CCC; background-color: #FCFCFC; border-radius: 5px"
+                    class="wcom-default w300x250">
+                <link rel="stylesheet" href="//cs3.wettercomassets.com/woys/5/css/w.css" media="all">
+                <div class="wcom-city"><a style="color: #000"
+                        href="https://www.wetter.com/deutschland/ettlingen/bruchhausen/DE0002761001.html"
+                        target="_blank" rel="nofollow" aria-label="Wetter Berlin" title="Wetter Bruchhausen">Wetter
+                    Bruchhausen</a></div>
+                <div id="wcom-14437e89daabd7befdf92e1b5b1b4491-weather"></div>
+                <script type="text/javascript" src="//cs3.wettercomassets.com/woys/5/js/w.js"></script>
+                <script
+                        type="text/javascript">_wcomWidget({ id: 'wcom-14437e89daabd7befdf92e1b5b1b4491', location: 'DE0002761001', format: '300x250', type: 'spaces' });</script>
+            </div>
+        </div>
+
+
+        <div class="c3"> <!-- garten -->
+            Garten<button onclick="RefreshDevices('Garten','');">&#8635;</button>
+            <table border="1">
+                <tr>
+                    <td>Temperatur Garten:
+                    <td id="GartenTemp">-
+                </tr>
+                <tr>
+                    <td>Luftfeuchtigkeit:
+                    <td id="WETTER_LF">-
+                </tr>
+                <tr>
+                    <td>Luftdruck:
+                    <td>
+                        <div id="WETTER_LD">-</div>
+                </tr>
+                <tr>
+                    <td>Sonnenaufgang:
+                    <td>
+                        <div id="WETTER_SA">-</div>
+                </tr>
+                <tr>
+                    <td>Sonnenuntergang:
+                    <td>
+                        <div id="WETTER_SU">-</div>
+                </tr>
+                <tr>
+                    <td>Status
+                    <td>
+                        <table border="1">
+                            <tr>
+                                <td>Licht<button onclick="History('3/1/6');">H</button>
+                                <td>Brunnen<button onclick="History('3/1/7');">H</button>
+                            </tr>
+                            <tr>
+                                <td align="center"><span id="GartenDose1"><img src="/sh/icons/open.png" width="64"
+                                        height="64"></span><br>
+                                    (<span id="GartenSchuko1_mA">-</span>)<br>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/6','1.001','1');RefreshDevices('','GartenDose1');">An</button>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/6','1.001','0');RefreshDevices('','GartenDose1');">Aus</button>
+
+                                <td align="center"><span id="GartenDose2"><img src="/sh/icons/open.png" width="64"
+                                        height="64"></span><br>
+                                    (<span id="GartenSchuko2_mA">-</span>)<br>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/7','1.001','1');RefreshDevices('','GartenDose2');">An</button>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/7','1.001','0');RefreshDevices('','GartenDose2');">Aus</button>
+                            </tr>
+
+                            <tr>
+                                <td><span id="Garten_S1_OPSH">-</span>
+                                <td><span id="Garten_S2_OPSH">-</span>
+                            </tr>
+
+                            <tr>
+                                <td><span id="Garten_S1_KWH">-</span>
+                                <td><span id="Garten_S2_KWH">-</span>
+                            </tr>
+
+
+                        </table>
+                </tr>
+
+
+            </table>
+
+
+        </div> <!-- Garten -->
+
+        <div class="c4">
+            <a href="/sh/visu/heizung/temp_aussen.php">Heizung</A>
+            <table border="1">
+                <tr>
+                    <td class="tc1">Stand
+                    <td>
+                        <div id="HZ_DT">-</div>
+                </tr>
+                <tr>
+                    <td>Modus
+                    <td>
+                        <div id="HZ_MODUS">-</div>
+                </tr>
+                <tr>
+                    <td>Brenner h
+                    <td>
+                        <div id="HZ_BRENNERH">-</div>
+                </tr>
+                <tr>
+                    <td>Brennerstarts
+                    <td>
+                        <div id="HZ_BRENNERS">-</div>
+                </tr>
+            </table>
+        </div>
+    </div> <!--Container -->
+
+    <div class="flex-container">
+        <div class="c1 room">
+            <span class="roomName">Eingang/Flur</span><button onclick="RefreshDevices('Flur EG','');">&#8635;</button>
+            <table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td>
+                        <div id="EingangTemp">-</div>
+                </tr>
+                <tr>
+                    <td>Status
+                    <td>
+                        <table border="1">
+                            <tr>
+                                <td>Fenster<br><button onclick="History('1/0/12');">H</button>
+                                <td>T&uuml;re<br><button onclick="History('1/0/13');">H</button>
+                                <td>T&uuml;rriegel<br><button onclick="History('1/0/14');">H</button>
+                                <td>Nachtlicht
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="EingangFenster"><img src="/sh/icons/open.png" width="64" height="64">
+                                    </div>
+                                <td>
+                                    <div id="EingangT"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td>
+                                    <div id="EingangTR2" width="80"><img src="/sh/icons/open.png" width="64"
+                                            height="64"></div>
+                                <td>
+                                    <div id="FLUR_NL"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                    <br>
+                                    <input type="button" value="An" onclick="delockSwitchAndUpdate('FLUR_NL',1)">
+                                    <input type="button" value="Aus" onclick="delockSwitchAndUpdate('FLUR_NL',0)">
+                            </tr>
+                        </table>
+                </tr>
+                <tr>
+                    <td>Rollladen
+                    <td>
+                        <form>
+                            <input type="number" size="3" maxlength="3" id="EingangR" style="max-width: 50px;">
+                            &percnt;
+                            <button type="button"
+                                    onclick="knx_write_ga('2/1/2','5.001',document.getElementById('EingangR').value)">Set</button>
+                        </form>
+                        <span id="EingangR_NEXT">&nbsp;</span>
+                </tr>
+            </table>
+        </div>
+
+        <div class="c2 room"> <!--Element K�che -->
+            <span class="roomName"><B>K&uuml;che</b></span>
+            <button onclick="RefreshDevices('K\u00fcche','');">&#8635;</button>
+
+            <table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td>
+                        <table border="1">
+                            <tr>
+                                <td>Flur
+                                <td><span id="K_TempLFH2">-</span>
+                            </tr>
+                            <td>WZ
+                            <td><span id="K_TempLFH">-</span>
+                </tr>
+                <tr>
+                    <td>MDT
+                    <td><span id="K_Temp3">-</span>
+                </tr>
+            </table>
+            </tr>
+
+            <tr>
+                <td>Status
+                <td>
+
+                    <table border="1"> <!-- Tabelle Status K�che -->
+                        <tr>
+                            <td>Fenster<br><button onclick="History('1/0/15;1/0/16');">H</button>
+                            <td>Hauptlicht<br><button onclick="History('3/1/0');">H</button>
+                            <td>Nebenlicht<br><button onclick="History('3/1/1');">H</button>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="K_F"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                            <td align="center"><span id="K_HL"><img src="/sh/icons/open.png" width="64"
+                                    height="64"></span><br>
+                                (<span id="K_HL_mA">-</span>)<br>
+                                <button type="button"
+                                        onclick="knx_write_ga('3/0/0','1.001','1');RefreshDevices('','K_HL');">An</button>
+                                <button type="button"
+                                        onclick="knx_write_ga('3/0/0','1.001','0');RefreshDevices('','K_HL');">Aus</button>
+
+
+                            <td align="center"><span id="K_NL"><img src="/sh/icons/open.png" width="64"
+                                    height="64"></span><br>
+
+                                (<span id="K_NL_mA">-</span>)
+                                <br>
+                                <button type="button"
+                                        onclick="knx_write_ga('3/0/1','1.001','1');RefreshDevices('','K_NL');">An</button>
+                                <button type="button"
+                                        onclick="knx_write_ga('3/0/1','1.001','0');RefreshDevices('','K_NL');">Aus</button>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;
+                            <td><span id="K_HL_OPSH">-</span>
+                            <td><span id="K_NL_OPSH">-</span>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;
+                            <td><span id="K_HL_KWH">-</span>
+                            <td><span id="K_NL_KWH">-</span>
+                        </tr>
+                    </table>
+
+
+            <tr>
+                <td>Rollladen
+                <td>
+                    <form>
+                        <input type="number" size="3" maxlength="3" id="K_R" style="max-width: 50px;">
+                        &percnt;
+                        <button type="button"
+                                onclick="knx_write_ga('2/1/5','5.001',document.getElementById('K_R').value)">Set</button>
+                    </form>
+                    <span ID="K_R_NEXT">&nbsp;</span>
+            </tr>
+            </table> <!-- ENDE Tabelle Status K�che --> <!-- End K�che -->
+        </div> <!--Element K�che -->
+
+        <div class="c3 room"> <!--Element WZ -->
+            <span class="roomName">WZ</span><button onclick="RefreshDevices('Wohnzimmer','');">&#8635;</button>
+
+            <table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td>
+                        <div id="WZ_Temp">-</div>
+                </tr>
+
+                <tr>
+                    <td>Status
+                    <td>
+                        <table border="1">
+                            <tr>
+                                <td>Schiebet&uuml;r
+                                <td>Fenster<br><button onclick="History('1/0/18');">H</button>
+                                <td>Terassent&uuml;r<br><button onclick="History('1/0/17');">H</button>
+                                <td>Nachtlicht
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <div id="WZ_F2"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td>
+                                    <div id="WZ_F3"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td>
+                                    <div id="WZ_F5"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td>
+                                    <div id="WZ_NL"><img src="/sh/icons/open.png" width="64" height="64"></div><br>
+                                    <input type="button" value="An" onclick="delockSwitchAndUpdate('WZ_NL',1)">
+                                    <input type="button" value="Aus" onclick="delockSwitchAndUpdate('WZ_NL',0)">
+                            </tr>
+                        </table>
+                </tr>
+
+                <tr>
+                    <td>Rolll&auml;den
+                    <td>
+                        <table border="1">
+                            <tr>
+                                <td>R1
+                                <td>R2
+                                <td>R3
+                                <td>R4
+                                <td>R5
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <form>
+                                        <input type="number" size="3" maxlength="3" id="WZ_R1" style="max-width: 50px;">
+                                        &percnt;<br>
+                                        <button type="button"
+                                                onclick="knx_write_ga('x/x/x','5.001',document.getElementById('WZ_R1').value)">Set</button>
+                                    </form>
+
+                                <td>
+                                    <form>
+                                        <input type="number" size="3" maxlength="3" id="WZ_R2" style="max-width: 50px;">
+                                        &percnt;<br>
+                                        <button type="button"
+                                                onclick="knx_write_ga('x/x/x','5.001',document.getElementById('WZ_R2').value)">Set</button>
+                                    </form>
+
+                                <td>
+                                    <form>
+                                        <input type="number" size="3" maxlength="3" id="WZ_R3" style="max-width: 50px;">
+                                        &percnt;<br>
+                                        <button type="button"
+                                                onclick="knx_write_ga('2/1/31','5.001',document.getElementById('WZ_R3').value)">Set</button>
+                                    </form>
+                                    <span ID="WZ_R3_NEXT">&nbsp;</span>
+
+                                <td>
+                                    <form>
+                                        <input type="number" size="3" maxlength="3" id="WZ_R4" style="max-width: 50px;">
+                                        &percnt;<br>
+                                        <button type="button"
+                                                onclick="knx_write_ga('2/1/11','5.001',document.getElementById('WZ_R4').value)">Set</button>
+                                    </form>
+                                    <span ID="WZ_R4_NEXT">&nbsp;</span>
+                                <td>
+                                    <form>
+                                        <input type="number" size="3" maxlength="3" id="WZ_R5" style="max-width: 50px;">
+                                        &percnt;<br>
+                                        <button type="button"
+                                                onclick="knx_write_ga('2/1/8','5.001',document.getElementById('WZ_R5').value)">Set</button>
+                                    </form>
+                                    <span ID="WZ_R5_NEXT">&nbsp;</span>
+                            </tr>
+                        </table>
+            </table>
+        </div> <!--Element WZ -->
+
+        <div class="c4 room"> <!--Element b�ro Chris -->
+            <span class="roomName">B&uuml;ro Chris</span><button onclick="RefreshDevices('B\u00fcro Unten','');">&#8635;</button>
+
+            <table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td>
+                        <div id="EG_BCTemp">-</div>
+                </tr>
+                <tr>
+                    <td>Fenster<br><button onclick="History('1/0/20;1/0/21');">H</button>
+                    <td>
+                        <div id="EG_BCF"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                </tr>
+
+                <tr>
+                    <td>Rollladen
+                    <td>
+                        <form>
+                            <input type="number" size="3" maxlength="3" id="EG_BCR" style="max-width: 50px;">
+                            &percnt;
+                            <button type="button"
+                                    onclick="knx_write_ga('2/1/17','5.001',document.getElementById('EG_BCR').value)">Set</button>
+                        </form>
+                        <span ID="EG_BCR_NEXT">&nbsp;</span>
+                </tr>
+            </table>
+
+        </div> <!--Element b�ro Chris -->
+    </div> <!-- Container -->
+
+
+    <div class="flex-container"> <!-- Container -->
+        <div class="c1 room"> <!-- Bad -->
+            <span class=""roomName>Bad</span><button onclick="RefreshDevices('Bad','');">&#8635;</button>
+
+            <table border="1" width="100%">
+                <tr>
+                    <td class="tc1">Temp
+                    <td>
+
+                        <table>
+                            <tr>
+                                <td>Arcus
+                                <td><span id="BADTempLFH">-</span>
+                            </tr>
+                            <tr>
+                                <td>MDT
+                                <td><span id="BADTemp2">-</span>
+                            </tr>
+                            <tr>
+                                <td>Lingg
+                                <td><span id="BADTempLFH2">-</span>
+                            </tr>
+                        </table>
+                </tr>
+
+                <tr>
+                    <td>Status
+                    <td>
+
+                        <table border="1">
+                            <tr>
+                                <td>Fenster<br><button onclick="History('1/0/7;1/0/8');">H</button>
+                                <td>Hauptlicht<br><button onclick="History('3/1/2');">H</button>
+                                <td>Duschlicht<br><button onclick="History('3/1/3');">H</button>
+                                <td>HTW<br><button onclick="History('3/1/4');">H</button>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <div id="BADFD"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td align="center">
+                                    <span id="B_HL"><img src="/sh/icons/open.png" width="64"
+                                            height="64"></span><br>(<span id="B_HL_mA">-</span>)
+                                    <br>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/2','1.001','1');RefreshDevices('','B_HL');">An</button>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/2','1.001','0');RefreshDevices('','B_HL');">Aus</button>
+                                <td align="center"><span id="B_DL"><img src="/sh/icons/open.png" width="64"
+                                        height="64"></span><br>(<span id="B_DL_mA">-</span>)
+                                    <br>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/3','1.001','1');RefreshDevices('','B_DL');">An</button>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/3','1.001','0');RefreshDevices('','B_DL');">Aus</button>
+
+                                <td><span id="B_HW"><img src="/sh/icons/open.png" width="64"
+                                        height="64"></span><br>(<span id="B_HW_mA">-</span>)
+                                    <br>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/4','1.001','1');RefreshDevices('','B_HW');">An</button>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/4','1.001','0');RefreshDevices('','B_HW');">Aus</button>
+
+                            </tr>
+                            <tr>
+                                <td>
+                                <td><span id="B_HL_OPSH">-</span>
+                                <td><span id="B_DL_OPSH">-</span>
+                                <td><span id="B_HW_OPSH">-</span>
+                            </tr>
+                            <tr>
+                                <td>
+                                <td><span id="B_HL_KWH">-</span>
+                                <td><span id="B_DL_KWH">-</span>
+                                <td><span id="B_HW_KWH">-</span>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Rollladen
+                    <td>
+                        <form>
+                            <input type="number" size="3" maxlength="3" id="BADR" style="max-width: 50px;">
+                            &percnt;
+                            <button type="button"
+                                    onclick="knx_write_ga('2/1/14','5.001',document.getElementById('BADR').value)">Set</button>
+                        </form>
+                        <span ID="BADR_NEXT">&nbsp;</span>
+                </tr>
+            </table>
+        </div> <!-- Bad -->
+
+        <div class="c2 room"> <!-- kl Bad -->
+            <span class=""roomName>kl. Bad</span><button onclick="RefreshDevices('kl. Bad','');">&#8635;</button>
+            <table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td><span id="KLBADTEMPLFH">-</span>
+                </tr>
+                <tr>
+                    <td>Fenster<button onclick="History('1/0/3');">H</button>
+                    <td>
+                        <div id="KLBADF"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                </tr>
+            </table>
+
+            <br>
+            <!-- START Kinderzimmer -->
+            Flur OG, Kinderzimmer
+            <table border="1">
+                <tr>
+                    <td>&nbsp;
+                    <td>Flur<button onclick="RefreshDevices('Flur OG','');">&#8635;</button>
+                    <td>Julia<button onclick="RefreshDevices('Julia','');">&#8635;</button>
+                    <td>Sophie<button onclick="RefreshDevices('Sophie','');">&#8635;</button>
+                </tr>
+
+                <tr>
+                    <td>Status
+                    <td>
+                        Fenster<button onclick="History('1/0/4;1/0/5');">H</button><br>
+                        <div id="OGFF"><img src="/sh/icons/open.png" width="64" height="64"></div>
+
+
+                    <td>
+                        Fenster<button onclick="History('1/0/27');">H</button><br>
+                        <div id="JULIA_F"><img src="/sh/icons/open.png" width="64" height="64"></div>
+
+                    <td>
+                        Fenster<button onclick="History('1/0/29');">H</button><br>
+                        <div id="SOPHIE_F"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                </tr>
+            </table>
+            <!-- END Kinderzimmer -->
+
+
+        </div> <!-- kl Bad -->
+
+        <div class="c3 room"> <!-- Spielzimmer -->
+            <!-- START Spielzimmer -->
+            <span class="roomName">Spielzimmer</span> <button onclick="RefreshDevices('Spielzimmer','');">&#8635;</button>
+
+            <table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td>
+                        <div id="SZTemp">-</div>
+                </tr>
+                <tr>
+                    <td>Status
+                    <td>
+                        <table border="1">
+                            <tr>
+                                <td>Links <button onclick="History('1/0/9');">H</button>
+                                <td>Mitte<button onclick="History('1/0/10');">H</button>
+                                <td>Rechts<button onclick="History('1/0/11');">H</button>
+                                <td>Licht<button onclick="History('3/1/5');">H</button>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="SZFL"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td>
+                                    <div id="SZFM"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td>
+                                    <div id="SZFR"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td>
+                                    <span id="SZLI"><img src="/sh/icons/open.png" width="64"
+                                            height="64"></span><br>(<span id="SZ_L_mA">-</span>)
+                                    <br>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/5','1.001','1');RefreshDevices('','SZLI');">An</button>
+                                    <button type="button"
+                                            onclick="knx_write_ga('3/0/5','1.001','0');RefreshDevices('','SZLI');">Aus</button>
+                            </tr>
+                            <tr>
+                                <td>
+                                <td>
+                                <td>
+                                <td><span id="SZ_L_OPSH">-</span>
+                            </tr>
+                            <tr>
+                                <td>
+                                <td>
+                                <td>
+                                <td><span id="SZ_L_KWH">-</span>
+                            </tr>
+                        </table>
+                </tr>
+
+                <tr>
+                    <td>Rollladen
+                    <td>
+                        <form>
+                            <input type="number" size="3" maxlength="3" id="SZR" style="max-width: 50px;">
+                            &percnt;
+                            <button type="button"
+                                    onclick="knx_write_ga('2/1/23','5.001',document.getElementById('SZR').value)">Set</button>
+                        </form>
+                </tr>
+            </table>
+            <!-- END Spielzimmer -->
+        </div>
+        <div class="c4 room">
+            <!-- Start HWR -->
+            <span class="roomName">HWR</span><button onclick="RefreshDevices('HWR','');">&#8635;</button>
+            <table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td id="HWRTemp">-
+                </tr>
+                <tr>
+                    <td>Fenster<br><button onclick="History('1/0/6');">H</button>
+                    <td>
+                        <div id="HWRF"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                </tr>
+                <tr>
+                    <td>Rollladen
+                    <td>
+                        <form>
+                            <input type="number" size="3" maxlength="3" id="HWR_R" style="max-width: 50px;">
+                            &percnt;
+                            <button type="button"
+                                    onclick="knx_write_ga('2/1/20','5.001',document.getElementById('HWR_R').value)">Set</button>
+                        </form>
+                        <span ID="HWR_R_NEXT">&nbsp;</span>
+                </tr>
+            </table>
+            </td>
+            <!-- END HWR -->
+
+
+        </div> <!-- Spielzimmer -->
+
+
+
+    </div> <!-- Container -->
+
+
+    <div class="flex-container"> <!-- Container UG -->
+        <div class="c1 room"> <!-- Hobby -->
+            <span class="roomName">Hobby</span><button onclick="RefreshDevices('Hobby','');">&#8635;</button>
+            <table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td><span id="HB_TempLFH">-</span>
+                </tr>
+                <tr>
+                    <td>VOC
+                    <td><span id="HB_VOC">-</span>
+                </tr>
+                <tr>
+                    <td>Fenster<br><button onclick="History('1/0/22;1/0/23');">H</button>
+                    <td>
+                        <div id="HB_F"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                </tr>
+            </table>
+        </div> <!-- Hobby -->
+
+        <div class="c2 room"> <!-- Keller Re -->
+            <span class="roomName">Keller Rechts</span><button onclick="RefreshDevices('Keller Rechts','');">&#8635;</button>
+            <table border="1">
+                <tr>
+                    <td class="tc1">Status
+                    <td>
+                        <table border="1">
+                            <tr>
+                                <td>Panzerriegel<button onclick="History('1/0/24');">H</button>
+                                <td>Fenster<button onclick="History('1/0/25');">H</button>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="KR_PR"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td>
+                                    <div id="KR_F"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                        </table>
+                </tr>
+            </table> <!-- Keller RE -->
+        </div> <!-- Keller Re -->
+
+        <div class="c3 room"> <!-- �lraum -->
+            <span class="roomName">&Ouml;lraum</span><button onclick="RefreshDevices('\u00d6lraum','');">&#8635;</button>
+            <table border="1">
+                <tr>
+                    <td class="tc1">Fenster<button onclick="History('1/0/26');">H</button>
+                    <td>
+                        <div id="OEL_F"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                </tr>
+            </table>
+        </div> <!-- �lraum -->
+
+        <div class="c4 room"> <!-- Keller Li -->
+            <span class="roomName">Keller Li</span>
+            <table border="1">
+                <tr>
+                    <td class="tc1">Status<!--Gefrierschrank-->
+                    <td>
+                        <div id="KL_GS"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                </tr>
+            </table>
+        </div> <!-- Keller Li -->
+
+    </div> <!-- Container UG -->
+
+
+    <div class="flex-container"> <!--Container DG -->
+        <div class="c1 room"> <!-- Schlafzimmer -->
+            <span class="roomName">Schlafzimmer</span><button onclick="RefreshDevices('Schlafzimmer','');">&#8635;</button>
+            <table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td>
+                        <div id="DG_SZTemp">-</div>
+                </tr>
+                <tr>
+                    <td>Fenster
+                    <td>
+                        <table border="1">
+                            <tr>
+                                <td>Links <button onclick="History('1/0/1')">H</button>
+                                <td>Rechts <button onclick="History('1/0/2')">H</button>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="DG_SZFL"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                                <td>
+                                    <div id="DG_SZF"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                            </tr>
+                        </table>
+
+                </tr>
+            </table>
+        </div> <!-- Schlafzimmer -->
+
+        <div class="c2 room"> <!-- B�ro CH -->
+            <span class="roomName">B&uuml;ro Christian</span><table border="1">
+                <tr>
+                    <td class="tc1">Temp
+                    <td>
+                        <table border="0">
+                            <tr>
+                                <td>MDT
+                                <td><span id="BCHTemp">-</span><br>
+                            </tr>
+                            <tr>
+                                <td>Heizung
+                                <td><span id="BCHTemp2">-</span>
+                        </table>
+                </tr>
+                <tr>
+                    <td>Balkont&uuml;re
+                    <td>
+                        <div id="BCHBLKT"><img src="/sh/icons/open.png" width="64" height="64"></div>
+                </tr>
+                <tr>
+                    <td>Rollladen
+                    <td>
+                        <div id="BCHR">-</div>
+                </tr>
+            </table>
+        </div> <!-- B�ro CH -->
+
+    </div> <!--Container DG -->
+
+    <div id="table-wrapper">
+        <div id="table-scroll">
+            <table id="anrufliste">
+            </table>
+        </div>
+    </div>
+
+    <script charset="UTF-8">
+
+        //GLOBALE VARIABLEN
+        var openWindows = new Array(); //array
+        var openDoors = new Array(); //array
+        var UnlockedDoors = new Array(); //array
+        //GLOBALE VARIABLEN
+
+        function knx_write_ga(GA, DPT, value) {
+            request = "/sh/knx/ajax/knx_write_ga.php?ga=" + GA + "&DPT=" + DPT + "&value=" + value;
+            jQuery.post(request);
+        }
+
+        function delockSwitchAndUpdate(ID, value) {
+            //console.log(ID);
+            //console.log(value);
+
+
+            for (var i = 0; i < DeviceList.length; i++) {
+                var entry = DeviceList[i];
+
+                if (entry[5] === ID) {
+                    //Erst schalten, dann updaten
+
+                    request = "/sh/delock/ajax/write_delock_state.php?device=" + entry[3] + "&value=" + value + "&ID=" + entry[5];
+                    //	console.log("Request"+request);
+
+                    var req = $.post(request);
+                    $.when(req).done(
+                        function (delockdaten) {
+                            console.log(delockdaten);
+
+                            const urlParams = new URLSearchParams(this.url);
+                            const entities = urlParams.get('ID'); //this.url.substring(1+this.url.lastIndexOf("="));
+
+                            var entity = entities.split(";");
+
+                            for (var i = 0; i < entity.length; i++) {
+                                var value = "0";
+
+                                if (delockdaten.POWER == "ON")
+                                    value = "1";
+                                //$("#"+entity[i]).html(value); don't do it..
+                                RefreshDevices("", entity[i]);
+                            }
+                        }
+                    ).fail(function (req, status, err) {
+                        alert(formatErrorMessage(req, err));
+                    });
+                } //entry==ID
+            } //For
+        }
+
+        function removeItemOnce(arr, value) {
+            var index = arr.indexOf(value);
+            if (index > -1) {
+                arr.splice(index, 1);
+            }
+            return arr;
+        }
+
+        function RefreshDevices(Raum, ID) {
+            console.log("RefreshDevices " + Raum + "/ID:" + ID);
+
+            if (Raum.length > 0 && ID.length > 0)
+                console.log("Error: Raum AND ID provided!!");
+
+            if (ID.length > 0) {
+                for (var i = 0; i < DeviceList.length; i++) {
+                    var entry = DeviceList[i];
+
+                    if (entry[5] === ID) {
+                        entry[7] = "0";//no caching !
+                        processDeviceListEntry(entry);
+                    }
+                }
+            }
+
+            if (Raum.length > 0) {
+                for (var i = 0; i < DeviceList.length; i++) {
+                    var entry = DeviceList[i];
+
+                    if (entry[1] === Raum) {
+                        entry[7] = "0";//no caching !
+                        var result = processDeviceListEntry(entry);
+                        //console.log("processKnxStatus inRefresh-Raum-ID"+entry[2]+"Result:"+result);
+                    }
+                }
+            }
+        }
+
+
+        function History(GA) {
+            console.log("History GA:" + GA);
+
+            window.open("/sh/knx/history.php?GA=" + GA, '_blank');
+
+            if (ID.length > 0) {
+                for (var i = 0; i < DeviceList.length; i++) {
+                    var entry = DeviceList[i];
+
+                    if (entry[5] === ID) {
+                        entry[7] = "0";//no caching !
+                        processDeviceListEntry(entry);
+                    }
+                }
+            }
+        }
+
+
+        function UpdateOpenWindows() {
+            if (openWindows.length > 0) {
+                var openWindowsTxt = "<div style=\"background-color: red;\">";
+
+                for (i = 0; i < openWindows.length; i++) {
+                    openWindowsTxt += openWindows[i] + "<br>";
+                }
+                openWindowsTxt += "</div>";
+                $("#OpenWindows").html(openWindowsTxt);
+            }
+            else
+                $("#OpenWindows").html("<div style=\"background-color: green;\">n/a</div>");
+        }
+
+
+        function UpdateOpenDoors() {
+            if (openDoors.length > 0) {
+                var openDoorsTxt = "<div style=\"background-color: red;\">";
+
+                for (i = 0; i < openDoors.length; i++) {
+                    openDoorsTxt += openDoors[i] + "<br>";
+                }
+                openDoorsTxt += "</div>";
+                $("#OpenDoors").html(openDoorsTxt);
+            }
+            else
+                $("#OpenDoors").html("-");
+        }
+
+
+        function UpdateUnlockedDoors() {
+            if (UnlockedDoors.length > 0) {
+                var UnlockedDoorsTxt = "<div style=\"background-color: yellow;\">";
+
+                for (i = 0; i < UnlockedDoors.length; i++) {
+                    UnlockedDoorsTxt += UnlockedDoors[i] + "<br>";
+                }
+                UnlockedDoorsTxt += "</div>";
+                $("#UnlockedDoors").html(UnlockedDoorsTxt);
+            }
+            else
+                $("#UnlockedDoors").html("-");
+        }
+
+
+
+
+        function processDeviceListEntry(parameter) {
+            switch (parameter[0]) {
+                case "D":
+                    return processDelockDevice(parameter);
+                case "F":
+                    return processFritzDevice(parameter);
+                case "K":
+                    return processKNXDevice(parameter);
+                default:
+                    console.log("Invalid device type " + parameter[0]);
+            };
+        }
+
+        function processKNXDevice(parameter) {
+            if (parameter[3].charAt(0) == "x")
+                return "Disabled";
+            if (parameter[3] == "")
+                return "Disabled";
+
+            if (parameter[6] == "TLFH") //Temp-LFH in one
+            {
+                var gradrs = parameter[3].split(";"); //ga1 / ga2
+
+                request = "/sh/knx/ajax/knx_read_temp_lfh.php?ga1=" + gradrs[0] + "&ga2=" + gradrs[1] + "&ID=" + parameter[5];
+                if (gradrs.length > 2)
+                    request += "&ga3=" + gradrs[2];
+                if (parameter[7] > 0) //mit Cache und Max-Age
+                    request += "&age=" + parameter[7];
+
+                //    console.log("Vor .getJSON KNX_LFH:"+request);
+
+                $.getJSON(request, function (data) {
+                    //console.log("Inside"+this.url+" Data [0]/[1]:"+data[0]+data[1]);
+
+                    //console.log(data);
+                    //console.log(this.url);
+
+                    const urlParams = new URLSearchParams(this.url);
+                    const entities = urlParams.get('ID'); //var entities = this.url.substring(1+this.url.lastIndexOf("="));
+                    var entity = entities.split(";");
+
+                    for (var i = 0; i < entity.length; i++) {
+                        $("#" + entity[i]).html(data[1]);
+                    }
+                }).error(function (jqXHR, exception) {
+                    console.log("Exception " + exception + "Status " + jqXHR.status + "\nBody: " + jqXHR.responseText + "\nURL:" + this.url);
+                });
+            }
+            else { //normal KNX
+                request = "/sh/knx/ajax/knx_read_ga.php?ga=" + parameter[3] + "&DPT=" + parameter[4] + "&Type=" + parameter[6] + "&ID=" + parameter[5] + "&Name=" + parameter[2];
+
+                if (parameter[8].length > 0) //mit Cache und Max-Age
+                    request += "&bfname=" + parameter[8];
+
+
+                if (parameter[7] > 0) //mit Cache und Max-Age
+                    request += "&age=" + parameter[7];
+                //  console.log("Vor .getJSON KNX:"+request);
+
+                $.getJSON(request, function (data) {
+                    //console.log("Inside"+this.url+" Data [0]/[1]:"+data[0]+data[1]);
+
+                    const urlParams = new URLSearchParams(this.url);
+                    const entities = urlParams.get('ID');
+                    const Type = urlParams.get('Type');
+
+                    var entity = entities.split(";");
+
+                    for (var i = 0; i < entity.length; i++) {
+                        if (Type == "R")     //wenn Rollladen, setze Value in Form
+                        {
+                            //console.log("Type R, ID"+entity[i]+"data:"+data[1]);
+                            //console.log("data0: "+data[0]+":");
+
+                            $("#" + entity[i]).val(data[0]);
+                            //Update plan wenn Rolladen wieder f�hrt und wohin, sofern ID da
+                            if ($("#" + entity[i] + "_NEXT").length) {
+                                //console.log("rNext: parameter--"+parameter);
+                                //console.log("Array Length--"+parameter.length);
+                                r_next_request = "/sh/knx/ajax/knx_read_shutter_next.php?DeviceID=" + parameter[parameter.length - 1]; //ID ist immer das letzte Element nach allen Spalten.
+                                const entID = entity[i] + "_NEXT";
+                                $.getJSON(r_next_request, function (data) {
+                                    //console.log("Inside --rrext "+data+"\nEntity:"+entID+"\n");
+
+                                    $("#" + entID).html(data);
+                                }).error(function (jqXHR, exception) {
+                                    console.log("Exception " + exception + "Status " + jqXHR.status + "\nBody: " + jqXHR.responseText + "\nURL:" + this.url);
+                                });
+                            }
+                        }
+                        else
+                            $("#" + entity[i]).html(data[1]);
+                    }
+
+                    if (Type === "F") //Fenster
+                    {
+                        if (data[0] == "0") //Offen
+                        {
+                            if (openWindows.indexOf(urlParams.get('Name')) === -1)  //nur wenn noch nicht drin
+                            {
+                                openWindows.push(urlParams.get('Name'));
+                                UpdateOpenWindows();
+                            }
+                        }
+                        else //Zu
+                        {
+                            if (openWindows.indexOf(urlParams.get('Name')) != -1)  //als offen aber zu ??
+                            {
+                                removeItemOnce(openWindows, urlParams.get('Name'));
+                                UpdateOpenWindows();
+                            }
+                        }
+                        //console.log("OpeW++");
+                    }
+                    if (Type === "T") //T�re
+                    {
+                        if (data[0] == "0") //Offen
+                        {
+                            if (openDoors.indexOf(urlParams.get('Name')) === -1)  //nur wenn noch nicht drin
+                            {
+                                openDoors.push(urlParams.get('Name'));
+                                UpdateOpenDoors();
+                            }
+                        }
+                        else //Zu
+                        {
+                            if (openDoors.indexOf(urlParams.get('Name')) != -1)  //als offen aber zu ??
+                            {
+                                removeItemOnce(openDoors, urlParams.get('Name'));
+                                UpdateOpenDoors();
+                            }
+                        }
+                        //console.log("OpeW++");
+                    }
+
+                    if (Type === "V" || Type === "PR") //Verriegelung oder Panzerriegel
+                    {
+                        if (data[0] == "0") //Offen
+                        {
+                            if (UnlockedDoors.indexOf(urlParams.get('Name')) === -1)  //nur wenn noch nicht drin
+                            {
+                                UnlockedDoors.push(urlParams.get('Name'));
+                                UpdateUnlockedDoors();
+                            }
+                        }
+                        else //Zu
+                        {
+                            if (UnlockedDoors.indexOf(urlParams.get('Name')) != -1)  //als offen aber zu ??
+                            {
+                                removeItemOnce(UnlockedDoors, urlParams.get('Name'));
+                                UpdateUnlockedDoors();
+                            }
+                        }
+                        //console.log("OpeW++");
+                    }
+
+                }).error(function (jqXHR, exception) {
+                    console.log("Exception " + exception + "Status " + jqXHR.status + "\nBody: " + jqXHR.responseText + "\nURL:" + this.url);
+                });
+            }
+        }
+
+        function processDelockDevice(parameter) {
+            request = "/sh/delock/ajax/read_delock_state.php?device=" + parameter[3] + "&ID=" + parameter[5] + "&bfname=" + parameter[8];
+            //console.log("In delockDevices...-"+request);
+            $.getJSON(request, function (data33) {
+                //console.log("in delockStatusmap ");
+                //console.log(data33);
+                //console.log("this.url"+this.url);
+
+                const urlParams = new URLSearchParams(this.url);
+                const entities = urlParams.get('ID');
+                const bfName = urlParams.get('bfname');
+
+                var entity = entities.split(";");
+                for (var i = 0; i < entity.length; i++) {
+                    if (bfName.length > 0)
+                        $("#" + entity[i]).html("<img width=\"64\" height=\"64\" src=\"/sh/icons/" + bfName + "_" + data33[0] + ".png\">");
+                    else
+                        $("#" + entity[i]).html(data33[0]);
+                }
+
+            }).error(function (jqXHR, textStatus, errorThrown) {
+                console.log("error " + textStatus);
+                console.log("incoming Text " + jqXHR.responseText);
+            });
+
+        }
+
+        function processFritzDevice(parameter) {
+            request = "/sh/visu/heizung/ajax/get_latest_temp_from_db.php?identifier=" + parameter[3] + "&type=dect" + "&ID=" + parameter[5];
+            //         console.log("Vor .getJSON processFritzDevice-"+request);
+
+            $.getJSON(request, function (data2) {
+                const urlParams = new URLSearchParams(this.url);
+                const entities = urlParams.get('ID');
+                var entity = entities.split(";");
+
+                for (var i = 0; i < entity.length; i++) {
+                    $("#" + entity[i]).html(data2[0].Ist_Temp);
+                }
+
+            }).error(function (jqXHR, textStatus, errorThrown) {
+                console.log("error " + textStatus);
+                console.log("incoming Text " + jqXHR.responseText);
+            });
+        }
+
+
+        function formatErrorMessage(jqXHR, exception) {
+
+            if (jqXHR.status === 0) {
+                return ('Not connected.\nPlease verify your network connection.[Error Code=0]');
+            }
+            else if (jqXHR.status == 400) {
+                return ("Server understood the request but request content was invalid.[Error Code=400]");
+            }
+            else if (jqXHR.status == 401) {
+                return ('Unauthorised access. [Error Code=401].');
+            }
+            else if (jqXHR.status == 403) {
+                return ("Forbidden resouce can't be accessed.[Error Code=403]");
+            }
+            else if (jqXHR.status == 404) {
+                return ('The requested page not found. [Error Code=404]');
+            } else if (jqXHR.status == 500) {
+                return ('Internal Server Error [Error Code=500].');
+
+            }
+            else if (jqXHR.status == 503) {
+                return ('Service Unavailable. [Error Code=503]');
+            }
+
+            else if (exception === 'parsererror') {
+                return ('Requested JSON parse failed.');
+            } else if (exception === 'timeout') {
+                return ('Time out error.');
+            } else if (exception === 'abort') {
+                return ('Ajax request aborted.');
+            } else {
+                return ('Uncaught Error.\n' + jqXHR.responseText);
+            }
+        }
+
+
+        //Device List (Generated):
+        //
+        //0: DeviceTyp (K=KNX,D=Delock,F=FritzBox)
+        //1: Raum
+        //2: Name
+        //3: Adresse (GA/IP/DECT)
+        //4: Parameter 1
+        //   KNX: DPT
+        //5: HTML ID
+        //6: Sensorart (DB: MesswertTyp - prim�r f�r Visu/Selektion sp�ter??)
+        //   (T=T�re F=Fenster R=Rollladen V=Verschlu�, TLFH=Temp und Luftfeuchtigkeit, PR=Panzerriegel, VOC=VOC)
+        //    S=Status
+        //    Temp=Temperatur
+        //7: MaxAge (0=current)
+        //8: Icon
+        //   KNX und DPD 1.011 (Status): image_base_path (+_0|1)
+        //   Delock: image_base_path (+_0|1)
+        //9: Write Adress
+        //10: DeviceID
+
+        var DeviceList = [
+
+
+            //DeviceType,RAUM,Name,Adresse,Parameter1,HTMLID,MesswertTyp,MaxAge,bfname,WriteAdress,ActionCondition,Action,QueryInterval,StoreChanges,Map2DECT,ID
+            ["K", "Bad", "Arcus", "7/2/1;9/2/1;9/2/4", "", "BADTempLFH", "TLFH", "60", "", "", "", "", "30", "0", "0", "5"],
+            ["K", "Bad", "Lingg", "7/2/3;9/2/2", "", "BADTempLFH2", "TLFH", "60", "", "", "", "", "0", "0", "0", "6"],
+            ["K", "Bad", "MDT Bad", "7/2/2", "9.001", "BADTemp2", "Temp", "120", "", "", "", "", "0", "0", "0", "7"],
+            ["K", "Bad", "Badfenster", "1/0/7;1/0/8", "1.019", "BADFD", "F", "0", "", "", "", "", "0", "1", "0", "8"],
+            ["K", "Bad", "Rollladen Bad", "2/2/9", "5.001", "BADR", "R", "120", "", "2/1/14", "", "", "0", "0", "0", "9"],
+            ["K", "Bad", "Bad Hauptlicht mA", "10/1/2", "7.012", "B_HL_mA", "", "120", "", "", "", "", "0", "0", "0", "10"],
+            ["K", "Bad", "Bad Hauptlicht h", "10/3/2", "7.007", "B_HL_OPSH", "", "120", "", "", "", "", "0", "0", "0", "11"],
+            ["K", "Bad", "Bad Hauptlicht kWh", "10/2/2", "13.010", "B_HL_KWH", "", "120", "", "", "", "", "0", "0", "0", "12"],
+            ["K", "Bad", "Hauptlicht Bad", "3/1/2", "1.011", "B_HL", "S", "0", "bad_hl", "", "", "", "0", "1", "0", "13"],
+            ["K", "Bad", "Bad Duschlicht mA", "10/1/3", "7.012", "B_DL_mA", "", "120", "", "", "", "", "0", "0", "0", "14"],
+            ["K", "Bad", "Bad Duschlicht h", "10/3/3", "7.007", "B_DL_OPSH", "", "120", "", "", "", "", "0", "0", "0", "16"],
+            ["K", "Bad", "Bad Duschlicht kWh", "10/2/3", "13.010", "B_DL_KWH", "", "120", "", "", "", "", "0", "0", "0", "17"],
+            ["K", "Bad", "Duschlicht Bad", "3/1/3", "1.011", "B_DL", "S", "0", "bad_dl", "", "", "", "0", "1", "0", "18"],
+            ["K", "Bad", "Bad HTW", "3/1/4", "1.011", "B_HW", "S", "0", "bad_hw", "", "", "", "0", "1", "0", "19"],
+            ["K", "Bad", "Bad Handtuchwärmer mA", "10/1/4", "7.012", "B_HW_mA", "", "120", "", "", "", "", "0", "0", "0", "20"],
+            ["K", "Bad", "Bad Handtuchwärmer h", "10/3/4", "7.007", "B_HW_OPSH", "", "120", "", "", "", "", "0", "0", "0", "21"],
+            ["K", "Bad", "Bad Handtuchwärmer kWh", "10/2/4", "13.013", "B_HW_KWH", "", "120", "", "", "", "", "0", "0", "0", "22"],
+            ["F", "Büro Oben", "Thermostat Büro", "13979 0233132", "", "BCHTemp2", "Temp", "", "", "", "", "", "0", "0", "0", "1"],
+            ["K", "Büro Oben", "", "", "", "BCHR", "R", "120", "", "", "", "", "0", "0", "0", "50"],
+            ["K", "Büro Oben", "", "", "1.019", "BCHBLKT", "T", "0", "", "", "", "", "0", "1", "0", "51"],
+            ["K", "Büro Oben", "Büro Oben MDT", "7/0/0", "9.001", "BCHTemp", "Temp", "120", "", "", "", "", "30", "0", "0", "52"],
+            ["K", "Büro Unten", "Büro Chris Temperatur", "7/1/3", "9.001", "EG_BCTemp", "Temp", "120", "", "", "", "", "0", "0", "0", "73"],
+            ["K", "Büro Unten", "Büro Chris Fenster", "1/0/20;1/0/21", "1.019", "EG_BCF", "F", "0", "", "", "", "", "0", "1", "0", "74"],
+            ["K", "Büro Unten", "Büro Chris", "2/2/7", "5.001", "EG_BCR", "R", "120", "", "2/1/17", "", "", "0", "0", "0", "75"],
+            ["D", "Flur EG", "", "192.168.0.208", "", "FLUR_NL", "S", "", "flur_licht", "", "", "", "0", "0", "0", "4"],
+            ["K", "Flur EG", "Eingang Temperatur", "7/1/0", "9.001", "EingangTemp", "Temp", "120", "", "", "", "", "30", "0", "0", "59"],
+            ["K", "Flur EG", "Flur EG Fenster", "1/0/12", "1.019", "EingangFenster", "F", "0", "", "", "", "", "0", "1", "0", "60"],
+            ["K", "Flur EG", "Rollladen Flur EG", "2/2/0", "5.001", "EingangR", "R", "120", "", "2/1/2", "", "", "0", "0", "0", "61"],
+            ["K", "Flur EG", "Haustuere", "1/0/13", "1.019", "EingangTR1;EingangT", "T", "0", "", "", "0", "http://gheihk0003:kwnSrej9NW@doorbird.fritz.box/bha-api/sip.cgi?action=hangup", "0", "1", "0", "62"],
+            ["K", "Flur EG", "Haustürriegel", "1/0/14", "1.019", "EingangTR2", "V", "0", "", "", "", "", "0", "1", "0", "63"],
+            ["K", "Flur OG", "Fenster Flur OG", "1/0/4;1/0/5", "1.019", "OGFF", "F", "0", "", "", "", "", "0", "1", "0", "49"],
+            ["K", "Gartem", "", "10/3/6", "7.007", "Garten_S1_OPSH", "", "120", "", "", "", "", "0", "0", "0", "140"],
+            ["K", "Gartem", "", "10/3/7", "7.007", "Garten_S2_OPSH", "", "120", "", "", "", "", "0", "0", "0", "141"],
+            ["K", "Gartem", "", "10/2/6", "13.010", "Garten_S1_KWH", "", "120", "", "", "", "", "0", "0", "0", "142"],
+            ["K", "Gartem", "", "10/2/7", "13.010", "Garten_S2_KWH", "", "120", "", "", "", "", "0", "0", "0", "143"],
+            ["K", "Garten", "GartenDose2", "3/1/7", "1.011", "GartenDose2", "S", "60", "schuko", "", "", "", "0", "1", "0", "55"],
+            ["K", "Garten", "GartenDose1", "3/1/6", "1.011", "GartenDose1", "S", "60", "schuko", "", "", "", "0", "1", "0", "56"],
+            ["K", "Garten", "", "10/1/6", "7.012", "GartenSchuko1_mA", "", "120", "", "", "", "", "0", "0", "0", "115"],
+            ["K", "Garten", "", "10/1/7", "7.012", "GartenSchuko2_mA", "", "120", "", "", "", "", "0", "0", "0", "116"],
+            ["K", "Hobby", "Arcus Hobbyraum", "7/3/0;9/3/0;9/3/1", "", "HB_TempLFH", "TLFH", "60", "", "", "", "", "0", "0", "0", "25"],
+            ["K", "Hobby", "Hobbyraum Fenster", "1/0/22;1/0/23", "1.019", "HB_F", "F", "0", "", "", "", "", "0", "1", "0", "26"],
+            ["K", "Hobby", "Arcus Hobbyraum", "10/0/0", "9.008", "HB_VOC", "VOC", "120", "", "", "", "", "0", "0", "0", "27"],
+            ["K", "HWR", "HWR Temperatur", "7/2/4", "9.001", "HWRTemp", "Temp", "", "", "", "", "", "0", "0", "0", "46"],
+            ["K", "HWR", "Fenster HWR", "1/0/6", "1.019", "HWRF", "F", "60", "", "", "", "", "0", "1", "0", "47"],
+            ["K", "HWR", "Rollladen HWR", "2/2/8", "5.001", "HWR_R", "R", "120", "", "2/1/20", "", "", "0", "0", "0", "48"],
+            ["K", "Julia", "Julia Fenster R", "1/0/27", "1.019", "JULIA_F", "F", "60", "", "", "", "", "0", "1", "1", "113"],
+            ["K", "Keller Links", "", "", "9.001", "KL_GS", "S", "0", "", "", "", "", "0", "1", "0", "78"],
+            ["K", "Keller Rechts", "Panzerriegel Keller", "1/0/24", "1.019", "KR_PR", "PR", "0", "", "", "", "", "0", "1", "0", "76"],
+            ["K", "Keller Rechts", "Keller Rechts Fenster", "1/0/25", "1.019", "KR_F", "F", "0", "", "", "", "", "0", "1", "0", "77"],
+            ["K", "kl. Bad", "Arcus kl. Bad", "7/2/0;9/2/0;9/2/3", "", "KLBADTEMPLFH", "TLFH", "60", "", "", "", "", "30", "0", "0", "23"],
+            ["K", "kl. Bad", "kl. Bad Fenster", "1/0/3", "1.019", "KLBADF", "F", "60", "", "", "", "", "0", "1", "0", "24"],
+            ["K", "Küche", "Lingg Küche zu WZ", "7/1/2;9/1/0", "", "K_TempLFH", "TLFH", "60", "", "", "", "", "30", "0", "0", "28"],
+            ["K", "Küche", "Lingg Küche zu Flur", "7/1/4;9/1/1", "", "K_TempLFH2", "TLFH", "60", "", "", "", "", "0", "0", "0", "29"],
+            ["K", "Küche", "MDT Küche", "7/1/1", "9.001", "K_Temp3", "Temp", "120", "", "", "", "", "0", "0", "0", "30"],
+            ["K", "Küche", "Küche Fenster", "1/0/15;1/0/16", "1.019", "K_F", "F", "0", "", "", "", "", "0", "1", "0", "31"],
+            ["K", "Küche", "Küche Hauptlicht mA", "10/1/0", "7.012", "K_HL_mA", "", "120", "", "", "", "", "0", "0", "0", "32"],
+            ["K", "Küche", "Küche Hauptlicht h", "10/3/0", "7.007", "K_HL_OPSH", "", "120", "", "", "", "", "0", "0", "0", "33"],
+            ["K", "Küche", "Küche Hauptlicht kWh", "10/2/0", "13.010", "K_HL_KWH", "", "120", "", "", "", "", "0", "0", "0", "34"],
+            ["K", "Küche", "Küche Nebenlicht mA", "10/1/1", "7.012", "K_NL_mA", "", "120", "", "", "", "", "0", "0", "0", "35"],
+            ["K", "Küche", "Küche Nebenlicht h", "10/3/1", "7.007", "K_NL_OPSH", "", "120", "", "", "", "", "0", "0", "0", "36"],
+            ["K", "Küche", "Küche Nebenlicht kWh", "10/2/1", "13.010", "K_NL_KWH", "", "120", "", "", "", "", "0", "0", "0", "37"],
+            ["K", "Küche", "Rollladen Küche", "2/2/1", "5.001", "K_R", "R", "120", "", "2/1/5", "", "", "0", "0", "0", "38"],
+            ["K", "Küche", "Küche Hauptlicht", "3/1/0", "1.011", "K_HL", "S", "0", "k_hl", "", "", "", "0", "1", "0", "39"],
+            ["K", "Küche", "Küche Nebenlicht", "3/1/1", "1.011", "K_NL", "S", "0", "k_nl", "", "", "", "0", "1", "0", "40"],
+            ["K", "Ölraum", "Ölraum Fenster", "1/0/26", "1.019", "OEL_F", "F", "600", "", "", "", "", "0", "1", "0", "79"],
+            ["F", "Schlafzimmer", "Thermostat Schlafzimmer", "13979 0238667", "", "DG_SZTemp", "Temp", "", "", "", "", "", "0", "0", "0", "2"],
+            ["K", "Schlafzimmer", "Schlafzimmer Fenster R", "1/0/2", "1.019", "DG_SZF", "F", "60", "", "", "", "", "0", "1", "1", "110"],
+            ["K", "Schlafzimmer", "Schlafzimmer Fenster L", "1/0/1", "1.019", "DG_SZFL", "F", "60", "", "", "", "", "0", "1", "1", "131"],
+            ["K", "Sophie", "Sophie Fenster R", "1/0/29", "1.019", "SOPHIE_F", "F", "60", "", "", "", "", "0", "1", "1", "114"],
+            ["K", "Spielzimmer", "Licht Spielzimmer", "3/1/5", "1.011", "SZLI", "S", "0", "sz_l", "", "", "", "0", "1", "0", "0"],
+            ["K", "Spielzimmer", "MDT", "7/2/5", "9.001", "SZTemp", "Temp", "120", "", "", "", "", "0", "0", "0", "41"],
+            ["K", "Spielzimmer", "Spielzimmer Links", "1/0/9", "1.019", "SZFL", "F", "60", "", "", "", "", "0", "1", "0", "42"],
+            ["K", "Spielzimmer", "Spielzimmer Mitte", "1/0/10", "1.019", "SZFM", "F", "60", "", "", "", "", "0", "1", "0", "43"],
+            ["K", "Spielzimmer", "Spielzimmer Rechts", "1/0/11", "1.019", "SZFR", "F", "60", "", "", "", "", "0", "1", "0", "44"],
+            ["K", "Spielzimmer", "Rollladen Spielzimmer", "2/2/10", "5.001", "SZR", "R", "120", "", "2/1/23", "", "", "0", "0", "0", "45"],
+            ["K", "Spielzimmer", "Spielzimmer Lampe h", "10/3/5", "7.007", "SZ_L_OPSH", "", "120", "", "", "", "", "0", "0", "0", "111"],
+            ["K", "Spielzimmer", "Spielzimmer Lampe kWh", "10/2/5", "13.010", "SZ_L_KWH", "", "120", "", "", "", "", "0", "0", "0", "117"],
+            ["K", "Spielzimmer", "Spielzimmer Licht mA", "10/1/5", "7.012", "SZ_L_mA", "", "120", "", "", "", "", "0", "0", "0", "220"],
+            ["K", "Strom", "Strom Leistung", "0/1/1", "14.056", "StromP", "W", "120", "", "", "", "", "0", "0", "0", "57"],
+            ["K", "Strom", "Stromzählerstand kWh", "0/1/0", "13.013", "StromKWH", "KWH", "120", "", "", "", "", "0", "0", "0", "58"],
+            ["K", "Strom", "Strom Leistung Lieferun", "0/1/3", "14.056", "StromPL", "W", "120", "", "", "", "", "0", "0", "0", "257"],
+            ["K", "Strom", "Stromzählerstand kWh Li", "0/1/4", "13.013", "StromKWHL", "KWH", "120", "", "", "", "", "0", "0", "0", "258"],
+            ["D", "Wohnzimmer", "", "192.168.0.205", "", "WZ_NL", "S", "", "wz_licht", "", "", "", "0", "0", "0", "3"],
+            ["K", "Wohnzimmer", "Wohnzimmer Temperatur", "7/1/5", "9.001", "WZ_Temp", "Temp", "120", "", "", "", "", "0", "0", "0", "64"],
+            ["K", "Wohnzimmer", "", "", "9.001", "WZ_F2", "S", "0", "", "", "", "", "0", "1", "0", "65"],
+            ["K", "Wohnzimmer", "WZ F3", "1/0/18", "1.019", "WZ_F3", "F", "0", "", "", "", "", "0", "1", "0", "66"],
+            ["K", "Wohnzimmer", "Terassentür", "1/0/17", "1.019", "WZ_F5", "T", "0", "", "", "", "", "0", "1", "0", "67"],
+            ["K", "Wohnzimmer", "", "", "5.001", "WZ_R1", "R", "120", "", "", "", "", "0", "0", "0", "68"],
+            ["K", "Wohnzimmer", "", "", "5.001", "WZ_R2", "R", "120", "", "", "", "", "0", "0", "0", "69"],
+            ["K", "Wohnzimmer", "Rollladen WZ F3", "2/2/4", "5.001", "WZ_R3", "R", "120", "", "2/1/31", "", "", "0", "0", "0", "70"],
+            ["K", "Wohnzimmer", "Rollladen WZ 4", "2/2/3", "5.001", "WZ_R4", "R", "120", "", "2/1/11", "", "", "0", "0", "0", "71"],
+            ["K", "Wohnzimmer", "Rollladen WZ 5", "2/2/2", "5.001", "WZ_R5", "R", "120", "", "2/1/8", "", "", "0", "0", "0", "72"],
+        ];
+
+        $(document).ready(function () {
+            var anrufe = $.post("/sh/visu/telefon/ajax/anrufe.php");
+            //	console.log("Trigger anrufe!");
+            var heizungsdaten = $.post("/sh/visu/heizung/ajax/read_table_vicare_latest.php");
+
+            var wetterdaten = $.post("https://api.openweathermap.org/dta/2.5/weather?zip=76275,DE&lang=de&units=metric&appid=xxxx");
+
+            var solardaten = $.get("/sh/solar/opendtu.php");
+
+            UpdateOpenWindows();
+            UpdateOpenDoors();
+            $(DeviceList).each(function () {
+                processDeviceListEntry(this);
+            });
+
+            $.when(wetterdaten).done(
+                function (wetterdaten) {
+                    $("#WETTER_LF").html(wetterdaten.main.humidity + "&#37;");
+                    $("#WETTER_LD").html(wetterdaten.main.pressure);
+                    $("#WETTER_SA").html(unix_ts(wetterdaten.sys.sunrise));
+                    $("#WETTER_SU").html(unix_ts(wetterdaten.sys.sunset));
+
+                    /*
+                    console.log("Wetter");
+                    console.log(snap(wetterdaten));
+                    console.log(wetterdaten.main.temp);
+                    console.log(wetterdaten.main.humidity);
+                    console.log(wetterdaten.main.pressure);
+                    console.log(wetterdaten.sys.sunrise);
+                    console.log(wetterdaten.sys.sunset);
+                    console.log(unix_ts(wetterdaten.sys.sunrise));
+                    console.log(unix_ts(wetterdaten.sys.sunset));
+                    */
+                }
+            ).fail(function (req, status, err) {
+                alert(formatErrorMessage(req, err));
+            });
+
+
+            $.when(solardaten).done(
+                function (solardaten) {
+                    $("#SolarLeistung").html(solardaten.total.Power.v.toFixed(0) + " " + solardaten.total.Power.u);
+
+                    $("#SolarTagesertrag").html(solardaten.total.YieldDay.v.toFixed(2) + " " + solardaten.total.YieldDay.u);
+                    $("#SolarGesamtertrag").html(solardaten.total.YieldTotal.v.toFixed(2) + " " + solardaten.total.YieldTotal.u);
+
+                    console.log(snap(solardaten));
+                }
+            ).fail(function (req, status, err) {
+                alert(formatErrorMessage(req, err));
+            });
+
+
+
+
+
+            $.when(heizungsdaten).done(
+                function (heizungsdaten) {
+                    $("#GartenTemp").html(heizungsdaten[0].Temp_Aussen);
+                    $("#HZ_DT").html(heizungsdaten[0].timestamp);
+                    $("#HZ_MODUS").html(heizungsdaten[0].Modus);
+                    $("#HZ_BRENNERH").html(heizungsdaten[0].Brenner_Betriebsstunden);
+                    $("#HZ_BRENNERS").html(heizungsdaten[0].Brenner_Starts);
+                });
+
+            $.when(anrufe).done(
+                function (anrufe) {
+                    //console.log(snap(anrufe));
+                    //	    console.log("anrufe done!");
+
+                    var text = "<tr><th><span class=\"text\">Richtung</span><th><span class=\"text\">Datum/Uhrzeit</span><th><span class=\"text\">Anrufer</span><th><span class=\"text\">Name</span><th><span class=\"text\">An</span><th><span class=\"text\">Dauer</span></tr>";
+                    for (var i in anrufe) {
+                        text = text + "<tr><td>" + anrufe[i].direction + "<td>" + anrufe[i].timestamp + "<td>" + anrufe[i].number + "<td>" + anrufe[i].name + "<td>" + anrufe[i].to + "<td>" + anrufe[i].duration + "</tr>";
+                    }
+                    $("#anrufliste").html(text);
+                });
+        });
+
+
+    </script>
+
+</body>
+<html>

@@ -1,6 +1,8 @@
 package de.christian2003.smarthome.model.data.devices;
 
 import android.net.Uri;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 
@@ -12,7 +14,7 @@ public abstract class ShGenericDevice {
     /**
      * Attribute stores the name of the device. This name is shown to the user.
      */
-    @Nullable
+    @NonNull
     private final String name;
 
     /**
@@ -29,7 +31,7 @@ public abstract class ShGenericDevice {
      * @param name  Name for the device.
      * @param imageUri  URI for the image to display to the user.
      */
-    public ShGenericDevice(@Nullable String name, @Nullable Uri imageUri) {
+    public ShGenericDevice(@NonNull String name, @Nullable Uri imageUri) {
         this.name = name;
         this.imageUri = imageUri;
     }
@@ -40,7 +42,7 @@ public abstract class ShGenericDevice {
      *
      * @return  Name of the smart home device.
      */
-    @Nullable
+    @NonNull
     public String getName() {
         return name;
     }
