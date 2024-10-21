@@ -9,10 +9,13 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import de.christian2003.smarthome.model.data.devices.ShGenericDevice;
 import de.christian2003.smarthome.model.data.devices.ShOpening;
+import de.christian2003.smarthome.model.data.devices.ShShutter;
 
 
 /**
@@ -84,6 +87,8 @@ public class ShRoom {
     }
 
     public static ShRoom findAllRooms(Document document) {
+        List<ShInfoText> infoTextsRoom = new ArrayList<>();
+
         // Find all rooms of the smart home.
         Elements rooms = document.select("div > div.room");
         System.out.println("Anzahl Rooms: " + rooms.size());
@@ -99,7 +104,12 @@ public class ShRoom {
                 System.out.println("Room name: " + roomName);
 
                 // Get the temperature of the room.
-                String temperature = findRoomTemperature(room);
+                ArrayList<ShInfoText> temperature = findRoomTemperature(room);
+
+                // Check if temperatures were found an add them to the info texts.
+                if (temperature != null) {
+                    infoTextsRoom.addAll(temperature);
+                }
 
                 // Get the openings of the room.
                 List<ShOpening> openings = ShOpening.findOpenings(room);
@@ -128,8 +138,8 @@ public class ShRoom {
      * @param room          The room element.
      * @return              Returns a String which contains the read temperature or a hyphen if no temperature was found.
      */
-    @NonNull
-    public static String findRoomTemperature(@NonNull Element room) {
+    @Nullable
+    public static ArrayList<ShInfoText> findRoomTemperature(@NonNull Element room) {
         // Find the data cell in which the temperature is displayed.
         Element temperatureEl = room.select("div > table td[class^=tc] + td").first();
 
@@ -139,23 +149,40 @@ public class ShRoom {
             Element multipleTemperaturesEl = temperatureEl.select("td > table").first();
 
             if (multipleTemperaturesEl == null) {
-                return temperatureEl.text();
+                return new ArrayList<>(Collections.singletonList(new ShInfoText("Temperature", null, temperatureEl.text(), null)));
             }
             // If more than one temperature is displayed, the names of the parts of the room and their temperature must be extracted from the table.
             else {
                 Elements temperatureRows = multipleTemperaturesEl.select("table > tr");
 
-                if (temperatureRows != null) {
-                    return null;
+                if (!temperatureRows.isEmpty()) {
+                    ArrayList<ShInfoText> infoTextsTemperature = new ArrayList<>();
+                    for (Element temperatureRow: temperatureRows) {
+                        Element name = temperatureRow.selectFirst("tr > td");
+
+                        if (name != null) {
+                            Element temperature = name.selectFirst("td + td");
+
+                            if (temperature != null) {
+                                infoTextsTemperature.add(new ShInfoText("Temperature", name.text(), temperature.text(), null));
+                            }
+                        }
+                    }
+                    return infoTextsTemperature;
                 }
                 else {
                     // Display error that table didn´t contain any temperatures.
-                    return "-";
+                    return null;
                 }
             }
         }
         else {
-            return "-";
+            // No temperature could be found.
+            return null;
         }
+    }
+
+    public static void printOutRoom() {
+
     }
 }

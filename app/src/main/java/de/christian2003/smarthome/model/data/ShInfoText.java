@@ -1,6 +1,8 @@
 package de.christian2003.smarthome.model.data;
 
 import android.graphics.Color;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 
@@ -12,8 +14,14 @@ public class ShInfoText {
     /**
      * Attribute stores the label for the info text.
      */
-    @Nullable
+    @NonNull
     private final String label;
+
+    /**
+     * Attribute specifies the properties of the label.
+     */
+    @Nullable
+    private final String specifier;
 
     /**
      * Attribute stores the text for the info text.
@@ -35,8 +43,9 @@ public class ShInfoText {
      * @param text              Text for the info text.
      * @param backgroundColor   Background color for the info text.
      */
-    public ShInfoText(@Nullable String label, @Nullable String text, @Nullable Color backgroundColor) {
+    public ShInfoText(@NonNull String label, @Nullable String specifier ,@Nullable String text, @Nullable Color backgroundColor) {
         this.label = label;
+        this.specifier = specifier;
         this.text = text;
         this.backgroundColor = backgroundColor;
     }
@@ -47,7 +56,7 @@ public class ShInfoText {
      *
      * @return  Label for the info text.
      */
-    @Nullable
+    @NonNull
     public String getLabel() {
         return label;
     }
