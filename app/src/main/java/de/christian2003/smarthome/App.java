@@ -44,10 +44,10 @@ public class App extends Application {
         context = this;
 
         //Load the webpage and if it was loaded successfully the rooms are loaded.
-        ShWebpageContent shWebpageContent = ShWebpageContent.getWebpageHtml();
+        //ShWebpageContent shWebpageContent = ShWebpageContent.getWebpageHtml();
 
         // Print rooms and their properties for debug.
-        ShWebpageContent.printElement(shWebpageContent);
+        //ShWebpageContent.printElement(shWebpageContent);
     }
 
     /**
