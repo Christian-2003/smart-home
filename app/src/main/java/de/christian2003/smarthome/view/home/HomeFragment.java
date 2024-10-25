@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import de.christian2003.smarthome.R;
 import de.christian2003.smarthome.utils.framework.SmartHomeFragment;
 
@@ -14,6 +16,22 @@ import de.christian2003.smarthome.utils.framework.SmartHomeFragment;
  * Class implements the home fragment for the app.
  */
 public class HomeFragment extends SmartHomeFragment<HomeViewModel> {
+
+    /**
+     * Attribute stores the recycler view adapter for the fragment.
+     */
+    private HomeRecyclerViewAdapter adapter;
+
+    /**
+     * Attribute stores the progress bar shown while loading the webpage content.
+     */
+    private ProgressBar progressBar;
+
+    /**
+     * Attribute stores the recycler view of the fragment.
+     */
+    private RecyclerView recyclerView;
+
 
     /**
      * Constructor instantiates a new fragment.
@@ -39,7 +57,29 @@ public class HomeFragment extends SmartHomeFragment<HomeViewModel> {
             return null;
         }
 
+        recyclerView = view.findViewById(R.id.recycler_view);
+        progressBar = view.findViewById(R.id.progress_bar);
+
+        recyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+
+        viewModel.initIfRequired(this::dataLoaded, true);
+
         return view;
+    }
+
+
+    /**
+     * Callback method is invoked after the webpage content is loaded.
+     */
+    private void dataLoaded() {
+        requireActivity().runOnUiThread(() -> {
+            recyclerView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+
+            adapter = new HomeRecyclerViewAdapter(requireActivity(), viewModel);
+            recyclerView.setAdapter(adapter);
+        });
     }
 
 }

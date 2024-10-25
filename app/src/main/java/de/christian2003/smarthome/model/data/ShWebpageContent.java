@@ -52,6 +52,11 @@ public class ShWebpageContent {
         this.rooms = rooms;
     }
 
+    @NonNull
+    public ArrayList<ShRoom> getRooms() {
+        return rooms;
+    }
+
     /**
      * Gets the data of the webpage and loads all the rooms.
      *
