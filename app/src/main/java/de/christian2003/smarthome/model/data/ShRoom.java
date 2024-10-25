@@ -86,8 +86,16 @@ public class ShRoom {
         return devices;
     }
 
-    public static ShRoom findAllRooms(Document document) {
-        List<ShInfoText> infoTextsRoom = new ArrayList<>();
+    /**
+     * Finads all the rooms of the smart home and returns a list containing all of them.
+     *
+     * @param document          The document with the source code of the webpage.
+     * @return                  Returns a list with all the rooms of the smart home. If no rooms were found an empty list will be returned.
+     */
+
+    @NonNull
+    public static ArrayList<ShRoom> findAllRooms(@NonNull Document document) {
+        ArrayList<ShRoom> shRoomList = new ArrayList<>();
 
         // Find all rooms of the smart home.
         Elements rooms = document.select("div > div.room");
@@ -96,29 +104,20 @@ public class ShRoom {
         // Iterates through all rooms and get their properties and devices.
         for (Element room: rooms) {
             Element roomNameEl = findRoomName(room);
-            String roomName;
 
             // Check if a name was found for the room.
             if (roomNameEl != null) {
-                roomName = roomNameEl.text();
+                String roomName = roomNameEl.text();
                 System.out.println("Room name: " + roomName);
 
-                // Get the temperature of the room.
-                ArrayList<ShInfoText> temperature = findRoomTemperature(room);
-
-                // Check if temperatures were found an add them to the info texts.
-                if (temperature != null) {
-                    infoTextsRoom.addAll(temperature);
-                }
-
-                // Get the openings of the room.
-                List<ShOpening> openings = ShOpening.findOpenings(room);
+                ArrayList<ShInfoText> shInfoTexts = parseContentTable(room);
+                shRoomList.add(new ShRoom(roomName, shInfoTexts, null));
             }
             else {
-                System.out.println("Element null");
+                // Div container with the class "room" was found but not title of the room could be found.
             }
         }
-        return null;
+        return shRoomList;
     }
 
     /**
@@ -133,56 +132,98 @@ public class ShRoom {
     }
 
     /**
-     * Finds the temperature of the room.
+     * Parses
      *
-     * @param room          The room element.
-     * @return              Returns a String which contains the read temperature or a hyphen if no temperature was found.
+     * @param roomName
+     * @return
      */
     @Nullable
-    public static ArrayList<ShInfoText> findRoomTemperature(@NonNull Element room) {
-        // Find the data cell in which the temperature is displayed.
-        Element temperatureEl = room.select("div > table td[class^=tc] + td").first();
+    public static ArrayList<ShInfoText> parseContentTable(@NonNull Element roomName) {
+        Element contentTable = roomName.selectFirst("span.roomName ~ table");
 
-        // Check if a temperature cell could be found.
-        if (temperatureEl != null) {
-            // Check if multiple temperatures are displayed for different parts of the room or if there is only one temperature.
-            Element multipleTemperaturesEl = temperatureEl.select("td > table").first();
+        if (contentTable != null) {
+            System.out.println("Content Table gefunden:");
+            Elements tableRows = contentTable.select("tr");
 
-            if (multipleTemperaturesEl == null) {
-                return new ArrayList<>(Collections.singletonList(new ShInfoText("Temperature", null, temperatureEl.text(), null)));
+            if (!tableRows.isEmpty()) {
+                System.out.println("0");
+                ArrayList<ShInfoText> shInfoTexts = new ArrayList<>();
+
+                for (Element tableRow: tableRows) {
+                    shInfoTexts.addAll(createInfoTexts(tableRow));
+                }
+                return shInfoTexts;
             }
-            // If more than one temperature is displayed, the names of the parts of the room and their temperature must be extracted from the table.
             else {
-                Elements temperatureRows = multipleTemperaturesEl.select("table > tr");
-
-                if (!temperatureRows.isEmpty()) {
-                    ArrayList<ShInfoText> infoTextsTemperature = new ArrayList<>();
-                    for (Element temperatureRow: temperatureRows) {
-                        Element name = temperatureRow.selectFirst("tr > td");
-
-                        if (name != null) {
-                            Element temperature = name.selectFirst("td + td");
-
-                            if (temperature != null) {
-                                infoTextsTemperature.add(new ShInfoText("Temperature", name.text(), temperature.text(), null));
-                            }
-                        }
-                    }
-                    return infoTextsTemperature;
-                }
-                else {
-                    // Display error that table didn´t contain any temperatures.
-                    return null;
-                }
+                return null;
             }
         }
         else {
-            // No temperature could be found.
+            // Room doesn´t contain a content table.
             return null;
         }
     }
 
-    public static void printOutRoom() {
+    @NonNull
+    public static ArrayList<ShInfoText> createInfoTexts(Element tableRow) {
+        Element firstDataCell = tableRow.selectFirst("tr > td.temperature");
+        System.out.println("1");
 
+        if (firstDataCell != null) {
+            System.out.println("FirstDataCell: " + firstDataCell.html());
+            Element secondDataCell = tableRow.selectFirst("tr > td[class^=tc] ~ td");
+            System.out.println("2");
+
+            if (secondDataCell != null) {
+                Element innerTable = secondDataCell.selectFirst("table");
+                System.out.println("3");
+
+                if (innerTable != null) {
+                    System.out.println("4");
+                    return getInnerTableContent(innerTable, firstDataCell.text());
+                }
+                else {
+                    System.out.println("5");
+                    return new ArrayList<>(Collections.singletonList(new ShInfoText(firstDataCell.text(), null, secondDataCell.text())));
+                }
+            }
+            else {
+                return new ArrayList<>();
+            }
+        }
+        else {
+            return new ArrayList<>();
+        }
+    }
+
+
+    public static ArrayList<ShInfoText> getInnerTableContent(Element innerTable, String label) {
+        Elements innerTableRows = innerTable.select("tr");
+        ArrayList<ShInfoText> shInfoTextsInnerTable = new ArrayList<>();
+
+        for (Element innerTableRow: innerTableRows) {
+            Element firstDataCell = innerTableRow.selectFirst("td");
+
+            if (firstDataCell != null) {
+                Element secondDataCell = innerTable.selectFirst("td ~ td");
+
+                if (secondDataCell != null) {
+                    shInfoTextsInnerTable.add(new ShInfoText(label, firstDataCell.text(), secondDataCell.text()));
+                }
+            }
+        }
+        return shInfoTextsInnerTable;
+    }
+
+    /**
+     * Method prints the properties of a ShRoom object.
+     *
+     * @param room      The room object which properties should be printed.
+     */
+    public static void printOutRoom(ShRoom room) {
+        System.out.println("Room name: " + room.name + "Länge Infos: " + room.infos.size());
+        for (ShInfoText shInfoText: room.infos) {
+            System.out.println("\tLabel: " + shInfoText.getLabel() + ", Specifier " + shInfoText.getSpecifier() + ", Text: " + shInfoText.getText());
+        }
     }
 }

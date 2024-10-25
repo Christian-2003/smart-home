@@ -43,25 +43,11 @@ public class App extends Application {
         super.onCreate();
         context = this;
 
-        // Get the webpage and if it the content was retrieved successfully get the information of the rooms and their devices.
-        // Try catch only needed temporary until we have access to the smart home webpage.
-        Document document = null;
-        try {
-            document = ShWebpageContent.getWebpageHtml(this);
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        //Load the webpage and if it was loaded successfully the rooms are loaded.
+        ShWebpageContent shWebpageContent = ShWebpageContent.getWebpageHtml();
 
-        try {
-            ShWebpageContent shWebpageContent = new ShWebpageContent(document);
-            ArrayList<ShRoom> allRooms = shWebpageContent.getAllShData();
-            System.out.println("Anzahl Räume: " + allRooms.size());
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-            // Display error on UI.
-        }
+        // Print rooms and their properties for debug.
+        ShWebpageContent.printElement(shWebpageContent);
     }
 
     /**

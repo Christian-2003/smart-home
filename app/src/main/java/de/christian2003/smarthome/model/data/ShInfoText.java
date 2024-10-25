@@ -30,31 +30,22 @@ public class ShInfoText {
     private String text;
 
     /**
-     * Attribute stores the background color for the info text.
-     */
-    @Nullable
-    private Color backgroundColor;
-
-
-    /**
      * Constructor instantiates a new info text.
      *
      * @param label             Label for the info text.
      * @param text              Text for the info text.
-     * @param backgroundColor   Background color for the info text.
      */
-    public ShInfoText(@NonNull String label, @Nullable String specifier ,@Nullable String text, @Nullable Color backgroundColor) {
+    public ShInfoText(@NonNull String label, @Nullable String specifier ,@Nullable String text) {
         this.label = label;
         this.specifier = specifier;
         this.text = text;
-        this.backgroundColor = backgroundColor;
     }
 
 
     /**
-     * Method returns the label for the info text.
+     * Method returns the label of the info text.
      *
-     * @return  Label for the info text.
+     * @return  Label of the info text.
      */
     @NonNull
     public String getLabel() {
@@ -62,23 +53,20 @@ public class ShInfoText {
     }
 
     /**
-     * Method returns the text for the info text.
+     * Method returns the specifier of the info text.
      *
-     * @return  Text for the info text.
+     * @return Specifier of the info text.
+     */
+    @Nullable
+    public String getSpecifier() {return specifier;}
+
+    /**
+     * Method returns the text of the info text.
+     *
+     * @return  Text of the info text.
      */
     @Nullable
     public String getText() {
         return text;
     }
-
-    /**
-     * Method returns the background color for the info text.
-     *
-     * @return  Background color for the info text.
-     */
-    @Nullable
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
-
 }

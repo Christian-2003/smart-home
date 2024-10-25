@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,10 +18,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import de.christian2003.smarthome.R;
+import de.christian2003.smarthome.model.Config;
 import de.christian2003.smarthome.model.data.devices.ShGenericDevice;
 import de.christian2003.smarthome.model.data.devices.ShOpening;
 import de.christian2003.smarthome.model.data.devices.ShShutter;
@@ -33,36 +39,34 @@ public class ShWebpageContent {
      */
     private final Document content;
 
+    private final ArrayList<ShRoom> rooms;
+
     /**
      * Constructor instantiates a new webpage content.
      *
      * @param content           Content of the read webpage.
-     * @throws Exception        Exception that will be thrown if the content of the webpage is null.
+     * @param rooms             List of all the rooms that are display on the smart home webpage.
      */
-    public ShWebpageContent(Document content) throws Exception {
-        if (content != null) {
-            this.content = content;
-        }
-        else {
-            throw new Exception();
-        }
+    private ShWebpageContent(Document content, ArrayList<ShRoom> rooms) {
+        this.content = content;
+        this.rooms = rooms;
     }
 
     /**
-     * Gets the data of the webpage.
+     * Gets the data of the webpage and loads all the rooms.
      *
-     * @return          Returns the document which contains the code of the webpage.
-     *                  Null if the content could not be retrieved due to an error.
+     * @return          Returns a ShWebpageContent object or null if the webpage content could not be loaded.
      */
-    public static Document getWebpageHtml(Context context) throws IOException {
+    @Nullable
+    public static ShWebpageContent getWebpageHtml() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         // The code that will be used when we have access to the webpage.
-        /*
+
         Callable<Document> task = () -> {
             try {
                 // Get the code from the webpage.
-                return Jsoup.connect("https://www.google.com").get();
+                return Jsoup.connect(Config.getInstance().getServerUrl(null)).get();
             }
             catch (Exception exception) {
                 System.out.println("Exception: " + exception.getMessage());
@@ -84,16 +88,14 @@ public class ShWebpageContent {
         finally {
             executor.shutdown();
         }
-        */
 
-        // Temporary code to get the html code from the webpage_code.html file.
-        Resources res = context.getResources();
-        InputStream inputStream = res.openRawResource(R.raw.webpage_code_updated);
-        String html = convertStreamToString(inputStream);
-        inputStream.close();
-        Document document = Jsoup.parse(html);
-
-        return document;
+        if (document != null) {
+            ArrayList<ShRoom> rooms = ShRoom.findAllRooms(document);
+            return new ShWebpageContent(document, rooms);
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -114,17 +116,14 @@ public class ShWebpageContent {
         return sb.toString();
     }
 
-    public ArrayList<ShRoom> getAllShData() {
-        // Find all the rooms that are located in the body of the webpage.
-        ShRoom.findAllRooms(content);
-
+    public ArrayList<ShRoom> getDummyData() {
         // Dummy InfoTexts.
-        ShInfoText infoText1 = new ShInfoText("Temperature", "30", null);
-        ShInfoText infoText2 = new ShInfoText("Humidity", "90", Color.valueOf(78));
-        ShInfoText infoText3 = new ShInfoText("Air pressure", "80", null);
-        ShInfoText infoText4 = new ShInfoText("Temperature", "30", null);
-        ShInfoText infoText5 = new ShInfoText("Temperature", "23", null);
-        ShInfoText infoText6 = new ShInfoText("Temperature", "12", null);
+        ShInfoText infoText1 = new ShInfoText("Temperature", null,"30");
+        ShInfoText infoText2 = new ShInfoText("Humidity", "Flur", "90");
+        ShInfoText infoText3 = new ShInfoText("Air pressure", null,"80");
+        ShInfoText infoText4 = new ShInfoText("Temperature", "WZ" ,"30");
+        ShInfoText infoText5 = new ShInfoText("Temperature", "Flur","23");
+        ShInfoText infoText6 = new ShInfoText("Temperature", null,"12");
 
         ArrayList<ShInfoText> infoTextArrayList1 = new ArrayList<>();
         infoTextArrayList1.add(infoText1);
@@ -161,5 +160,17 @@ public class ShWebpageContent {
         dummyRooms.add(new ShRoom("Test-Room4", infoTextArrayList3, null));
         dummyRooms.add(new ShRoom("Test-Room5", infoTextArrayList4, null));
         return dummyRooms;
+    }
+
+    /**
+     * Prints all the rooms and their properties that belong to the ShWebpageContent object.
+     *
+     * @param shWebpageContent          The object which has attribute that contains all the rooms of the smart home and their properties.
+     */
+    public static void printElement(@NonNull ShWebpageContent shWebpageContent) {
+        System.out.println("Länge: " + shWebpageContent.rooms.size());
+        for (ShRoom room: shWebpageContent.rooms) {
+            ShRoom.printOutRoom(room);
+        }
     }
 }
