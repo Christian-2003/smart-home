@@ -5,9 +5,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import de.christian2003.smarthome.R;
 import de.christian2003.smarthome.model.data.ShRoom;
+import de.christian2003.smarthome.utils.framework.OnRecyclerViewActionListener;
 import de.christian2003.smarthome.utils.framework.SmartHomeRecyclerViewAdapter;
 
 
@@ -41,6 +43,13 @@ public class HomeRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<HomeVi
 
 
     /**
+     * Attribute stores the action listener to invoke when a room is clicked.
+     */
+    @Nullable
+    public OnRecyclerViewActionListener roomClickedListener;
+
+
+    /**
      * Constructor instantiates a new recycler view adapter.
      *
      * @param context   Context for the adapter.
@@ -48,6 +57,17 @@ public class HomeRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<HomeVi
      */
     public HomeRecyclerViewAdapter(@NonNull Context context, @NonNull HomeViewModel viewModel) {
         super(context, viewModel);
+        roomClickedListener = null;
+    }
+
+
+    /**
+     * Method changes the action listener to invoke whenever a room is clicked.
+     *
+     * @param roomClickedListener   New action listener to invoke.
+     */
+    public void setRoomClickedListener(@Nullable OnRecyclerViewActionListener roomClickedListener) {
+        this.roomClickedListener = roomClickedListener;
     }
 
 
@@ -64,6 +84,11 @@ public class HomeRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<HomeVi
             RoomViewHolder viewHolder = (RoomViewHolder)holder;
             ShRoom room = viewModel.getRooms().get(position);
             viewHolder.nameTextView.setText(room.getName());
+            viewHolder.itemView.setOnClickListener(view -> {
+                if (roomClickedListener != null) {
+                    roomClickedListener.invoke(holder.getAdapterPosition());
+                }
+            });
         }
     }
 

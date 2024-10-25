@@ -1,5 +1,6 @@
 package de.christian2003.smarthome.view.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import de.christian2003.smarthome.R;
+import de.christian2003.smarthome.model.data.ShRoom;
 import de.christian2003.smarthome.utils.framework.SmartHomeFragment;
+import de.christian2003.smarthome.view.room.RoomActivity;
 
 
 /**
@@ -78,8 +81,22 @@ public class HomeFragment extends SmartHomeFragment<HomeViewModel> {
             progressBar.setVisibility(View.GONE);
 
             adapter = new HomeRecyclerViewAdapter(requireActivity(), viewModel);
+            adapter.setRoomClickedListener(this::onRoomClicked);
             recyclerView.setAdapter(adapter);
         });
+    }
+
+
+    /**
+     * Method is called whenever a room is clicked.
+     *
+     * @param position  Position of the room within the recycler view adapter.
+     */
+    private void onRoomClicked(int position) {
+        ShRoom room = viewModel.getRooms().get(position);
+        Intent intent = new Intent(getActivity(), RoomActivity.class);
+        intent.putExtra(RoomActivity.EXTRA_ROOM, room);
+        startActivity(intent);
     }
 
 }

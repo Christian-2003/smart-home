@@ -5,11 +5,13 @@ import android.graphics.Color;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
+
 
 /**
  * Class models an info text for the smart home.
  */
-public class ShInfoText {
+public class ShInfoText implements Serializable {
 
     /**
      * Attribute stores the label for the info text.

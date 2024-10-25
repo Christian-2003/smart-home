@@ -2,26 +2,19 @@ package de.christian2003.smarthome.model.data;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-
 import de.christian2003.smarthome.model.data.devices.ShGenericDevice;
-import de.christian2003.smarthome.model.data.devices.ShOpening;
-import de.christian2003.smarthome.model.data.devices.ShShutter;
 
 
 /**
  * Class models a room for the smart home.
  */
-public class ShRoom {
+public class ShRoom implements Serializable {
 
     /**
      * Attribute stores the name of the room.
