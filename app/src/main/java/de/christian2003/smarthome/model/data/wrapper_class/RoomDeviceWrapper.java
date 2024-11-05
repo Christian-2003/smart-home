@@ -55,22 +55,47 @@ public class RoomDeviceWrapper {
         return userInformation;
     }
 
+    /**
+     * Sets the devices for the {@link RoomDeviceWrapper}.
+     *
+     * @param devices       A list of the devices that should be set for the {@link RoomDeviceWrapper}.
+     */
     public void setDevices(@NonNull ArrayList<ShGenericDevice> devices) {
         this.devices = devices;
     }
 
+    /**
+     * Sets the user information for the {@link RoomDeviceWrapper}.
+     *
+     * @param userInformation       A list of the user information that should be set for the {@link RoomDeviceWrapper}.
+     */
     public void setUserInformation(@NonNull ArrayList<UserInformation> userInformation) {
         this.userInformation = userInformation;
     }
 
+    /**
+     * Adds a list of devices to the existing list of the {@link RoomDeviceWrapper} object.
+     *
+     * @param devices       A list of the devices that should be added to the {@link RoomDeviceWrapper}.
+     */
     public void addDevices(@NonNull ArrayList<ShGenericDevice> devices) {
         this.devices.addAll(devices);
     }
 
+    /**
+     * Adds a list of user information to the existing list of the {@link RoomDeviceWrapper} object.
+     *
+     * @param userInformation       A list of the user information that should be added to the {@link RoomDeviceWrapper}.
+     */
     public void addUserInformation(@NonNull ArrayList<UserInformation> userInformation) {
         this.userInformation.addAll(userInformation);
     }
 
+    /**
+     * Combines two {@link RoomDeviceWrapper} objects.
+     *
+     * @param handedOverWrapper     The {@link RoomDeviceWrapper} that should be added.
+     */
     public void combineWrapper(RoomDeviceWrapper handedOverWrapper) {
         this.addDevices(handedOverWrapper.getDevices());
         this.addUserInformation(handedOverWrapper.getUserInformation());

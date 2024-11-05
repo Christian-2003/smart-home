@@ -145,34 +145,34 @@ public class ShRoom implements Serializable {
     }
 
     /**
-     * Parses
+     * Parses the elements that are in the content table of a room.
      *
-     * @param room      The element node which contains the name of the room.
+     * @param room          The element node which contains the name of the room.
+     * @param roomName      The name of the room.
      * @return              A list of all the info texts of the room and a list with all warnings/ errors that occurred while gathering the information.
      */
     @NonNull
     public static ShRoom parseContentTable(@NonNull Element room, @NonNull String roomName) {
-        Element contentTable = room.selectFirst("span.roomName ~ table");
 
+        // Get the content table and its elements.
+        Element contentTable = room.selectFirst("span.roomName ~ table");
         if (contentTable != null) {
-            //System.out.println("Content Table gefunden:");
             Elements tableRows = contentTable.select("tr");
 
             if (!tableRows.isEmpty()) {
-                //System.out.println("0");
                 ArrayList<ShInfoText> shInfoTexts = new ArrayList<>();
                 ArrayList<UserInformation> userInformation = new ArrayList<>();
                 ArrayList<ShGenericDevice> shGenericDevices = new ArrayList<>();
 
+                // Find the different info texts and devices of the room.
                 for (Element tableRow: tableRows) {
                     Set<String> classNames = tableRow.classNames();
                     if (classNames.contains("temperature")) {
-                        RoomInfoTextWrapper roomInformationWrapper = createTemperatureInfoText(tableRow);
+                        RoomInfoTextWrapper roomInformationWrapper = ShInfoText.createTemperatureInfoText(tableRow);
                         shInfoTexts.addAll(roomInformationWrapper.getInfoTexts());
                         userInformation.addAll(roomInformationWrapper.getUserInformation());
                     }
                     else if (classNames.contains("shutter")) {
-                        System.out.println("Shutter class gefunden");
                         RoomDeviceWrapper roomDeviceWrapper = ShShutter.createShutterDevice(tableRow, roomName);
                         shGenericDevices.addAll(roomDeviceWrapper.getDevices());
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
@@ -193,65 +193,12 @@ public class ShRoom implements Serializable {
         }
     }
 
-    @NonNull
-    public static RoomInfoTextWrapper createTemperatureInfoText(Element tableRow) {
-        Element firstDataCell = tableRow.selectFirst("tr > td");
-        //System.out.println("1");
-
-        if (firstDataCell != null) {
-            //System.out.println("FirstDataCell: " + firstDataCell.html());
-            Element secondDataCell = tableRow.selectFirst("tr > td ~ td");
-            //System.out.println("2");
-
-            if (secondDataCell != null) {
-                Element innerTable = secondDataCell.selectFirst("table");
-                //System.out.println("3");
-
-                if (innerTable != null) {
-                    //System.out.println("4");
-                    return new RoomInfoTextWrapper(getInnerTableContent(innerTable, firstDataCell.text()), new ArrayList<>());
-                }
-                else {
-                    //System.out.println("5");
-                    return new RoomInfoTextWrapper(new ArrayList<>(Collections.singletonList(new ShInfoText(firstDataCell.text(), null, secondDataCell.text()))), new ArrayList<>());
-                }
-            }
-            else {
-                String warningDescription = "A table row that contains the temperature of the room should be present but could not be found. Please check the website and the documentation.";
-                return new RoomInfoTextWrapper(new ArrayList<>(),  new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
-            }
-        }
-        else {
-            String warningDescription = "";
-            return new RoomInfoTextWrapper(new ArrayList<>(),  new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
-        }
-    }
-
-
-    public static ArrayList<ShInfoText> getInnerTableContent(Element innerTable, String label) {
-        Elements innerTableRows = innerTable.select("tr");
-        ArrayList<ShInfoText> shInfoTextsInnerTable = new ArrayList<>();
-
-        for (Element innerTableRow: innerTableRows) {
-            Element firstDataCell = innerTableRow.selectFirst("td");
-
-            if (firstDataCell != null) {
-                Element secondDataCell = innerTable.selectFirst("td ~ td");
-
-                if (secondDataCell != null) {
-                    shInfoTextsInnerTable.add(new ShInfoText(label, firstDataCell.text(), secondDataCell.text()));
-                }
-            }
-        }
-        return shInfoTextsInnerTable;
-    }
-
     /**
      * Method prints the properties of a ShRoom object.
      *
      * @param room      The room object which properties should be printed.
      */
-    public static void printOutRoom(ShRoom room) {
+    public static void printOutRoom(@NonNull ShRoom room) {
         System.out.println("Room name: " + room.name + "Länge Infos: " + room.infos.size());
         for (ShInfoText shInfoText: room.infos) {
             System.out.println("\tLabel: " + shInfoText.getLabel() + ", Specifier " + shInfoText.getSpecifier() + ", Text: " + shInfoText.getText());

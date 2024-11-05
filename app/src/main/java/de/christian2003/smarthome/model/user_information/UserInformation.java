@@ -38,16 +38,31 @@ public class UserInformation {
         this.description = description;
     }
 
+    /**
+     * Gets the type of the information.
+     *
+     * @return      The type of the information.
+     */
     @NonNull
     public InformationType getInformationType() {
         return informationType;
     }
 
+    /**
+     * Gets the title of the information.
+     *
+     * @return      The title of the information.
+     */
     @NonNull
     public InformationTitle getInformationTitle() {
         return informationTitle;
     }
 
+    /**
+     * Gets the description of the information.
+     *
+     * @return      The description of the information.
+     */
     @NonNull
     public String getDescription() {
         return description;
