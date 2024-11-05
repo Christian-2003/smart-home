@@ -1,12 +1,16 @@
 package de.christian2003.smarthome.view.home;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.christian2003.smarthome.App;
 import de.christian2003.smarthome.model.data.ShRoom;
 import de.christian2003.smarthome.model.data.ShWebpageContent;
 
@@ -87,7 +91,12 @@ public class HomeViewModel extends ViewModel {
         if (state == STATE_WAITING) {
             state = STATE_LOADING;
             Thread thread = new Thread(() -> {
-                webpageContent = ShWebpageContent.getWebpageHtml();
+                try {
+                    webpageContent = ShWebpageContent.getWebpageHtml(App.getContext());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                ShWebpageContent.printElement(webpageContent);
                 state = STATE_FINISHED;
                 if (callback != null) {
                     callback.run();

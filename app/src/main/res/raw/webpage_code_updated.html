@@ -402,8 +402,8 @@
         <div class="c1 room">
             <span class="roomName">Eingang/Flur</span><button onclick="RefreshDevices('Flur EG','');">&#8635;</button>
             <table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td>
                         <div id="EingangTemp">-</div>
                 </tr>
@@ -434,7 +434,7 @@
                             </tr>
                         </table>
                 </tr>
-                <tr>
+                <tr class="shutter">
                     <td>Rollladen
                     <td>
                         <form>
@@ -453,8 +453,8 @@
             <button onclick="RefreshDevices('K\u00fcche','');">&#8635;</button>
 
             <table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td>
                         <table border="1">
                             <tr>
@@ -518,14 +518,14 @@
                     </table>
 
 
-            <tr>
+            <tr class="shutter">
                 <td>Rollladen
                 <td>
                     <form>
                         <input type="number" size="3" maxlength="3" id="K_R" style="max-width: 50px;">
                         &percnt;
                         <button type="button"
-                                onclick="knx_write_ga('2/1/5','5.001',document.getElementById('K_R').value)">Set</button>
+                                onclick="knx_write_ga('2/1/5','5.001',document.getElementById('K_R').value)">Set</button> 50%(12:30)
                     </form>
                     <span ID="K_R_NEXT">&nbsp;</span>
             </tr>
@@ -536,8 +536,8 @@
             <span class="roomName">WZ</span><button onclick="RefreshDevices('Wohnzimmer','');">&#8635;</button>
 
             <table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td>
                         <div id="WZ_Temp">-</div>
                 </tr>
@@ -568,7 +568,7 @@
                         </table>
                 </tr>
 
-                <tr>
+                <tr class="shutter">
                     <td>Rolll&auml;den
                     <td>
                         <table border="1">
@@ -628,11 +628,12 @@
         </div> <!--Element WZ -->
 
         <div class="c4 room"> <!--Element b�ro Chris -->
-            <span class="roomName">B&uuml;ro Chris</span><button onclick="RefreshDevices('B\u00fcro Unten','');">&#8635;</button>
+            <span class="roomName">B&uuml;ro Chris</span><button
+                    onclick="RefreshDevices('B\u00fcro Unten','');">&#8635;</button>
 
             <table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td>
                         <div id="EG_BCTemp">-</div>
                 </tr>
@@ -642,7 +643,7 @@
                         <div id="EG_BCF"><img src="/sh/icons/open.png" width="64" height="64"></div>
                 </tr>
 
-                <tr>
+                <tr class="shutter">
                     <td>Rollladen
                     <td>
                         <form>
@@ -661,11 +662,11 @@
 
     <div class="flex-container"> <!-- Container -->
         <div class="c1 room"> <!-- Bad -->
-            <span class=""roomName>Bad</span><button onclick="RefreshDevices('Bad','');">&#8635;</button>
+            <span class="" roomName>Bad</span><button onclick="RefreshDevices('Bad','');">&#8635;</button>
 
             <table border="1" width="100%">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td>
 
                         <table>
@@ -741,7 +742,7 @@
                     </td>
                 </tr>
 
-                <tr>
+                <tr class="shutter">
                     <td>Rollladen
                     <td>
                         <form>
@@ -758,8 +759,8 @@
         <div class="c2 room"> <!-- kl Bad -->
             <span class="roomName">kl. Bad</span><button onclick="RefreshDevices('kl. Bad','');">&#8635;</button>
             <table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td><span id="KLBADTEMPLFH">-</span>
                 </tr>
                 <tr>
@@ -803,11 +804,12 @@
 
         <div class="c3 room"> <!-- Spielzimmer -->
             <!-- START Spielzimmer -->
-            <span class="roomName">Spielzimmer</span> <button onclick="RefreshDevices('Spielzimmer','');">&#8635;</button>
+            <span class="roomName">Spielzimmer</span> <button
+                    onclick="RefreshDevices('Spielzimmer','');">&#8635;</button>
 
             <table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td>
                         <div id="SZTemp">-</div>
                 </tr>
@@ -852,7 +854,7 @@
                         </table>
                 </tr>
 
-                <tr>
+                <tr class="shutter">
                     <td>Rollladen
                     <td>
                         <form>
@@ -869,8 +871,8 @@
             <!-- Start HWR -->
             <span class="roomName">HWR</span><button onclick="RefreshDevices('HWR','');">&#8635;</button>
             <table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td id="HWRTemp">-
                 </tr>
                 <tr>
@@ -878,7 +880,7 @@
                     <td>
                         <div id="HWRF"><img src="/sh/icons/open.png" width="64" height="64"></div>
                 </tr>
-                <tr>
+                <tr class="shutter">
                     <td>Rollladen
                     <td>
                         <form>
@@ -905,8 +907,8 @@
         <div class="c1 room"> <!-- Hobby -->
             <span class="roomName">Hobby</span><button onclick="RefreshDevices('Hobby','');">&#8635;</button>
             <table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td><span id="HB_TempLFH">-</span>
                 </tr>
                 <tr>
@@ -922,7 +924,8 @@
         </div> <!-- Hobby -->
 
         <div class="c2 room"> <!-- Keller Re -->
-            <span class="roomName">Keller Rechts</span><button onclick="RefreshDevices('Keller Rechts','');">&#8635;</button>
+            <span class="roomName">Keller Rechts</span><button
+                    onclick="RefreshDevices('Keller Rechts','');">&#8635;</button>
             <table border="1">
                 <tr>
                     <td class="tc1">Status
@@ -943,7 +946,8 @@
         </div> <!-- Keller Re -->
 
         <div class="c3 room"> <!-- �lraum -->
-            <span class="roomName">&Ouml;lraum</span><button onclick="RefreshDevices('\u00d6lraum','');">&#8635;</button>
+            <span class="roomName">&Ouml;lraum</span><button
+                    onclick="RefreshDevices('\u00d6lraum','');">&#8635;</button>
             <table border="1">
                 <tr>
                     <td class="tc1">Fenster<button onclick="History('1/0/26');">H</button>
@@ -969,10 +973,11 @@
 
     <div class="flex-container"> <!--Container DG -->
         <div class="c1 room"> <!-- Schlafzimmer -->
-            <span class="roomName">Schlafzimmer</span><button onclick="RefreshDevices('Schlafzimmer','');">&#8635;</button>
+            <span class="roomName">Schlafzimmer</span><button
+                    onclick="RefreshDevices('Schlafzimmer','');">&#8635;</button>
             <table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td>
                         <div id="DG_SZTemp">-</div>
                 </tr>
@@ -997,9 +1002,10 @@
         </div> <!-- Schlafzimmer -->
 
         <div class="c2 room"> <!-- B�ro CH -->
-            <span class="roomName">B&uuml;ro Christian</span><table border="1">
-                <tr>
-                    <td class="tc1 temperature">Temp
+            <span class="roomName">B&uuml;ro Christian</span>
+            <table border="1">
+                <tr class="temperature">
+                    <td class="tc1">Temp
                     <td>
                         <table border="0">
                             <tr>
@@ -1016,7 +1022,7 @@
                     <td>
                         <div id="BCHBLKT"><img src="/sh/icons/open.png" width="64" height="64"></div>
                 </tr>
-                <tr>
+                <tr class="shutter">
                     <td>Rollladen
                     <td>
                         <div id="BCHR">-</div>

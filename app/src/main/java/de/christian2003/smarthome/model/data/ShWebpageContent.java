@@ -63,11 +63,11 @@ public class ShWebpageContent {
      * @return          Returns a ShWebpageContent object or null if the webpage content could not be loaded.
      */
     @Nullable
-    public static ShWebpageContent getWebpageHtml() {
+    public static ShWebpageContent getWebpageHtml(Context context) throws IOException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         // The code that will be used when we have access to the webpage.
-
+        /*
         Callable<Document> task = () -> {
             try {
                 // Get the code from the webpage.
@@ -79,7 +79,7 @@ public class ShWebpageContent {
             }
         };
 
-        // Submit the task to the executor and get a Future representing the result
+        // Submit the task to the executor and get a Future representing the result.
         Future<Document> future = executor.submit(task);
         Document document = null;
 
@@ -93,6 +93,12 @@ public class ShWebpageContent {
         finally {
             executor.shutdown();
         }
+        */
+        Resources res = context.getResources();
+        InputStream inputStream = res.openRawResource(R.raw.webpage_code_updated);
+        String html = convertStreamToString(inputStream);
+        inputStream.close();
+        Document document = Jsoup.parse(html);
 
         if (document != null) {
             ArrayList<ShRoom> rooms = ShRoom.findAllRooms(document);
@@ -121,6 +127,7 @@ public class ShWebpageContent {
         return sb.toString();
     }
 
+    /*
     public ArrayList<ShRoom> getDummyData() {
         // Dummy InfoTexts.
         ShInfoText infoText1 = new ShInfoText("Temperature", null,"30");
@@ -165,7 +172,7 @@ public class ShWebpageContent {
         dummyRooms.add(new ShRoom("Test-Room4", infoTextArrayList3, null));
         dummyRooms.add(new ShRoom("Test-Room5", infoTextArrayList4, null));
         return dummyRooms;
-    }
+    }*/
 
     /**
      * Prints all the rooms and their properties that belong to the ShWebpageContent object.

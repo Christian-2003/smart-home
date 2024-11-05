@@ -28,9 +28,9 @@ public class UserInformation {
     /**
      *Constructor instantiates a new user information.
      *
-     * @param informationType
-     * @param informationTitle
-     * @param description
+     * @param informationType       States which type of information will de displayed for the user.
+     * @param informationTitle      States the title of the information that will be displayed.
+     * @param description           The description that will explain the error or warning further.
      */
     public UserInformation(@NonNull InformationType informationType, @NonNull InformationTitle informationTitle,@NonNull String description) {
         this.informationType = informationType;
