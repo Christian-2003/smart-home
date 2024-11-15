@@ -5,11 +5,13 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
+
 
 /**
  * Class models a generic smart home device. All other smart home devices must extend this class.
  */
-public abstract class ShGenericDevice {
+public abstract class ShGenericDevice implements Serializable {
 
     /**
      * Attribute stores the name of the device. This name is shown to the user.

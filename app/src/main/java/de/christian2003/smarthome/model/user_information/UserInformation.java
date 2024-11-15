@@ -2,10 +2,12 @@ package de.christian2003.smarthome.model.user_information;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * Call models the information that can be displayed for the user.
  */
-public class UserInformation {
+public class UserInformation implements Serializable {
 
     /**
      * States which type of information will de displayed for the user.
