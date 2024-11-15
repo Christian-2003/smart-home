@@ -7,20 +7,34 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/space_horizontal"
-    android:paddingVertical="@dimen/space_vertical_between">
+    android:paddingVertical="@dimen/space_horizontal_between">
 
     <TextView
         android:id="@+id/text_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Label name"
+        tools:text="Device name"
         style="@style/text.light"/>
 
     <TextView
-        android:id="@+id/text_content"
+        android:id="@+id/text_percentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Label content"
+        tools:text="Percentage"
         style="@style/text"/>
+
+    <TextView
+        android:id="@+id/text_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Time"
+        style="@style/text"/>
+
+    <Button
+        android:id="@+id/button_set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_vertical_between"
+        tools:text="Set"/>
 
 </LinearLayout>

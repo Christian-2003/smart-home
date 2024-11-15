@@ -2,6 +2,8 @@ package de.christian2003.smarthome.view.room;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.appbar.MaterialToolbar;
 import java.io.Serializable;
 import de.christian2003.smarthome.R;
@@ -12,6 +14,9 @@ import de.christian2003.smarthome.utils.framework.SmartHomeActivity;
 public class RoomActivity extends SmartHomeActivity<RoomViewModel> {
 
     public static final String EXTRA_ROOM = "extra_room";
+
+
+    private RoomRecyclerViewAdapter adapter;
 
 
     public RoomActivity() {
@@ -38,5 +43,8 @@ public class RoomActivity extends SmartHomeActivity<RoomViewModel> {
         appBar.setNavigationOnClickListener(view -> finish());
         appBar.setTitle(viewModel.getRoom().getName());
 
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        adapter = new RoomRecyclerViewAdapter(this, viewModel);
+        recyclerView.setAdapter(adapter);
     }
 }
