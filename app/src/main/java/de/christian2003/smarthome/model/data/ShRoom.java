@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.christian2003.smarthome.model.data.devices.ShGenericDevice;
+import de.christian2003.smarthome.model.data.devices.ShOpening;
 import de.christian2003.smarthome.model.data.devices.ShShutter;
 import de.christian2003.smarthome.model.data.wrapper_class.RoomDeviceWrapper;
 import de.christian2003.smarthome.model.data.wrapper_class.RoomInfoTextWrapper;
@@ -177,6 +178,11 @@ public class ShRoom implements Serializable {
                         shGenericDevices.addAll(roomDeviceWrapper.getDevices());
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
                     }
+                    else if (classNames.contains("opening")) {
+                        RoomDeviceWrapper roomDeviceWrapper = ShOpening.createOpeningDevice(tableRow, roomName);
+                        shGenericDevices.addAll(roomDeviceWrapper.getDevices());
+                        userInformation.addAll(roomDeviceWrapper.getUserInformation());
+                    }
                 }
                 return new ShRoom(roomName, shInfoTexts, shGenericDevices, userInformation);
             }
@@ -206,6 +212,9 @@ public class ShRoom implements Serializable {
         for (ShGenericDevice shGenericDevice: room.devices) {
             if (shGenericDevice instanceof ShShutter) {
                 System.out.println("\tShutter Name: " + shGenericDevice.getName() + ", Specifier: " + ((ShShutter) shGenericDevice).getSpecifier() + ", ButtonText: " + ((ShShutter) shGenericDevice).getSetButtonText() + ", Percentage: " + ((ShShutter) shGenericDevice).getPercentage() + ", Time: " + ((ShShutter) shGenericDevice).getTime());
+            }
+            if (shGenericDevice instanceof ShOpening) {
+                System.out.println("\tOpening Name: " + shGenericDevice.getName() + ", Specifier: " + ((ShOpening) shGenericDevice).getSpecifier() + ", ImageUri: " + (shGenericDevice).getImageUri() + ", Type: " + ((ShOpening) shGenericDevice).getOpeningType() + ", Time: ");
             }
         }
     }

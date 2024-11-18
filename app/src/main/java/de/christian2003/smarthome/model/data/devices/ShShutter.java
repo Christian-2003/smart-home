@@ -71,7 +71,7 @@ public class ShShutter extends ShGenericDevice {
      *
      * @param tableRow      The table row which contains the cells with the shutters.
      * @param name          The name of the room in which the shutter is.
-     * @return              A RoomDeviceWrapper which contains a list of all shutters that were found in the room and a list of all warning/ errors that occurred while finding them.
+     * @return      A RoomDeviceWrapper which contains a list of all shutters that were found in the room and a list of all warning/ errors that occurred while finding them.
      */
     @NonNull
     public static RoomDeviceWrapper createShutterDevice(@NonNull Element tableRow, @NonNull String name) {
@@ -181,7 +181,7 @@ public class ShShutter extends ShGenericDevice {
                 // No table Row found.
                 String warningDescription = "No table was found in the inner table. The table should contain rows with the shutters. No shutters could be found. Please check the website and the documentation.";
                 return new RoomDeviceWrapper(new ArrayList<>(), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
-            }
+        }
     }
 
     /**

@@ -72,7 +72,7 @@ public class ShInfoText implements Serializable {
 
                 // If an inner table element was found there are multiple temperatures for the room and they have to be extracted from the table. Otherwise there is only one temperature which is directly located in the data cell.
                 if (innerTable != null) {
-                    return new RoomInfoTextWrapper(getInnerTableContent(innerTable, firstDataCell.text()), new ArrayList<>());
+                    return getInnerTableContent(innerTable, firstDataCell.text());
                 }
                 else {
                     return new RoomInfoTextWrapper(new ArrayList<>(Collections.singletonList(new ShInfoText(firstDataCell.text(), null, secondDataCell.text()))), new ArrayList<>());
@@ -95,12 +95,13 @@ public class ShInfoText implements Serializable {
      *
      * @param innerTable        The table element which contains the specifiers for the different temperatures.
      * @param label             The label of the info text.
-     * @return                  A list of info texts.
+     * @return                  A {@link RoomInfoTextWrapper} object with a list of the temperature info texts and a list of the warnings that occurred it.
      */
     @NonNull
-    public static ArrayList<ShInfoText> getInnerTableContent(@NonNull Element innerTable, @NonNull String label) {
+    public static RoomInfoTextWrapper getInnerTableContent(@NonNull Element innerTable, @NonNull String label) {
         Elements innerTableRows = innerTable.select("tr");
         ArrayList<ShInfoText> shInfoTextsInnerTable = new ArrayList<>();
+        ArrayList<UserInformation> userInformation = new ArrayList<>();
 
         // Get the content of the inner table and create info texts for the found information.
         for (Element innerTableRow: innerTableRows) {
@@ -113,14 +114,16 @@ public class ShInfoText implements Serializable {
                     shInfoTextsInnerTable.add(new ShInfoText(label, firstDataCell.text(), secondDataCell.text()));
                 }
                 else {
-
+                    String warningDescription = "No data cell could be found for the temperature element \" " + firstDataCell.text() + " \" in the inner table which should contain further temperature information. Please check the website and the documentation. ";
+                    userInformation.add(new UserInformation(InformationType.WARNING ,InformationTitle.HtmlElementNotLocated, warningDescription));
                 }
             }
             else {
-
+                String warningDescription = "No data cell could be found for a temperature element in the inner table which should contain further temperature information. Please check the website and the documentation. ";
+                userInformation.add(new UserInformation(InformationType.WARNING ,InformationTitle.HtmlElementNotLocated, warningDescription));
             }
         }
-        return shInfoTextsInnerTable;
+        return new RoomInfoTextWrapper(shInfoTextsInnerTable, userInformation);
     }
 
 

@@ -17,7 +17,7 @@ public abstract class ShGenericDevice implements Serializable {
      * Attribute stores the name of the device. This name is shown to the user.
      */
     @NonNull
-    private final String name;
+    private final String openeingName;
 
     /**
      * Attribute stores the URI for the image to display to the user. This will be {@code null} if
@@ -34,7 +34,7 @@ public abstract class ShGenericDevice implements Serializable {
      * @param imageUri  URI for the image to display to the user.
      */
     public ShGenericDevice(@NonNull String name, @Nullable Uri imageUri) {
-        this.name = name;
+        this.openeingName = name;
         this.imageUri = imageUri;
     }
 
@@ -46,7 +46,7 @@ public abstract class ShGenericDevice implements Serializable {
      */
     @NonNull
     public String getName() {
-        return name;
+        return openeingName;
     }
 
     /**
