@@ -52,7 +52,7 @@ public class ShOutlet extends ShGenericDevice {
      * @param powerConsumption  Power consumption of the outlet (in "Wh").
      */
     public ShOutlet(@Nullable String name, @Nullable Uri imageUri, @Nullable String onButtonText, @Nullable String offButtonText, @Nullable String amperage, @Nullable String time, @Nullable String powerConsumption) {
-        super(name, imageUri);
+        super(name,null, imageUri);
         this.onButtonText = onButtonText;
         this.offButtonText = offButtonText;
         this.amperage = amperage;

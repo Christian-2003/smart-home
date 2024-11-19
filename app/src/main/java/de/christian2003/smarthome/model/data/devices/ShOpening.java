@@ -36,12 +36,6 @@ public class ShOpening extends ShGenericDevice {
     private ShOpeningType openingType;
 
     /**
-     * The specifier of the opening.
-     */
-    @Nullable
-    private String specifier;
-
-    /**
      * Constructor instantiates a new door / window.
      *
      * @param name  Name for the door / window.
@@ -50,9 +44,8 @@ public class ShOpening extends ShGenericDevice {
      * @param imageUri      URI to the image for the door / window.
      */
     public ShOpening(@NonNull String name, @NonNull ShOpeningType openingType, @Nullable String specifier, @Nullable Uri imageUri) {
-        super(name, imageUri);
+        super(name, specifier, imageUri);
         this.openingType = openingType;
-        this.specifier = specifier;
     }
 
     /**
@@ -247,15 +240,5 @@ public class ShOpening extends ShGenericDevice {
      */
     public void setOpeningType(@NonNull ShOpeningType openingType) {
         this.openingType = openingType;
-    }
-
-    /**
-     * Method returns the specifier of the opening.
-     *
-     * @return  The specifier of the opening.
-     */
-    @Nullable
-    public String getSpecifier() {
-        return specifier;
     }
 }

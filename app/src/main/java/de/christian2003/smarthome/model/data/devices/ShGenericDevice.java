@@ -17,7 +17,13 @@ public abstract class ShGenericDevice implements Serializable {
      * Attribute stores the name of the device. This name is shown to the user.
      */
     @NonNull
-    private final String openeingName;
+    private final String name;
+
+    /**
+     * The specifier of the device to distinguish different devices in a room that are the same type..
+     */
+    @Nullable
+    private final String specifier;
 
     /**
      * Attribute stores the URI for the image to display to the user. This will be {@code null} if
@@ -31,10 +37,12 @@ public abstract class ShGenericDevice implements Serializable {
      * Constructor instantiates a new generic smart home device.
      *
      * @param name  Name for the device.
+     * @param specifier The specifier of the device to distinguish different devices in a room that are the same type.
      * @param imageUri  URI for the image to display to the user.
      */
-    public ShGenericDevice(@NonNull String name, @Nullable Uri imageUri) {
-        this.openeingName = name;
+    public ShGenericDevice(@NonNull String name, @Nullable String specifier, @Nullable Uri imageUri) {
+        this.name = name;
+        this.specifier = specifier;
         this.imageUri = imageUri;
     }
 
@@ -46,7 +54,7 @@ public abstract class ShGenericDevice implements Serializable {
      */
     @NonNull
     public String getName() {
-        return openeingName;
+        return name;
     }
 
     /**
@@ -60,4 +68,13 @@ public abstract class ShGenericDevice implements Serializable {
         return imageUri;
     }
 
+    /**
+     * Method returns the specifier of the device. If there is only one device of a type the specifier is null.
+     *
+     * @return  The specifier of the device.
+     */
+    @Nullable
+    public String getSpecifier() {
+        return specifier;
+    }
 }

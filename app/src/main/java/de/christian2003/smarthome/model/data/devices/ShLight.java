@@ -31,7 +31,7 @@ public class ShLight extends ShGenericDevice {
      * @param offButtonText Text for the button to turn off the light.
      */
     public ShLight(@Nullable String name, @Nullable Uri imageUri, @Nullable String onButtonText, @Nullable String offButtonText) {
-        super(name, imageUri);
+        super(name, null, imageUri);
         this.onButtonText = onButtonText;
         this.offButtonText = offButtonText;
     }

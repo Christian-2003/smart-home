@@ -21,12 +21,6 @@ import de.christian2003.smarthome.model.user_information.UserInformation;
 public class ShShutter extends ShGenericDevice {
 
     /**
-     * Attribute specifies the device.
-     */
-    @Nullable
-    private final String specifier;
-
-    /**
      * Attribute stores the text for the button to set the percentage to which to close the
      * shutter.
      */
@@ -59,8 +53,7 @@ public class ShShutter extends ShGenericDevice {
      * @param time          Time at which the shutter was closed?
      */
     public ShShutter(@NonNull String name, @Nullable String specifier, @Nullable String setButtonText, @Nullable String percentage, @Nullable String time) {
-        super(name, null);
-        this.specifier = specifier;
+        super(name, specifier ,null);
         this.setButtonText = setButtonText;
         this.percentage = percentage;
         this.time = time;
@@ -261,16 +254,6 @@ public class ShShutter extends ShGenericDevice {
             formInformation[1] = null;
         }
         return formInformation;
-    }
-
-    /**
-     * Method returns the specifier of the info text.
-     *
-     * @return Specifier of the info text.
-     */
-    @Nullable
-    public String getSpecifier() {
-        return specifier;
     }
 
     /**
