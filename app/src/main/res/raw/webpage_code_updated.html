@@ -299,28 +299,28 @@
         </div>
 
 
-        <div class="c3"> <!-- garten -->
-            Garten<button onclick="RefreshDevices('Garten','');">&#8635;</button>
+        <div class="c3 room"> <!-- garten -->
+            <span class="roomName">Garten</span><button onclick="RefreshDevices('Garten','');">&#8635;</button>
             <table border="1">
-                <tr>
+                <tr class="infoText">
                     <td>Temperatur Garten:
                     <td id="GartenTemp">-
                 </tr>
-                <tr>
+                <tr class="infoText">
                     <td>Luftfeuchtigkeit:
                     <td id="WETTER_LF">-
                 </tr>
-                <tr>
+                <tr class="infoText">
                     <td>Luftdruck:
                     <td>
                         <div id="WETTER_LD">-</div>
                 </tr>
-                <tr>
+                <tr class="infoText">
                     <td>Sonnenaufgang:
                     <td>
                         <div id="WETTER_SA">-</div>
                 </tr>
-                <tr>
+                <tr class="infoText">
                     <td>Sonnenuntergang:
                     <td>
                         <div id="WETTER_SU">-</div>
@@ -371,25 +371,25 @@
 
         </div> <!-- Garten -->
 
-        <div class="c4">
-            <a href="/sh/visu/heizung/temp_aussen.php">Heizung</A>
+        <div class="c4 room">
+            <a href="/sh/visu/heizung/temp_aussen.php"><span class="roomName">Heizung</span></A>
             <table border="1">
-                <tr>
+                <tr class="infoText">
                     <td class="tc1">Stand
                     <td>
                         <div id="HZ_DT">-</div>
                 </tr>
-                <tr>
+                <tr class="infoText">
                     <td>Modus
                     <td>
                         <div id="HZ_MODUS">-</div>
                 </tr>
-                <tr>
+                <tr class="infoText">
                     <td>Brenner h
                     <td>
                         <div id="HZ_BRENNERH">-</div>
                 </tr>
-                <tr>
+                <tr class="infoText">
                     <td>Brennerstarts
                     <td>
                         <div id="HZ_BRENNERS">-</div>
@@ -402,7 +402,7 @@
         <div class="c1 room">
             <span class="roomName">Eingang/Flur</span><button onclick="RefreshDevices('Flur EG','');">&#8635;</button>
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td>
                         <div id="EingangTemp">-</div>
@@ -453,7 +453,7 @@
             <button onclick="RefreshDevices('K\u00fcche','');">&#8635;</button>
 
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td>
                         <table border="1">
@@ -536,7 +536,7 @@
             <span class="roomName">WZ</span><button onclick="RefreshDevices('Wohnzimmer','');">&#8635;</button>
 
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td>
                         <div id="WZ_Temp">-</div>
@@ -632,7 +632,7 @@
                     onclick="RefreshDevices('B\u00fcro Unten','');">&#8635;</button>
 
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td>
                         <div id="EG_BCTemp">-</div>
@@ -665,7 +665,7 @@
             <span class="roomName">Bad</span><button onclick="RefreshDevices('Bad','');">&#8635;</button>
 
             <table border="1" width="100%">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td>
 
@@ -759,7 +759,7 @@
         <div class="c2 room"> <!-- kl Bad -->
             <span class="roomName">kl. Bad</span><button onclick="RefreshDevices('kl. Bad','');">&#8635;</button>
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td><span id="KLBADTEMPLFH">-</span>
                 </tr>
@@ -808,7 +808,7 @@
                     onclick="RefreshDevices('Spielzimmer','');">&#8635;</button>
 
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td>
                         <div id="SZTemp">-</div>
@@ -871,7 +871,7 @@
             <!-- Start HWR -->
             <span class="roomName">HWR</span><button onclick="RefreshDevices('HWR','');">&#8635;</button>
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td id="HWRTemp">-
                 </tr>
@@ -907,7 +907,7 @@
         <div class="c1 room"> <!-- Hobby -->
             <span class="roomName">Hobby</span><button onclick="RefreshDevices('Hobby','');">&#8635;</button>
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td><span id="HB_TempLFH">-</span>
                 </tr>
@@ -976,7 +976,7 @@
             <span class="roomName">Schlafzimmer</span><button
                     onclick="RefreshDevices('Schlafzimmer','');">&#8635;</button>
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td>
                         <div id="DG_SZTemp">-</div>
@@ -1004,7 +1004,7 @@
         <div class="c2 room"> <!-- B�ro CH -->
             <span class="roomName">B&uuml;ro Christian</span>
             <table border="1">
-                <tr class="temperature">
+                <tr class="infoText">
                     <td class="tc1">Temp
                     <td>
                         <table border="0">

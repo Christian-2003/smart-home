@@ -113,7 +113,7 @@ public class ShRoom implements Serializable {
         ArrayList<ShRoom> shRoomList = new ArrayList<>();
 
         // Find all rooms of the smart home.
-        Elements rooms = document.select("div > div.room");
+        Elements rooms = document.select("div.room");
         //System.out.println("Anzahl Rooms: " + rooms.size());
 
         // Iterates through all rooms and get their properties and devices.
@@ -142,7 +142,7 @@ public class ShRoom implements Serializable {
      */
     @Nullable
     public static Element findRoomName(@NonNull Element room) {
-        return room.select("div > span.roomName").first();
+        return room.select("div span.roomName").first();
     }
 
     /**
@@ -168,7 +168,7 @@ public class ShRoom implements Serializable {
                 // Find the different info texts and devices of the room.
                 for (Element tableRow: tableRows) {
                     Set<String> classNames = tableRow.classNames();
-                    if (classNames.contains("temperature")) {
+                    if (classNames.contains("infoText")) {
                         RoomInfoTextWrapper roomInformationWrapper = ShInfoText.createTemperatureInfoText(tableRow);
                         shInfoTexts.addAll(roomInformationWrapper.getInfoTexts());
                         userInformation.addAll(roomInformationWrapper.getUserInformation());
