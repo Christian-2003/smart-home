@@ -33,7 +33,7 @@ public class ShOpening extends ShGenericDevice {
      * The {@link ShOpeningType} of the opening.
      */
     @NonNull
-    private ShOpeningType openingType;
+    private final ShOpeningType openingType;
 
     /**
      * Constructor instantiates a new door / window.
@@ -56,12 +56,11 @@ public class ShOpening extends ShGenericDevice {
      * @return      A RoomDeviceWrapper which contains a list of all openings that were found in the room and a list of all warning/ errors that occurred while finding them.
      */
     @NonNull
-    public static RoomDeviceWrapper createOpeningDevice (@NonNull Element tableRow, String roomName) {
+    public static RoomDeviceWrapper createOpeningDevice (@NonNull Element tableRow, @NonNull String roomName) {
         Element firstDataCell = tableRow.selectFirst("tr > td");
 
         // Find the data cell which contains the opening.
         if (firstDataCell != null) {
-
             ShOpeningType openingType = checkOpeningType(firstDataCell.ownText());
 
             Element secondDataCell = tableRow.selectFirst("tr > td ~ td");
@@ -231,14 +230,5 @@ public class ShOpening extends ShGenericDevice {
     @NonNull
     public ShOpeningType getOpeningType() {
         return openingType;
-    }
-
-    /**
-     * Method sets the {@link ShOpeningType} of the opening.
-     *
-     * @param openingType   The type of the opening.
-     */
-    public void setOpeningType(@NonNull ShOpeningType openingType) {
-        this.openingType = openingType;
     }
 }

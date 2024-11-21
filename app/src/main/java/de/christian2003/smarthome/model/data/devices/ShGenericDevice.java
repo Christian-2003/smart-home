@@ -32,7 +32,6 @@ public abstract class ShGenericDevice implements Serializable {
     @Nullable
     private final Uri imageUri;
 
-
     /**
      * Constructor instantiates a new generic smart home device.
      *
@@ -45,7 +44,6 @@ public abstract class ShGenericDevice implements Serializable {
         this.specifier = specifier;
         this.imageUri = imageUri;
     }
-
 
     /**
      * Method returns the name of the smart home device.

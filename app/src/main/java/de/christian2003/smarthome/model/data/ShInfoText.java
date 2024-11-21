@@ -1,7 +1,5 @@
 package de.christian2003.smarthome.model.data;
 
-import android.graphics.Color;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -39,7 +37,7 @@ public class ShInfoText implements Serializable {
      * Attribute stores the text for the info text.
      */
     @Nullable
-    private String text;
+    private final String text;
 
     /**
      * Constructor instantiates a new info text.
@@ -54,23 +52,23 @@ public class ShInfoText implements Serializable {
     }
 
     /**
-     * Finds the temperature of a room and creates an info text form them.
+     * Finds the info text of a room and creates an object for it.
      *
-     * @param tableRow      The table row which contains the cells with the temperature.
+     * @param tableRow      The table row which contains the cells with the info text.
      * @return              A RoomInfoTextWrapper which contains a list of info texts and a list of all warning/ errors that occurred while finding them.
      */
     @NonNull
-    public static RoomInfoTextWrapper createTemperatureInfoText(@NonNull Element tableRow) {
+    public static RoomInfoTextWrapper createInfoText(@NonNull Element tableRow) {
         Element firstDataCell = tableRow.selectFirst("tr > td");
 
-        // Find the data cell containing the temperature.
+        // Find the data cell containing the info.
         if (firstDataCell != null) {
             Element secondDataCell = tableRow.selectFirst("tr > td ~ td");
 
             if (secondDataCell != null) {
                 Element innerTable = secondDataCell.selectFirst("table");
 
-                // If an inner table element was found there are multiple temperatures for the room and they have to be extracted from the table. Otherwise there is only one temperature which is directly located in the data cell.
+                // If an inner table element was found there are multiple info texts for the room and they have to be extracted from the table. Otherwise there is only one info text which is directly located in the data cell.
                 if (innerTable != null) {
                     return getInnerTableContent(innerTable, firstDataCell.text());
                 }
@@ -79,23 +77,23 @@ public class ShInfoText implements Serializable {
                 }
             }
             else {
-                String warningDescription = "A table row that contains the temperature of the room should be present but could not be found. Please check the website and the documentation.";
+                String warningDescription = "A table row that contains an info text of the room should be present but could not be found. Please check the website and the documentation.";
                 return new RoomInfoTextWrapper(new ArrayList<>(),  new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
             }
         }
         else {
             // No table rows were found in the table.
-            String warningDescription = "No table row was found in the table. The table should contain rows with the temperature. No temperature could be found. Please check the website and the documentation.";
+            String warningDescription = "No table row was found in the table. The table should contain rows with the info texts. No info text could be found in this table row. Please check the website and the documentation.";
             return new RoomInfoTextWrapper(new ArrayList<>(),  new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
         }
     }
 
     /**
-     * Gets the content of the inner table. That is only the case if there are multiple temperatures for the room.
+     * Gets the content of the inner table. That is only the case if there are multiple info texts for a specific information (e.g. temperature).
      *
-     * @param innerTable        The table element which contains the specifiers for the different temperatures.
+     * @param innerTable        The table element which contains the specifiers for the different info texts.
      * @param label             The label of the info text.
-     * @return                  A {@link RoomInfoTextWrapper} object with a list of the temperature info texts and a list of the warnings that occurred it.
+     * @return                  A {@link RoomInfoTextWrapper} object with a list of info texts and a list of the warnings that occurred it.
      */
     @NonNull
     public static RoomInfoTextWrapper getInnerTableContent(@NonNull Element innerTable, @NonNull String label) {
@@ -114,12 +112,12 @@ public class ShInfoText implements Serializable {
                     shInfoTextsInnerTable.add(new ShInfoText(label, firstDataCell.text(), secondDataCell.text()));
                 }
                 else {
-                    String warningDescription = "No data cell could be found for the temperature element \" " + firstDataCell.text() + " \" in the inner table which should contain further temperature information. Please check the website and the documentation. ";
+                    String warningDescription = "No data cell could be found for the info text element \" " + firstDataCell.text() + " \" in the inner table which should contain further information. Please check the website and the documentation. ";
                     userInformation.add(new UserInformation(InformationType.WARNING ,InformationTitle.HtmlElementNotLocated, warningDescription));
                 }
             }
             else {
-                String warningDescription = "No data cell could be found for a temperature element in the inner table which should contain further temperature information. Please check the website and the documentation. ";
+                String warningDescription = "No data cell could be found for a info text element in the inner table which should contain further information. Please check the website and the documentation. ";
                 userInformation.add(new UserInformation(InformationType.WARNING ,InformationTitle.HtmlElementNotLocated, warningDescription));
             }
         }

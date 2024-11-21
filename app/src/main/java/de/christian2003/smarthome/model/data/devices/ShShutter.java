@@ -32,14 +32,14 @@ public class ShShutter extends ShGenericDevice {
      * percentage is provided.
      */
     @Nullable
-    private String percentage;
+    private final String percentage;
 
     /**
      * Attribute stores the time at which the shutter was closed? This is {@code null} if no time
      * is provided.
      */
     @Nullable
-    private String time;
+    private final String time;
 
 
     /**

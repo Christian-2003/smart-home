@@ -1,22 +1,19 @@
 package de.christian2003.smarthome.model.data;
 
-import android.telephony.mbms.MbmsErrors;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.jetbrains.annotations.Contract;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import de.christian2003.smarthome.model.data.devices.ShGenericDevice;
 import de.christian2003.smarthome.model.data.devices.ShOpening;
+import de.christian2003.smarthome.model.data.devices.ShOpeningType;
 import de.christian2003.smarthome.model.data.devices.ShShutter;
 import de.christian2003.smarthome.model.data.wrapper_class.RoomDeviceWrapper;
 import de.christian2003.smarthome.model.data.wrapper_class.RoomInfoTextWrapper;
@@ -156,7 +153,8 @@ public class ShRoom implements Serializable {
     public static ShRoom parseContentTable(@NonNull Element room, @NonNull String roomName) {
 
         // Get the content table and its elements.
-        Element contentTable = room.selectFirst("span.roomName ~ table");
+        //Element contentTable = room.selectFirst("span.roomName ~ table");
+        Element contentTable = room.selectFirst("table");
         if (contentTable != null) {
             Elements tableRows = contentTable.select("tr");
 
@@ -169,7 +167,7 @@ public class ShRoom implements Serializable {
                 for (Element tableRow: tableRows) {
                     Set<String> classNames = tableRow.classNames();
                     if (classNames.contains("infoText")) {
-                        RoomInfoTextWrapper roomInformationWrapper = ShInfoText.createTemperatureInfoText(tableRow);
+                        RoomInfoTextWrapper roomInformationWrapper = ShInfoText.createInfoText(tableRow);
                         shInfoTexts.addAll(roomInformationWrapper.getInfoTexts());
                         userInformation.addAll(roomInformationWrapper.getUserInformation());
                     }
@@ -179,6 +177,11 @@ public class ShRoom implements Serializable {
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
                     }
                     else if (classNames.contains("opening")) {
+                        RoomDeviceWrapper roomDeviceWrapper = ShOpening.createOpeningDevice(tableRow, roomName);
+                        shGenericDevices.addAll(roomDeviceWrapper.getDevices());
+                        userInformation.addAll(roomDeviceWrapper.getUserInformation());
+                    }
+                    else if (classNames.contains("status")) {
                         RoomDeviceWrapper roomDeviceWrapper = ShOpening.createOpeningDevice(tableRow, roomName);
                         shGenericDevices.addAll(roomDeviceWrapper.getDevices());
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
