@@ -153,7 +153,7 @@ public class ShOpening extends ShGenericDevice {
      */
     @NonNull
     public static RoomDeviceWrapper findMultipleOpenings(@NonNull Element innerTable, @NonNull String openingName, @NonNull ShOpeningType openingType) {
-        // Get the table row which contains the specifiers of each shutter and the table row with the properties of the shutters.
+        // Get the table row which contains the specifiers of each opening and the table row with the properties of the openings.
         Element firstTableRow = innerTable.selectFirst("table > tbody >tr");
 
         if (firstTableRow != null) {

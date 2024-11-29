@@ -182,7 +182,7 @@ public class ShRoom implements Serializable {
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
                     }
                     else if (classNames.contains("status")) {
-                        RoomDeviceWrapper roomDeviceWrapper = ShOpening.createOpeningDevice(tableRow, roomName);
+                        RoomDeviceWrapper roomDeviceWrapper = ShStatus.gatherStatusContent(tableRow, roomName);
                         shGenericDevices.addAll(roomDeviceWrapper.getDevices());
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
                     }
