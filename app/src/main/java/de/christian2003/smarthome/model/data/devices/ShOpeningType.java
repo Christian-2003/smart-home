@@ -6,6 +6,5 @@ package de.christian2003.smarthome.model.data.devices;
 public enum ShOpeningType {
     Window,
     Door,
-    Light,
     Unkown
 }

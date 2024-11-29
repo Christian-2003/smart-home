@@ -191,7 +191,7 @@ public class ShOpening extends ShGenericDevice {
                             wrapper.combineWrapper(findSingleOpening(specifierValues.get(i), openingName, openingType,openingsSpecifier.get(i).ownText()));
                         }
                         for (int i = openingsSpecifier.size(); i < specifierValues.size(); i++) {
-                            wrapper.combineWrapper(findSingleOpening(specifierValues.get(i), openingName, openingType,"Automatic Specifier " + (++i - openingsSpecifier.size())));
+                            wrapper.combineWrapper(findSingleOpening(specifierValues.get(i), openingName, openingType,"Automatic Specifier " + (i + 1 - openingsSpecifier.size())));
                         }
                         String descriptionWarning = "There were more openings than specifiers. All openings that could be found were extracted. For the openings to which no specifiers could be found automatic specifiers were implemented. Please check the website and the documentation.";
                         wrapper.addUserInformation(new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, descriptionWarning))));

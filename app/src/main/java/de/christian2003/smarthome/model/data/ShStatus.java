@@ -31,10 +31,10 @@ public class ShStatus {
                 Element innerTable = secondDataCell.selectFirst("table");
                 if (innerTable != null) {
 
-                    return findMultipleOpenings(secondDataCell, firstDataCell.ownText() + " " + roomName, openingType);
+                    return gatherStatusContent(innerTable, roomName);
                 }
                 else {
-
+                    // Implement find unknown element method
                     return findSingleOpening(secondDataCell, firstDataCell.ownText() + " " + roomName, openingType, null);
                 }
             }
@@ -68,7 +68,7 @@ public class ShStatus {
 
                     for (int i = 0; i < statusElementNames.size(); i++) {
                         RoomDeviceWrapper temporaryWrapper;
-                        temporaryWrapper = findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i), roomName);
+                        temporaryWrapper = findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i).ownText(), roomName);
 
                         wrapper.addDevices(temporaryWrapper.getDevices());
                         wrapper.addUserInformation(temporaryWrapper.getUserInformation());
@@ -83,17 +83,14 @@ public class ShStatus {
                     if (statusElementsContent.size() > statusElementNames.size()) {
                         for (int i = 0; i < statusElementsContent.size(); i++) {
                             if (statusElementNames.size() >= i) {
-                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i), roomName));
+                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i).ownText(), roomName));
                             }
                             else {
-
+                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), "Automatic specifier " + (i - statusElementNames.size())+ 1, roomName));
                             }
+                        }
 
-                        }
-                        for (int i = statusElementNames.size(); i < statusElementsContent.size(); i++) {
-                            wrapper.combineWrapper(findSingleOpening(statusElementsContent.get(i), openingName, openingType,"Automatic Specifier " + (++i - statusElementNames.size())));
-                        }
-                        String descriptionWarning = "There were more status elements than specifiers. All openings that could be found were extracted. For the elements to which no specifiers could be found automatic specifiers were implemented. Please check the website and the documentation.";
+                        String descriptionWarning = "There were more status elements than specifiers. All elements that could be found were extracted. For the elements to which no specifiers could be found automatic specifiers were implemented. Please check the website and the documentation.";
                         wrapper.addUserInformation(new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, descriptionWarning))));
                         return wrapper;
                     }
@@ -102,13 +99,13 @@ public class ShStatus {
                     else {
                         for (int i = 0; i < statusElementNames.size(); i++) {
                             if (statusElementsContent.size() >= i) {
-                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i), roomName));
+                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i).ownText(), roomName));
                             }
                             else {
-                                wrapper.combineWrapper(findSingleStatusElement(null, statusElementNames.get(i), roomName));
+                                wrapper.combineWrapper(findSingleStatusElement(null, statusElementNames.get(i).ownText(), roomName));
                             }
                         }
-                        String descriptionWarning = "There was a different amount of openings and specifiers for them. All openings that could be found were extracted but no specifiers could be found for them. Automatic specifiers were implemented. Please check the website and the documentation.";
+                        String descriptionWarning = "There was a different amount of status elements and specifier for them. All elements that could be found were extracted. If no content was found the element was extracted with its name and specifier. Please check the website and the documentation.";
                         wrapper.addUserInformation(new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, descriptionWarning))));
                         return wrapper;
                     }
@@ -127,34 +124,32 @@ public class ShStatus {
         }
     }
 
-    public static RoomDeviceWrapper findSingleStatusElement(@Nullable Element statusElementContent, Element statusElementNameNode, String roomName) {
-        String statusElementName = statusElementNameNode.ownText().toLowerCase();
+    public static RoomDeviceWrapper findSingleStatusElement(@Nullable Element statusElementContent, String statusElementName, String roomName) {
+        String statusElementNameLowerCase = statusElementName.toLowerCase();
 
-        if (statusElementName.contains("fenster")) {
+        if (statusElementNameLowerCase.contains("fenster")) {
             if (statusElementContent != null) {
-                return ShOpening.findSingleOpening(statusElementContent, "Fenster " + roomName, ShOpeningType.Window, statusElementNameNode.ownText());
+                return ShOpening.findSingleOpening(statusElementContent, "Fenster " + roomName, ShOpeningType.Window, statusElementName);
             }
             else {
-                String warningDescription = "There was a different amount of status element contents and specifiers for them. All elements were extracted but for the element " + statusElementNameNode.ownText() + " no corresponding content could be found. Please check the website and the documentation.";
-                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShOpening("Fenster " + roomName, ShOpeningType.Window, statusElementNameNode.ownText(), null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
+                String warningDescription = "There was a different amount of status element contents and specifiers for them. All elements were extracted but for the element " + statusElementName + " no corresponding content could be found. Please check the website and the documentation.";
+                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShOpening("Fenster " + roomName, ShOpeningType.Window, statusElementName, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
             }
         }
-        else if (statusElementName.contains("tür") || statusElementName.contains("tuer")) {
+        else if (statusElementNameLowerCase.contains("tür") || statusElementNameLowerCase.contains("tuer")) {
             if (statusElementContent != null) {
-                return ShOpening.findSingleOpening(statusElementContent, "Tür " + roomName, ShOpeningType.Window, statusElementNameNode.ownText());
+                return ShOpening.findSingleOpening(statusElementContent, "Tür " + roomName, ShOpeningType.Window, statusElementName);
             }
             else {
-                String warningDescription = "There was a different amount of status element contents and specifiers for them. All elements were extracted but for the element " + statusElementNameNode.ownText() + " no corresponding content could be found. Please check the website and the documentation.";
-                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShOpening("Tür " + roomName, ShOpeningType.Door, statusElementNameNode.ownText(), null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
+                String warningDescription = "There was a different amount of status element contents and specifiers for them. All elements were extracted but for the element " + statusElementName + " no corresponding content could be found. Please check the website and the documentation.";
+                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShOpening("Tür " + roomName, ShOpeningType.Door, statusElementName, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
             }
         }
-        else if (statusElementName.contains("licht")) {
+        else if (statusElementNameLowerCase.contains("licht")) {
 
         }
         else {
             
         }
     }
-
-    public static 
 }

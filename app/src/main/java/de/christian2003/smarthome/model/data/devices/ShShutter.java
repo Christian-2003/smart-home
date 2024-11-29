@@ -146,7 +146,7 @@ public class ShShutter extends ShGenericDevice {
                             wrapper.combineWrapper(findSingleShutter(shutterValues.get(i), name, shutterSpecifier.get(i).ownText()));
                         }
                         for (int i = shutterSpecifier.size(); i < shutterValues.size(); i++) {
-                            wrapper.combineWrapper(findSingleShutter(shutterValues.get(i), name, "Automatic Specifier " + (++i - shutterSpecifier.size())));
+                            wrapper.combineWrapper(findSingleShutter(shutterValues.get(i), name, "Automatic Specifier " + (i + 1 - shutterSpecifier.size())));
                         }
                         String descriptionWarning = "There were more shutters than specifiers. All shutters that could be found were extracted. For the shutters to which no specifiers could be found automatic specifiers were implemented. Please check the website and the documentation.";
                         wrapper.addUserInformation(new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, descriptionWarning))));
