@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import de.christian2003.smarthome.model.data.devices.ShLight;
 import de.christian2003.smarthome.model.data.devices.ShOpening;
 import de.christian2003.smarthome.model.data.devices.ShOpeningType;
 import de.christian2003.smarthome.model.data.wrapper_class.RoomDeviceWrapper;
@@ -35,7 +36,9 @@ public class ShStatus {
                 }
                 else {
                     // Implement find unknown element method
-                    return findSingleOpening(secondDataCell, firstDataCell.ownText() + " " + roomName, openingType, null);
+                    //temporary
+                    return new RoomDeviceWrapper(new ArrayList<>(), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, "Temporary return. Unknown element"))));
+                    //return findSingleOpening(secondDataCell, firstDataCell.ownText() + " " + roomName, openingType, null);
                 }
             }
             else {
@@ -124,7 +127,8 @@ public class ShStatus {
         }
     }
 
-    public static RoomDeviceWrapper findSingleStatusElement(@Nullable Element statusElementContent, String statusElementName, String roomName) {
+    @NonNull
+    public static RoomDeviceWrapper findSingleStatusElement(@Nullable Element statusElementContent, String statusElementName, @NonNull String roomName) {
         String statusElementNameLowerCase = statusElementName.toLowerCase();
 
         if (statusElementNameLowerCase.contains("fenster")) {
@@ -146,10 +150,16 @@ public class ShStatus {
             }
         }
         else if (statusElementNameLowerCase.contains("licht")) {
-
+            if (statusElementContent != null) {
+                return ShLight.findSingleLighting(statusElementContent, "Licht " + roomName, statusElementName);
+            }
+            else {
+                String warningDescription = "There was a different amount of status element contents and specifiers for them. All elements were extracted but for the element " + statusElementName + " no corresponding content could be found. Please check the website and the documentation.";
+                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShLight("Licht " + roomName, statusElementName,null, null, null, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
+            }
         }
         else {
-            
+            return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShLight("TestDevice " + roomName, null,null, null, null, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, ""))));
         }
     }
 }

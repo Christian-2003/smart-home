@@ -1,21 +1,19 @@
 package de.christian2003.smarthome.model.data.wrapper_class;
 
-import android.net.Uri;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import de.christian2003.smarthome.model.user_information.UserInformation;
 
 /**
- *Wrapper for returning a Uri of an image of a device and a user information.
+ * Wrapper for returning a String that contains e.g. the milliAmp of a light a user information.
  */
-public class ImageWrapper {
+public class StringUserInformationWrapper {
+
     /**
-     * Attribute stores the Uri of the image.
+     * Attribute stores the milli amp of a light.
      */
     @Nullable
-    private final Uri imageUri;
+    private final String milliAmp;
 
     /**
      * Attribute stores a user information.
@@ -24,24 +22,24 @@ public class ImageWrapper {
     private final UserInformation userInformation;
 
     /**
-     * Constructor instantiates a new {@link ImageWrapper} to return the Uri and user information form the methods that gather the images.
+     * Constructor instantiates a new {@link StringUserInformationWrapper} to return a String and user information form the methods that gather the properties of devices.
      *
-     * @param imageUri      The Uri of the image.
+     * @param milliAmp      The milli amp of a light.
      * @param userInformation       The user information that might occur while gathering the properties.
      */
-    public ImageWrapper(@Nullable Uri imageUri, @Nullable UserInformation userInformation) {
-        this.imageUri = imageUri;
+    public StringUserInformationWrapper(@Nullable String milliAmp, @Nullable UserInformation userInformation) {
+        this.milliAmp = milliAmp;
         this.userInformation = userInformation;
     }
 
     /**
-     * Method returns the Uri of the image.
+     * Method returns a String containing a property of a devices.
      *
-     * @return      A Uri object.
+     * @return      A String that contains a property.
      */
     @Nullable
-    public Uri getImageUri() {
-        return imageUri;
+    public String getMilliAmp() {
+        return milliAmp;
     }
 
     /**

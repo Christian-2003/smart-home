@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import de.christian2003.smarthome.model.data.devices.ShGenericDevice;
+import de.christian2003.smarthome.model.data.devices.ShLight;
 import de.christian2003.smarthome.model.data.devices.ShOpening;
 import de.christian2003.smarthome.model.data.devices.ShOpeningType;
 import de.christian2003.smarthome.model.data.devices.ShShutter;
@@ -182,6 +183,7 @@ public class ShRoom implements Serializable {
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
                     }
                     else if (classNames.contains("status")) {
+                        System.out.println("Status Aufgerufen");
                         RoomDeviceWrapper roomDeviceWrapper = ShStatus.gatherStatusContent(tableRow, roomName);
                         shGenericDevices.addAll(roomDeviceWrapper.getDevices());
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
@@ -218,6 +220,9 @@ public class ShRoom implements Serializable {
             }
             if (shGenericDevice instanceof ShOpening) {
                 System.out.println("\tOpening Name: " + shGenericDevice.getName() + ", Specifier: " + ((ShOpening) shGenericDevice).getSpecifier() + ", ImageUri: " + (shGenericDevice).getImageUri() + ", Type: " + ((ShOpening) shGenericDevice).getOpeningType() + ", Time: ");
+            }
+            if (shGenericDevice instanceof ShLight) {
+                System.out.println("\tLight Name: " + shGenericDevice.getName() + ", Specifier: " + ((ShLight) shGenericDevice).getSpecifier() + ", ImageUri: " + (shGenericDevice).getImageUri() + ", OnButton: " + ((ShLight) shGenericDevice).getOnButtonText() + ", OffButton: " + ((ShLight) shGenericDevice).getOffButtonText() + ", MilliAmp: " + ((ShLight) shGenericDevice).getMilliAmp());
             }
         }
     }
