@@ -54,6 +54,7 @@ public class ShStatus {
         }
     }
 
+    @NonNull
     public static RoomDeviceWrapper gatherStatusContent(@NonNull Element innerTable, @NonNull String roomName) {
         // Get the table row which contains the specifiers of each status element and the table row with the properties of the elements.
         Element firstTableRow = innerTable.selectFirst("table > tbody >tr");

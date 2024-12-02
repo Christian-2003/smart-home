@@ -110,7 +110,7 @@ public class ShWebpageContent {
     }
 
     /**
-     * Temporary method to read the html that contains the smart home webpage hrml code.
+     * Temporary method to read the html that contains the smart home webpage html code.
      *
      * @param is
      * @return Returns the html code of the webpage.
