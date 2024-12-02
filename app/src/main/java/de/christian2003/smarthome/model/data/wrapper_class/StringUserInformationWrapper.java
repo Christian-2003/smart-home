@@ -13,7 +13,7 @@ public class StringUserInformationWrapper {
      * Attribute stores the milli amp of a light.
      */
     @Nullable
-    private final String milliAmp;
+    private final String property;
 
     /**
      * Attribute stores a user information.
@@ -24,11 +24,11 @@ public class StringUserInformationWrapper {
     /**
      * Constructor instantiates a new {@link StringUserInformationWrapper} to return a String and user information form the methods that gather the properties of devices.
      *
-     * @param milliAmp      The milli amp of a light.
+     * @param property      A specific property of a device.
      * @param userInformation       The user information that might occur while gathering the properties.
      */
-    public StringUserInformationWrapper(@Nullable String milliAmp, @Nullable UserInformation userInformation) {
-        this.milliAmp = milliAmp;
+    public StringUserInformationWrapper(@Nullable String property, @Nullable UserInformation userInformation) {
+        this.property = property;
         this.userInformation = userInformation;
     }
 
@@ -38,8 +38,8 @@ public class StringUserInformationWrapper {
      * @return      A String that contains a property.
      */
     @Nullable
-    public String getMilliAmp() {
-        return milliAmp;
+    public String getProperty() {
+        return property;
     }
 
     /**

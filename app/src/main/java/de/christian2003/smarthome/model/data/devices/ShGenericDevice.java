@@ -30,16 +30,16 @@ public abstract class ShGenericDevice implements Serializable {
      * the smart home device does not have any image.
      */
     @Nullable
-    private final Uri imageUri;
+    private final String imageUri;
 
     /**
      * Constructor instantiates a new generic smart home device.
      *
      * @param name  Name for the device.
      * @param specifier The specifier of the device to distinguish different devices in a room that are the same type.
-     * @param imageUri  URI for the image to display to the user.
+     * @param imageUri  String that represents the URI for the image to display to the user.
      */
-    public ShGenericDevice(@NonNull String name, @Nullable String specifier, @Nullable Uri imageUri) {
+    public ShGenericDevice(@NonNull String name, @Nullable String specifier, @Nullable String imageUri) {
         this.name = name;
         this.specifier = specifier;
         this.imageUri = imageUri;
@@ -56,13 +56,13 @@ public abstract class ShGenericDevice implements Serializable {
     }
 
     /**
-     * Method returns the URI for the image to display to the user. The method returns {@code null}
+     * Method returns a string that represents the URI for the image to display to the user. The method returns {@code null}
      * if the smart home device does not have any image to display.
      *
      * @return  URI for the image to display to the user.
      */
     @Nullable
-    public Uri getImageUri() {
+    public String getImageUri() {
         return imageUri;
     }
 

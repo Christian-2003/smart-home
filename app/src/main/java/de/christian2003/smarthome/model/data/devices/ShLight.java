@@ -9,10 +9,7 @@ import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Objects;
 
-import de.christian2003.smarthome.model.data.ShInfoText;
-import de.christian2003.smarthome.model.data.wrapper_class.ImageWrapper;
 import de.christian2003.smarthome.model.data.wrapper_class.OnOffButtonWrapper;
 import de.christian2003.smarthome.model.data.wrapper_class.RoomDeviceWrapper;
 import de.christian2003.smarthome.model.data.wrapper_class.StringUserInformationWrapper;
@@ -54,7 +51,7 @@ public class ShLight extends ShGenericDevice {
      * @param offButtonText Text for the button to turn off the light.
      * @param milliAmp      The milli amp of the light.
      */
-    public ShLight(@NonNull String name, @Nullable String specifier, @Nullable Uri imageUri, @Nullable String onButtonText, @Nullable String offButtonText, @Nullable String milliAmp) {
+    public ShLight(@NonNull String name, @Nullable String specifier, @Nullable String imageUri, @Nullable String onButtonText, @Nullable String offButtonText, @Nullable String milliAmp) {
         super(name, specifier , imageUri);
         this.onButtonText = onButtonText;
         this.offButtonText = offButtonText;
@@ -77,7 +74,7 @@ public class ShLight extends ShGenericDevice {
             userInformation.add(lightingButtonsInformation.getUserInformation());
         }
 
-        ImageWrapper imageWrapper = findImage(secondDataCell);
+        StringUserInformationWrapper imageWrapper = findImage(secondDataCell);
         if (imageWrapper.getUserInformation() != null) {
             userInformation.add(imageWrapper.getUserInformation());
         }
@@ -87,7 +84,7 @@ public class ShLight extends ShGenericDevice {
             userInformation.add(milliAmp.getUserInformation());
         }
 
-        return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShLight(lightingName, specifier, imageWrapper.getImageUri(), lightingButtonsInformation.getOnButton(), lightingButtonsInformation.getOffButton(), milliAmp.getMilliAmp()))), userInformation);
+        return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShLight(lightingName, specifier, imageWrapper.getProperty(), lightingButtonsInformation.getOnButton(), lightingButtonsInformation.getOffButton(), milliAmp.getProperty()))), userInformation);
     }
 
     @NonNull
@@ -110,7 +107,7 @@ public class ShLight extends ShGenericDevice {
      * @return      An wrapper which contains the Uri of the image and the user information that occurred while getting the Uri.
      */
     @NonNull
-    public static ImageWrapper findImage(@NonNull Element secondDataCell) {
+    public static StringUserInformationWrapper findImage(@NonNull Element secondDataCell) {
         Element image = secondDataCell.selectFirst("td  img");
 
         if (image != null) {
@@ -118,19 +115,19 @@ public class ShLight extends ShGenericDevice {
 
             // Check if a source could be found.
             if (!source.isEmpty()){
-                return new ImageWrapper(Uri.parse("https://smarthome.de/" + source), null);
+                return new StringUserInformationWrapper(source, null);
 
             }
             // No image source found for opening but object can be created anyways.
             else {
                 String warningDescription = "An image node could be found but not source for the image. The opening could be created anyways. Please check the website and the documentation.";
-                return new ImageWrapper(null, new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription));
+                return new StringUserInformationWrapper(null, new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription));
             }
         }
         // No image found for opening but object can be created anyways.
         else {
             String warningDescription = "No image could be found for the opening but it could be created anyways. Please check the website and the documentation.";
-            return new ImageWrapper(null, new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription));
+            return new StringUserInformationWrapper(null, new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription));
         }
     }
 

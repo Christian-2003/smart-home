@@ -41,9 +41,9 @@ public class ShOpening extends ShGenericDevice {
      * @param name  Name for the door / window.
      * @param openingType   The type of the opening (window / door).
      * @param specifier     Specifies the opening.
-     * @param imageUri      URI to the image for the door / window.
+     * @param imageUri      String that represents the URI to the image for the door / window.
      */
-    public ShOpening(@NonNull String name, @NonNull ShOpeningType openingType, @Nullable String specifier, @Nullable Uri imageUri) {
+    public ShOpening(@NonNull String name, @NonNull ShOpeningType openingType, @Nullable String specifier, @Nullable String imageUri) {
         super(name, specifier, imageUri);
         this.openingType = openingType;
     }
@@ -125,8 +125,7 @@ public class ShOpening extends ShGenericDevice {
 
             // Check if a source could be found.
             if (!source.isEmpty()){
-               Uri imageUri = Uri.parse("https://smarthome.de/" + source);
-               return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShOpening(openingName, openingType, specifier, imageUri))), new ArrayList<>());
+               return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShOpening(openingName, openingType, specifier, source))), new ArrayList<>());
             }
             // No image source found for opening but object can be created anyways.
             else {
