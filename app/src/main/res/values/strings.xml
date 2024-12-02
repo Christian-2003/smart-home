@@ -19,4 +19,8 @@
 
     <string name="button_cancel">Cancel</string>
     <string name="button_save">Save</string>
+
+    <string name="info_title_html_element_not_located">Could not locate HTML element</string>
+    <string name="info_title_no_milli_amp_information">No amperage information</string>
+    <string name="info_title_unknown">Unknown error</string>
 </resources>

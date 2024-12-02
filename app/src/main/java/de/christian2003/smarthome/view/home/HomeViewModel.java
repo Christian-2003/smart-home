@@ -1,15 +1,11 @@
 package de.christian2003.smarthome.view.home;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import de.christian2003.smarthome.App;
 import de.christian2003.smarthome.model.data.ShRoom;
 import de.christian2003.smarthome.model.data.ShWebpageContent;

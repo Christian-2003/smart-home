@@ -28,6 +28,11 @@ public class UserInformation implements Serializable {
     private final String description;
 
     /**
+     * Stores whether the description is visible in the UI.
+     */
+    private boolean descriptionVisible;
+
+    /**
      *Constructor instantiates a new user information.
      *
      * @param informationType       States which type of information will de displayed for the user.
@@ -38,6 +43,7 @@ public class UserInformation implements Serializable {
         this.informationType = informationType;
         this.informationTitle = informationTitle;
         this.description = description;
+        descriptionVisible = false;
     }
 
     /**
@@ -69,4 +75,23 @@ public class UserInformation implements Serializable {
     public String getDescription() {
         return description;
     }
+
+    /**
+     * Method returns whether the description is visible.
+     *
+     * @return  Whether the description is visible.
+     */
+    public boolean isDescriptionVisible() {
+        return descriptionVisible;
+    }
+
+    /**
+     * Method changes whether the description is visible.
+     *
+     * @param descriptionVisible    Whether the description is visible.
+     */
+    public void setDescriptionVisible(boolean descriptionVisible) {
+        this.descriptionVisible = descriptionVisible;
+    }
+    
 }

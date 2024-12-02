@@ -1,14 +1,15 @@
 package de.christian2003.smarthome.view.room;
 
 import android.content.Context;
+import android.icu.text.IDNA;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import de.christian2003.smarthome.R;
 import de.christian2003.smarthome.model.data.ShInfoText;
 import de.christian2003.smarthome.model.data.devices.ShGenericDevice;
@@ -16,6 +17,7 @@ import de.christian2003.smarthome.model.data.devices.ShLight;
 import de.christian2003.smarthome.model.data.devices.ShOpening;
 import de.christian2003.smarthome.model.data.devices.ShOutlet;
 import de.christian2003.smarthome.model.data.devices.ShShutter;
+import de.christian2003.smarthome.model.user_information.UserInformation;
 import de.christian2003.smarthome.utils.framework.SmartHomeRecyclerViewAdapter;
 
 public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomViewModel> {
@@ -112,6 +114,40 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
 
     }
 
+    public static class InfoViewHolder extends RecyclerView.ViewHolder {
+
+        public final TextView titleTextView;
+
+        public final TextView messageTextView;
+
+        public final ImageView stateImageView;
+
+
+        public InfoViewHolder(View itemView) {
+            super(itemView);
+            titleTextView = itemView.findViewById(R.id.text_title);
+            messageTextView = itemView.findViewById(R.id.text_message);
+            stateImageView = itemView.findViewById(R.id.image_state);
+        }
+
+    }
+
+    public static class WarningViewHolder extends InfoViewHolder {
+
+        public WarningViewHolder(View itemView) {
+            super(itemView);
+        }
+
+    }
+
+    public static class ErrorViewHolder extends InfoViewHolder {
+
+        public ErrorViewHolder(View itemView) {
+            super(itemView);
+        }
+
+    }
+
 
     private static final int TYPE_LABEL = 1;
 
@@ -122,6 +158,10 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
     private static final int TYPE_OUTLET = 7;
 
     private static final int TYPE_SHUTTER = 9;
+
+    private static final int TYPE_WARNING = 11;
+
+    private static final int TYPE_ERROR = 13;
 
 
     public RoomRecyclerViewAdapter(@NonNull Context context, @NonNull RoomViewModel viewModel) {
@@ -134,10 +174,13 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
         if (viewModel.getRoom() == null) {
             return;
         }
+        int errorCount = viewModel.getErrors().size();
+        int warningCount = viewModel.getWarnings().size();
+        int labelCount = viewModel.getRoom().getInfos().size();
         if (holder instanceof LabelViewHolder) {
             //Label:
             LabelViewHolder viewHolder = (LabelViewHolder)holder;
-            ShInfoText infoText = viewModel.getRoom().getInfos().get(position);
+            ShInfoText infoText = viewModel.getRoom().getInfos().get(position - errorCount - warningCount);
             if (infoText.getSpecifier() != null) {
                 viewHolder.nameTextView.setText(context.getString(R.string.room_label_specifier).replace("{label}", infoText.getLabel()).replace("{specifier}", infoText.getSpecifier()));
             }
@@ -149,8 +192,13 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
         else if (holder instanceof GenericDeviceViewHolder) {
             //Device:
             GenericDeviceViewHolder vh = (GenericDeviceViewHolder)holder;
-            ShGenericDevice genericDevice = viewModel.getRoom().getDevices().get(position - viewModel.getRoom().getInfos().size());
-            vh.nameTextView.setText(genericDevice.getName());
+            ShGenericDevice genericDevice = viewModel.getRoom().getDevices().get(position - errorCount - warningCount - labelCount);
+            if (genericDevice.getSpecifier() != null) {
+                vh.nameTextView.setText(context.getString(R.string.room_label_specifier).replace("{label}", genericDevice.getName()).replace("{specifier}", genericDevice.getSpecifier()));
+            }
+            else {
+                vh.nameTextView.setText(context.getString(R.string.room_label).replace("{label}", genericDevice.getName()));
+            }
 
             if (holder instanceof DeviceLightViewHolder) {
                 DeviceLightViewHolder viewHolder = (DeviceLightViewHolder)holder;
@@ -175,6 +223,34 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
                 viewHolder.setButton.setText(device.getSetButtonText());
             }
         }
+        if (holder instanceof InfoViewHolder) {
+            //Info
+            InfoViewHolder viewHolder = (InfoViewHolder)holder;
+            UserInformation info;
+            if (position < errorCount) {
+                info = viewModel.getErrors().get(position);
+            }
+            else if (position < errorCount + warningCount) {
+                info = viewModel.getWarnings().get(position - errorCount);
+            }
+            else {
+                return;
+            }
+            viewHolder.titleTextView.setText(info.getInformationTitle().getLocalizedTitle());
+            viewHolder.messageTextView.setText(info.getDescription());
+            if (info.isDescriptionVisible()) {
+                viewHolder.messageTextView.setVisibility(View.VISIBLE);
+                viewHolder.stateImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_collapse));
+            }
+            else {
+                viewHolder.messageTextView.setVisibility(View.GONE);
+                viewHolder.stateImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_expand));
+            }
+            viewHolder.itemView.setOnClickListener(v -> {
+                info.setDescriptionVisible(!info.isDescriptionVisible());
+                notifyItemChanged(viewHolder.getAdapterPosition());
+            });
+        }
     }
 
 
@@ -190,7 +266,7 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
                 view = layoutInflater.inflate(R.layout.item_room_light, parent, false);
                 return new DeviceLightViewHolder(view);
             case TYPE_OPENING:
-                view = layoutInflater.inflate(R.layout.item_room_light, parent, false);
+                view = layoutInflater.inflate(R.layout.item_room_opening, parent, false);
                 return new DeviceOpeningViewHolder(view);
             case TYPE_OUTLET:
                 view = layoutInflater.inflate(R.layout.item_room_outlet, parent, false);
@@ -198,6 +274,12 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
             case TYPE_SHUTTER:
                 view = layoutInflater.inflate(R.layout.item_room_shutter, parent, false);
                 return new DeviceShutterViewHolder(view);
+            case TYPE_WARNING:
+                view = layoutInflater.inflate(R.layout.item_room_warning, parent, false);
+                return new WarningViewHolder(view);
+            case TYPE_ERROR:
+                view = layoutInflater.inflate(R.layout.item_room_error, parent, false);
+                return new ErrorViewHolder(view);
             default:
                 //The default case should NEVER occur!
                 return null;
@@ -208,11 +290,20 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
     @Override
     public int getItemViewType(int position) {
         if (viewModel.getRoom() != null) {
-            if (position < viewModel.getRoom().getInfos().size()) {
+            int errorCount = viewModel.getErrors().size();
+            int warningCount = viewModel.getWarnings().size();
+            int labelCount = viewModel.getRoom().getInfos().size();
+            if (position < errorCount) {
+                return TYPE_ERROR;
+            }
+            else if (position < errorCount + warningCount) {
+                return TYPE_WARNING;
+            }
+            if (position < errorCount + warningCount + labelCount) {
                 return TYPE_LABEL;
             }
             else {
-                int deviceIndex = position - viewModel.getRoom().getInfos().size();
+                int deviceIndex = position - errorCount - warningCount - labelCount;
                 ShGenericDevice device = viewModel.getRoom().getDevices().get(deviceIndex);
                 if (device instanceof ShLight) {
                     return TYPE_LIGHT;
@@ -234,7 +325,7 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
     @Override
     public int getItemCount() {
         if (viewModel.getRoom() != null) {
-            return viewModel.getRoom().getInfos().size() + viewModel.getRoom().getDevices().size();
+            return viewModel.getRoom().getInfos().size() + viewModel.getRoom().getDevices().size() + viewModel.getErrors().size() + viewModel.getWarnings().size();
         }
         else {
             return 0;

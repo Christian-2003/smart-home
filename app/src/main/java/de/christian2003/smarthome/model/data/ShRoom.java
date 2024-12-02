@@ -100,6 +100,16 @@ public class ShRoom implements Serializable {
     }
 
     /**
+     * Method returns a list of information for the user that were generated during parsing.
+     *
+     * @return  List of user information.
+     */
+    @NonNull
+    public ArrayList<UserInformation> getUserInformation() {
+        return userInformation;
+    }
+
+    /**
      * Finds all the rooms of the smart home and returns a list containing all of them.
      *
      * @param document          The document with the source code of the webpage.

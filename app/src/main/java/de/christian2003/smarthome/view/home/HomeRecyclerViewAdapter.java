@@ -120,4 +120,9 @@ public class HomeRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<HomeVi
         return viewModel.getRooms().size();
     }
 
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
 }
