@@ -34,6 +34,7 @@
 
         <activity android:name=".view.url.UrlActivity" android:exported="false"/>
         <activity android:name=".view.room.RoomActivity" android:exported="false"/>
+        <activity android:name=".view.cert.CertActivity" android:exported="false"/>
 
     </application>
 

@@ -1,7 +1,6 @@
 package de.christian2003.smarthome.view.room;
 
 import android.content.Context;
-import android.icu.text.IDNA;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -246,10 +245,19 @@ public class RoomRecyclerViewAdapter extends SmartHomeRecyclerViewAdapter<RoomVi
                 viewHolder.messageTextView.setVisibility(View.GONE);
                 viewHolder.stateImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_expand));
             }
-            viewHolder.itemView.setOnClickListener(v -> {
-                info.setDescriptionVisible(!info.isDescriptionVisible());
-                notifyItemChanged(viewHolder.getAdapterPosition());
-            });
+            if (info.getDescription().isEmpty()) {
+                viewHolder.stateImageView.setVisibility(View.GONE);
+                viewHolder.messageTextView.setVisibility(View.GONE);
+                viewHolder.itemView.setClickable(false);
+                viewHolder.itemView.setFocusable(false);
+                viewHolder.itemView.setForeground(null);
+            }
+            else {
+                viewHolder.itemView.setOnClickListener(v -> {
+                    info.setDescriptionVisible(!info.isDescriptionVisible());
+                    notifyItemChanged(viewHolder.getAdapterPosition());
+                });
+            }
         }
     }
 

@@ -11,14 +11,35 @@
     <string name="settings_connection">Connection</string>
     <string name="settings_connection_url">Server URL</string>
     <string name="settings_connection_url_info">Edit the server URL</string>
+    <string name="settings_connection_cert">Client certificate</string>
+    <string name="settings_connection_cert_info">Select the client certificate</string>
+    <string name="settings_customization">Customization</string>
+    <string name="settings_customization_warnings">Show warnings</string>
+    <string name="settings_customization_warnings_info">Show warnings when displaying a smart home room</string>
+    <string name="settings_customization_errors">Show errors</string>
+    <string name="settings_customization_errors_info">Show errors when displaying a smart home room</string>
 
     <string name="url_title">Configure Server URL</string>
     <string name="url_input_server">Server URL</string>
     <string name="url_info">In order to connect to your smart home system, please enter the server URL.</string>
     <string name="url_error">Invalid URL</string>
 
+    <string name="cert_title">Configure Client Certificate</string>
+    <string name="cert_info">In order to connect to your smart home system, please select a client certificate to use for authentication.</string>
+    <string name="cert_error_invalid">No certificate selected or invalid password entered.</string>
+    <string name="cert_error_remove">Could not remove certificate</string>
+    <string name="cert_selected">You have selected a certificate and entered a valid password.</string>
+
+    <string name="password_hint">Certificate password</string>
+    <string name="password_info">Please enter the password for the client certificate</string>
+    <string name="password_error_empty">Please enter a password</string>
+
     <string name="button_cancel">Cancel</string>
     <string name="button_save">Save</string>
+    <string name="button_ok">Okay</string>
+    <string name="button_select_cert">Select certificate</string>
+    <string name="button_select_other_cert">Select other certificate</string>
+    <string name="button_remove_cert">Remove certificate</string>
 
     <string name="info_title_html_element_not_located">Could not locate HTML element</string>
     <string name="info_title_no_milli_amp_information">No amperage information</string>

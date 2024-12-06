@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import de.christian2003.smarthome.R;
 import de.christian2003.smarthome.utils.framework.SmartHomeFragment;
+import de.christian2003.smarthome.view.cert.CertActivity;
 import de.christian2003.smarthome.view.url.UrlActivity;
 
 
@@ -42,6 +43,7 @@ public class SettingsFragment extends SmartHomeFragment<SettingsViewModel> {
         }
 
         view.findViewById(R.id.container_url).setOnClickListener(this::startUrlActivity);
+        view.findViewById(R.id.container_cert).setOnClickListener(this::startCertActivity);
 
         return view;
     }
@@ -56,6 +58,17 @@ public class SettingsFragment extends SmartHomeFragment<SettingsViewModel> {
     private void startUrlActivity(View view) {
         Intent intent = new Intent(getActivity(), UrlActivity.class);
         intent.putExtra(UrlActivity.EXTRA_CLOSEABLE, true);
+        startActivity(intent);
+    }
+
+    /**
+     * Method starts the activity through which to select the client certificate, once the
+     * corresponding view is clicked.
+     *
+     * @param view  View that was clicked.
+     */
+    private void startCertActivity(View view) {
+        Intent intent = new Intent(getActivity(), CertActivity.class);
         startActivity(intent);
     }
 

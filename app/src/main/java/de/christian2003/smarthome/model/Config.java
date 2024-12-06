@@ -25,6 +25,16 @@ public class Config {
     private static final String KEY_SERVER_URL = "server_url";
 
     /**
+     * Field stores the key with which to save whether to show warnings on the {@link de.christian2003.smarthome.view.room.RoomActivity}.
+     */
+    private static final String KEY_SHOW_WARNINGS = "show_warnings";
+
+    /**
+     * Field stores the key with which to save whether to show errors on the {@link de.christian2003.smarthome.view.room.RoomActivity}.
+     */
+    private static final String KEY_SHOW_ERRORS = "show_errors";
+
+    /**
      * Attribute stores the singleton instance of this class.
      */
     @Nullable
@@ -70,6 +80,44 @@ public class Config {
      */
     public void setServerUrl(@Nullable String url) {
         editor.putString(KEY_SERVER_URL, url);
+        editor.apply();
+    }
+
+    /**
+     * Method returns whether to show warnings on the {@link de.christian2003.smarthome.view.room.RoomActivity}.
+     *
+     * @return  Whether to show warnings.
+     */
+    public boolean getShowWarnings() {
+        return preferences.getBoolean(KEY_SHOW_WARNINGS, true);
+    }
+
+    /**
+     * Method changes whether to show warnings on the {@link de.christian2003.smarthome.view.room.RoomActivity}.
+     *
+     * @param showWarnings  Whether to show warnings.
+     */
+    public void setShowWarnings(boolean showWarnings) {
+        editor.putBoolean(KEY_SHOW_WARNINGS, showWarnings);
+        editor.apply();
+    }
+
+    /**
+     * Method returns whether to show errors on the {@link de.christian2003.smarthome.view.room.RoomActivity}.
+     *
+     * @return  Whether to show errors.
+     */
+    public boolean getShowErrors() {
+        return preferences.getBoolean(KEY_SHOW_ERRORS, true);
+    }
+
+    /**
+     * Method changes whether to show errors on the {@link de.christian2003.smarthome.view.room.RoomActivity}.
+     *
+     * @param showErrors    Whether to show errors.
+     */
+    public void setShowErrors(boolean showErrors) {
+        editor.putBoolean(KEY_SHOW_ERRORS, showErrors);
         editor.apply();
     }
 

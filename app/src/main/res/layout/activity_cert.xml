@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationIconTint="@color/md_theme_onSurface"
+        app:navigationIcon="@drawable/ic_back"
+        app:titleTextColor="@color/md_theme_onSurface"
+        app:title="@string/cert_title"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/space_horizontal"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_vertical"
+                android:backgroundTint="@color/md_theme_tertiaryContainer"
+                app:cardCornerRadius="@dimen/corners_default">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/space_vertical"
+                    android:layout_marginHorizontal="@dimen/space_horizontal"
+                    android:text="@string/cert_info"
+                    app:drawableStartCompat="@drawable/ic_info"
+                    style="@style/text.info"/>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/container_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_vertical"
+                android:backgroundTint="@color/md_theme_errorContainer"
+                android:focusable="true"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardCornerRadius="@dimen/corners_default">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/space_vertical"
+                    android:layout_marginHorizontal="@dimen/space_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cert_error_invalid"
+                        app:drawableStartCompat="@drawable/ic_error"
+                        style="@style/text.error"/>
+
+                    <Button
+                        android:id="@+id/button_select_cert"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="@dimen/space_vertical_between"
+                        android:text="@string/button_select_cert"
+                        android:backgroundTint="@color/md_theme_onErrorContainer"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/container_cert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_vertical"
+                android:backgroundTint="@color/md_theme_surfaceContainer"
+                app:cardCornerRadius="@dimen/corners_default">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/space_vertical"
+                    android:layout_marginHorizontal="@dimen/space_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cert_selected"
+                        style="@style/text"/>
+
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_vertical_between"
+                        app:flexWrap="wrap"
+                        app:justifyContent="flex_end"
+                        android:layout_gravity="end"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/button_remove"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/button_remove_cert"
+                            style="@style/Widget.Material3.Button.OutlinedButton"/>
+
+                        <Button
+                            android:id="@+id/button_change_cert"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/space_horizontal_between"
+                            android:text="@string/button_select_other_cert"/>
+
+                    </com.google.android.flexbox.FlexboxLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
