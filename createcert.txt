@@ -1,0 +1,2 @@
+::Create a new self signed certificate with the following command:
+New-SelfSignedCertificate -CertStoreLocation "Desktop" -DnsName "smarthome.christian2003.de" -FriendlyName "TestCertificateForSmarthomeWebsite" -NotAfter (Get-Date).AddYears(10)

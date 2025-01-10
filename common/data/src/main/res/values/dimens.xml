@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <dimen name="space_vertical">20dp</dimen>
+    <dimen name="space_vertical_between">10dp</dimen>
+    <dimen name="space_horizontal">30dp</dimen>
+    <dimen name="space_horizontal_between">15dp</dimen>
+
+    <dimen name="corners_default">30dp</dimen>
+
+</resources>
