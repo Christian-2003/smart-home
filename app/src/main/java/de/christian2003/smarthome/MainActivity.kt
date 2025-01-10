@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import de.christian2003.smarthome.data.model.TestDataModel
 import de.christian2003.smarthome.data.ui.theme.SmartHomeTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +19,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SmartHomeTheme {
-                val testDataModel = TestDataModel(LocalContext.current)
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
                         name = "Smart Home",
