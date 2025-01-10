@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SmartHomeAuto"
+rootProject.name = "SmartHome"
 include(":app")
 include(":common:data")
 include(":common:auto")
