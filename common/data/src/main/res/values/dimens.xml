@@ -9,4 +9,6 @@
 
     <dimen name="corners_default">30dp</dimen>
 
+    <dimen name="borders_default">1dp</dimen>
+
 </resources>
