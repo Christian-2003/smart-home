@@ -10,11 +10,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import de.christian2003.smarthome.data.ui.theme.SmartHomeTheme
+import de.christian2003.smarthome.data.view.cert.CertView
+import de.christian2003.smarthome.data.view.cert.CertViewModel
 import de.christian2003.smarthome.data.view.main.MainView
 import de.christian2003.smarthome.data.view.main.MainViewModel
 import de.christian2003.smarthome.data.view.settings.SettingsView
 import de.christian2003.smarthome.data.view.settings.SettingsViewModel
-import de.christian2003.smarthome.data.view.url.SettingsUrlView
+import de.christian2003.smarthome.data.view.url.UrlView
 import de.christian2003.smarthome.data.view.url.UrlViewModel
 
 class MainActivity : ComponentActivity() {
@@ -64,15 +66,25 @@ fun SmartHome() {
                         navController.navigate("settings/url")
                     },
                     onNavigateToCert = {
-
+                        navController.navigate("settings/cert")
                     }
                 )
             }
             composable("settings/url") {
                 val urlViewModel: UrlViewModel = viewModel()
                 urlViewModel.init()
-                SettingsUrlView(
+                UrlView(
                     viewModel = urlViewModel,
+                    onNavigateUp = {
+                        navController.navigateUp()
+                    }
+                )
+            }
+            composable("settings/cert") {
+                val certViewModel: CertViewModel = viewModel()
+                certViewModel.init()
+                CertView(
+                    viewModel = certViewModel,
                     onNavigateUp = {
                         navController.navigateUp()
                     }

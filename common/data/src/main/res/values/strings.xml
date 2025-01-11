@@ -24,20 +24,20 @@
 
     <string name="url_title">Configure Server URL</string>
     <string name="url_input_server">Server URL</string>
-    <string name="url_info">In order to connect to your smart home system, please enter the server URL.</string>
+    <string name="url_info">Configure the URL of the smart home server.</string>
     <string name="url_error">Invalid URL</string>
     <string name="url_save_success">Saved URL</string>
     <string name="url_save_error">Cannot save URL</string>
 
     <string name="cert_title">Configure Client Certificate</string>
-    <string name="cert_info">In order to connect to your smart home system, please select a client certificate to use for authentication.</string>
+    <string name="cert_info">Configure the certificate to use for client authentication.</string>
     <string name="cert_error_invalid">No certificate selected or invalid password entered.</string>
     <string name="cert_error_remove">Could not remove certificate</string>
     <string name="cert_selected">You have selected a certificate and entered a valid password.</string>
 
-    <string name="password_hint">Certificate password</string>
-    <string name="password_info">Please enter the password for the client certificate</string>
-    <string name="password_error_empty">Please enter a password</string>
+    <string name="cert_password_hint">Certificate password</string>
+    <string name="cert_password_info">Please enter the password for the client certificate</string>
+    <string name="cert_password_error_empty">Please enter a password</string>
 
     <string name="button_cancel">Cancel</string>
     <string name="button_save">Save</string>

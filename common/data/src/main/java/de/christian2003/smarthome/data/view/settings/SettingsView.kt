@@ -20,6 +20,16 @@ import androidx.compose.ui.text.font.FontWeight
 import de.christian2003.smarthome.data.R
 
 
+/**
+ * Composable displays a view through which the user can edit the app settings.
+ *
+ * @param viewModel         View model for the view.
+ * @param onNavigateUp      Callback to invoke in order to navigate up on the navigation stack.
+ * @param onNavigateToUrl   Callback to invoke in order to navigate to the view through which to
+ *                          edit the server URL.
+ * @param onNavigateToCert  Callback to invoke in order to navigate to the view through which to
+ *                          edit the client certificate.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsView(

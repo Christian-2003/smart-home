@@ -32,7 +32,7 @@ class UrlViewModel(application: Application): AndroidViewModel(application) {
 
 
     /**
-     * Method instantiates the view model.
+     * Method initializes the view model.
      */
     fun init() {
         url = preferences.getString("server_url", "")!!
