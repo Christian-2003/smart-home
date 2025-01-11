@@ -10,6 +10,7 @@
     <string name="room_label">{label}</string>
     <string name="room_label_specifier">{label} ({specifier})</string>
 
+    <string name="settings_title">Settings</string>
     <string name="settings_connection">Connection</string>
     <string name="settings_connection_url">Server URL</string>
     <string name="settings_connection_url_info">Edit the server URL</string>
@@ -25,6 +26,8 @@
     <string name="url_input_server">Server URL</string>
     <string name="url_info">In order to connect to your smart home system, please enter the server URL.</string>
     <string name="url_error">Invalid URL</string>
+    <string name="url_save_success">Saved URL</string>
+    <string name="url_save_error">Cannot save URL</string>
 
     <string name="cert_title">Configure Client Certificate</string>
     <string name="cert_info">In order to connect to your smart home system, please select a client certificate to use for authentication.</string>

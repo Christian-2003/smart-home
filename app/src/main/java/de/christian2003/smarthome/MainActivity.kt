@@ -4,36 +4,80 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import de.christian2003.smarthome.data.ui.theme.SmartHomeTheme
+import de.christian2003.smarthome.data.view.main.MainView
+import de.christian2003.smarthome.data.view.main.MainViewModel
+import de.christian2003.smarthome.data.view.settings.SettingsView
+import de.christian2003.smarthome.data.view.settings.SettingsViewModel
+import de.christian2003.smarthome.data.view.url.SettingsUrlView
+import de.christian2003.smarthome.data.view.url.UrlViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SmartHomeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Smart Home",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            SmartHome()
         }
     }
 }
 
+
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun SmartHome() {
+    val navController = rememberNavController()
+
+    val mainViewModel: MainViewModel = viewModel()
+    mainViewModel.init(mutableListOf()) //TODO: Load data
+
+    val settingsViewModel: SettingsViewModel = viewModel()
+    settingsViewModel.init()
+
+    SmartHomeTheme {
+        NavHost(
+            navController = navController,
+            startDestination = "main"
+        ) {
+            composable("main") {
+                MainView(
+                    viewModel = mainViewModel,
+                    onNavigateToSettings = {
+                        navController.navigate("settings")
+                    },
+                    onNavigateToRoom = {
+
+                    }
+                )
+            }
+            composable("settings") {
+                SettingsView(
+                    viewModel = settingsViewModel,
+                    onNavigateUp = {
+                        navController.navigateUp()
+                    },
+                    onNavigateToUrl = {
+                        navController.navigate("settings/url")
+                    },
+                    onNavigateToCert = {
+
+                    }
+                )
+            }
+            composable("settings/url") {
+                val urlViewModel: UrlViewModel = viewModel()
+                urlViewModel.init()
+                SettingsUrlView(
+                    viewModel = urlViewModel,
+                    onNavigateUp = {
+                        navController.navigateUp()
+                    }
+                )
+            }
+        }
+    }
 }
