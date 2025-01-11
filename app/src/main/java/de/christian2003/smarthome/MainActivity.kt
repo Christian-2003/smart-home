@@ -22,10 +22,10 @@ import de.christian2003.smarthome.data.view.url.UrlViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        println("Test")
-        val webPageContent = ShWebpageContent("https://www.google.com", this)
-        val test = webPageContent.smartHomeData
-        println("Testrückgabe: " + test)
+        //println("Test")
+        //val webPageContent = ShWebpageContent("https://www.google.com", this)
+        //val test = webPageContent.smartHomeData
+        //println("Testrückgabe: " + test)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
