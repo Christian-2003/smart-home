@@ -3,8 +3,16 @@ package de.christian2003.smarthome.data.model.extraction;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.net.http.SslError;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.KeyEvent;
+import android.webkit.HttpAuthHandler;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -37,38 +45,48 @@ public class ShWebpageContent {
     /**
      * The document which contains the code of the smart home webpage.
      */
-    private final Document document;
+    private  Document document;
 
     private ArrayList<ShRoom> rooms;
 
     private boolean loadingSuccessful;
 
+    public ShWebpageContent(){
+
+    }
     /**
      * Constructor instantiates a new webpage content.
      *
      * @param url           The url of the webpage that should be read.
      */
-    public ShWebpageContent(String url, Context context) {
-        CountDownLatch latch = new CountDownLatch(1);
-        ShWebpageInterface shWebpageInterface = new ShWebpageInterface(context);
-        createWebView(url, context, shWebpageInterface, latch);
 
-        try {
-            latch.await();
-        }
-        catch (InterruptedException ex) {
-            // EX
-        }
-        if (loadingSuccessful) {
-            document = shWebpageInterface.getDocument();
-        }
-        else {
-            // EX
-            document = null;
-        }
+    public ShWebpageContent(String url, Context context) {
+        System.out.println("Test2");
+        CountDownLatch latch = new CountDownLatch(1);
+        ShWebpageInterface shWebpageInterface = new ShWebpageInterface(context, latch);
+
+        System.out.println("Test3");
+
+        new Thread(()-> {
+
+            new Handler(Looper.getMainLooper()).post(() -> createWebView(url, context, shWebpageInterface, latch));
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (loadingSuccessful) {
+                System.out.println("Seite erfolgreich geladen!" + shWebpageInterface.getDocument());
+            } else {
+                System.out.println("Fehler beim Laden der Seite.");
+            }
+        }).start();
     }
 
     private void createWebView(String url, Context context, ShWebpageInterface shWebpageInterface, CountDownLatch latch) {
+        System.out.println("CearetWebView");
         WebView webView = new WebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
         // Provide the data of the website that was loaded in the webView in the java code.
@@ -79,15 +97,60 @@ public class ShWebpageContent {
                 super.onPageFinished(view, url);
                 // Get the HTML of the website and give it to the handleHtml method.
                 loadingSuccessful = true;
+                System.out.println("fin");
+
                 // Achtung
-                view.loadUrl("javascript:window.Android.handleHtml(document.documentElement.outerHTML);");
-                latch.countDown();
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    // JavaScript ausführen und HTML an die Android-App übergeben
+                    view.loadUrl("javascript:window.Android.handleHtml(document.documentElement.outerHTML);");
+                });
             }
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
                 loadingSuccessful = false;
+                System.out.println("error");
+                latch.countDown();
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String irl, Bitmap favicon) {
+                super.onPageStarted(view, irl, favicon);
+                loadingSuccessful = false;
+                System.out.println("started");
+
+            }
+
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest irl, WebResourceResponse favicon) {
+                super.onReceivedHttpError(view, irl, favicon);
+                loadingSuccessful = false;
+                System.out.println("http");
+                latch.countDown();
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler irl, SslError favicon) {
+                super.onReceivedSslError(view, irl, favicon);
+                loadingSuccessful = false;
+                System.out.println("Ssl");
+                latch.countDown();
+            }
+
+            @Override
+            public void onUnhandledKeyEvent(WebView view, KeyEvent irl) {
+                super.onUnhandledKeyEvent(view, irl);
+                loadingSuccessful = false;
+                System.out.println("key");
+                latch.countDown();
+            }
+
+            @Override
+            public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler irl, String host, String realm) {
+                super.onReceivedHttpAuthRequest(view, irl, host, realm);
+                loadingSuccessful = false;
+                System.out.println("http");
                 latch.countDown();
             }
         });
@@ -100,11 +163,13 @@ public class ShWebpageContent {
         return rooms;
     }
 
-    public List<ShRoom> getSmartHomeData() {
+    public ArrayList<ShRoom> getSmartHomeData() {
         if (document != null) {
+            System.out.println("Funktioniert");
             return ShRoomSearch.findAllRooms(document);
         }
         else {
+            System.out.println("Dok null");
             return null;
         }
     }

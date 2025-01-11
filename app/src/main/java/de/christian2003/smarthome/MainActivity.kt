@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import de.christian2003.smarthome.data.model.extraction.ShWebpageContent
 import de.christian2003.smarthome.data.ui.theme.SmartHomeTheme
 import de.christian2003.smarthome.data.view.cert.CertView
 import de.christian2003.smarthome.data.view.cert.CertViewModel
@@ -21,6 +22,10 @@ import de.christian2003.smarthome.data.view.url.UrlViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        println("Test")
+        val webPageContent = ShWebpageContent("https://www.google.com", this)
+        val test = webPageContent.smartHomeData
+        println("Testrückgabe: " + test)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
