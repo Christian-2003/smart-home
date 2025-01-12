@@ -1,10 +1,9 @@
 package de.christian2003.smarthome.data.view.main
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import de.christian2003.smarthome.data.model.SmartHomeRepository
 import de.christian2003.smarthome.data.model.room.ShRoom
 
@@ -12,7 +11,7 @@ import de.christian2003.smarthome.data.model.room.ShRoom
 /**
  * Class implements the view model for the main view.
  */
-class MainViewModel(application: Application): AndroidViewModel(application) {
+class MainViewModel: ViewModel() {
 
     /**
      * Attribute stores the repository through which to access the data.

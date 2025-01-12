@@ -11,40 +11,31 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import de.christian2003.smarthome.data.model.SmartHomeRepository
-import de.christian2003.smarthome.data.model.extraction.ShWebpageContent
-import de.christian2003.smarthome.data.model.extraction.ShWebpageContentCallback
 import de.christian2003.smarthome.data.ui.theme.SmartHomeTheme
 import de.christian2003.smarthome.data.view.cert.CertView
 import de.christian2003.smarthome.data.view.cert.CertViewModel
 import de.christian2003.smarthome.data.view.main.MainView
 import de.christian2003.smarthome.data.view.main.MainViewModel
+import de.christian2003.smarthome.data.view.room.RoomView
+import de.christian2003.smarthome.data.view.room.RoomViewModel
 import de.christian2003.smarthome.data.view.settings.SettingsView
 import de.christian2003.smarthome.data.view.settings.SettingsViewModel
 import de.christian2003.smarthome.data.view.url.UrlView
 import de.christian2003.smarthome.data.view.url.UrlViewModel
 
+
 class MainActivity : ComponentActivity() {
-    private lateinit var webPageContent : ShWebpageContent
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        /*webPageContent = ShWebpageContent("https://smarthome.christian2003.de/", this, object :
-            ShWebpageContentCallback {
-            override fun onPageLoadComplete(success: Boolean) {
-                if (success) {
-                    println("Success")
-                    val test = webPageContent.smartHomeData
-                    println("Testrückgabe: " + test)
-                }
-                else {
-                    println("Fail")
-                }
-            }
-        })*/
+        //Nachricht an Björn: Habe den Code in die SmartHomeRepository-Klasse bewegt. Hier gehört
+        //der nämlich nicht hin. Lösche den Kommentar bitte sobald du die Nachricht gelesen hast!
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             SmartHome()
         }
     }
+
 }
 
 
@@ -69,10 +60,28 @@ fun SmartHome() {
                     onNavigateToSettings = {
                         navController.navigate("settings")
                     },
-                    onNavigateToRoom = {
-
+                    onNavigateToRoom = { position ->
+                        navController.navigate("room/$position")
                     }
                 )
+            }
+            composable("room/{position}") { backStackEntry ->
+                val position: Int? = try {
+                    backStackEntry.arguments?.getString("position")!!.toInt()
+                } catch (e: Exception) {
+                    null
+                }
+                if (position != null) {
+                    val roomViewModel: RoomViewModel = viewModel()
+                    roomViewModel.init(SmartHomeRepository.getInstance(LocalContext.current), position)
+
+                    RoomView(
+                        viewModel = roomViewModel,
+                        onNavigateUp = {
+                            navController.navigateUp()
+                        }
+                    )
+                }
             }
             composable("settings") {
                 SettingsView(
