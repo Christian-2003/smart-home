@@ -5,10 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import de.christian2003.smarthome.data.model.SmartHomeRepository
 import de.christian2003.smarthome.data.model.extraction.ShWebpageContent
 import de.christian2003.smarthome.data.model.extraction.ShWebpageContentCallback
 import de.christian2003.smarthome.data.ui.theme.SmartHomeTheme
@@ -24,7 +26,7 @@ import de.christian2003.smarthome.data.view.url.UrlViewModel
 class MainActivity : ComponentActivity() {
     private lateinit var webPageContent : ShWebpageContent
     override fun onCreate(savedInstanceState: Bundle?) {
-        webPageContent = ShWebpageContent("https://smarthome.christian2003.de/", this, object :
+        /*webPageContent = ShWebpageContent("https://smarthome.christian2003.de/", this, object :
             ShWebpageContentCallback {
             override fun onPageLoadComplete(success: Boolean) {
                 if (success) {
@@ -36,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     println("Fail")
                 }
             }
-            })
+        })*/
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -51,7 +53,7 @@ fun SmartHome() {
     val navController = rememberNavController()
 
     val mainViewModel: MainViewModel = viewModel()
-    mainViewModel.init(mutableListOf()) //TODO: Load data
+    mainViewModel.init(SmartHomeRepository.getInstance(LocalContext.current))
 
     val settingsViewModel: SettingsViewModel = viewModel()
     settingsViewModel.init()
