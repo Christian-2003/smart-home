@@ -45,25 +45,30 @@ public class ShWebpageContent {
     /**
      * The document which contains the code of the smart home webpage.
      */
+    @Nullable
     private  Document document;
 
+    /**
+     * The rooms of the Smart Home.
+     */
+    @Nullable
     private ArrayList<ShRoom> rooms;
 
+    /**
+     * States if the webpage was loaded successfully.
+     */
     private boolean loadingSuccessful;
 
-    public ShWebpageContent(){
 
-    }
     /**
      * Constructor instantiates a new webpage content.
      *
      * @param url           The url of the webpage that should be read.
      */
-
-    public ShWebpageContent(String url, Context context) {
+    public ShWebpageContent(String url, Context context, ShWebpageContentCallback callback) {
         System.out.println("Test2");
         CountDownLatch latch = new CountDownLatch(1);
-        ShWebpageInterface shWebpageInterface = new ShWebpageInterface(context, latch);
+        ShWebpageInterface shWebpageInterface = new ShWebpageInterface(latch);
 
         System.out.println("Test3");
 
@@ -78,17 +83,29 @@ public class ShWebpageContent {
             }
 
             if (loadingSuccessful) {
-                System.out.println("Seite erfolgreich geladen!" + shWebpageInterface.getDocument());
+                //System.out.println("Seite erfolgreich geladen!" + shWebpageInterface.getDocument());
+                document = shWebpageInterface.getDocument();
+                callback.onPageLoadComplete(true);
             } else {
                 System.out.println("Fehler beim Laden der Seite.");
+                callback.onPageLoadComplete(false);
             }
         }).start();
     }
 
+    /**
+     * Creates a Web View, loads the webpage with the given url and gets the html code of the given webpage.
+     *
+     * @param url   The url of the webpage that should be loaded.
+     * @param context   The current context.
+     * @param shWebpageInterface    Handling the parsing of the code of the loaded website to a document.
+     * @param latch     Latch to notify when the website is loaded or an error occurred.
+     */
     private void createWebView(String url, Context context, ShWebpageInterface shWebpageInterface, CountDownLatch latch) {
         System.out.println("CearetWebView");
         WebView webView = new WebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
+
         // Provide the data of the website that was loaded in the webView in the java code.
         webView.addJavascriptInterface(shWebpageInterface, "Android");
         webView.setWebViewClient(new WebViewClient() {
@@ -101,7 +118,7 @@ public class ShWebpageContent {
 
                 // Achtung
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    // JavaScript ausführen und HTML an die Android-App übergeben
+                    // Gets the html code of the loaded website and calls the handleHtml method in which the html code is then available.
                     view.loadUrl("javascript:window.Android.handleHtml(document.documentElement.outerHTML);");
                 });
             }
@@ -150,23 +167,27 @@ public class ShWebpageContent {
             public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler irl, String host, String realm) {
                 super.onReceivedHttpAuthRequest(view, irl, host, realm);
                 loadingSuccessful = false;
-                System.out.println("http");
+                System.out.println("httpAuth");
                 latch.countDown();
             }
         });
         webView.loadUrl(url);
     }
 
-
-    @NonNull
-    public ArrayList<ShRoom> getRooms() {
-        return rooms;
-    }
-
+    /**
+     * Gathers all the data of the Smart Home.
+     *
+     * @return  A list of all the rooms of the Smart Home and their properties.
+     */
+    @Nullable
     public ArrayList<ShRoom> getSmartHomeData() {
         if (document != null) {
             System.out.println("Funktioniert");
-            return ShRoomSearch.findAllRooms(document);
+            System.out.println("HTML: " + document.html());
+            ArrayList<ShRoom> test = ShRoomSearch.findAllRooms(document);
+            this.rooms = test;
+            printElement(this);
+            return test;
         }
         else {
             System.out.println("Dok null");

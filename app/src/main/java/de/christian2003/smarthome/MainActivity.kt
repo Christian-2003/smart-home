@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import de.christian2003.smarthome.data.model.extraction.ShWebpageContent
+import de.christian2003.smarthome.data.model.extraction.ShWebpageContentCallback
 import de.christian2003.smarthome.data.ui.theme.SmartHomeTheme
 import de.christian2003.smarthome.data.view.cert.CertView
 import de.christian2003.smarthome.data.view.cert.CertViewModel
@@ -21,11 +22,21 @@ import de.christian2003.smarthome.data.view.url.UrlView
 import de.christian2003.smarthome.data.view.url.UrlViewModel
 
 class MainActivity : ComponentActivity() {
+    private lateinit var webPageContent : ShWebpageContent
     override fun onCreate(savedInstanceState: Bundle?) {
-        //println("Test")
-        //val webPageContent = ShWebpageContent("https://www.google.com", this)
-        //val test = webPageContent.smartHomeData
-        //println("Testrückgabe: " + test)
+        webPageContent = ShWebpageContent("https://www.google.com", this, object :
+            ShWebpageContentCallback {
+            override fun onPageLoadComplete(success: Boolean) {
+                if (success) {
+                    println("Success")
+                    val test = webPageContent.smartHomeData
+                    println("Testrückgabe: " + test)
+                }
+                else {
+                    println("Fail")
+                }
+            }
+            })
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
