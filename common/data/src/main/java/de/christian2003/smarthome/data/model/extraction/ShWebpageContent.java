@@ -54,11 +54,6 @@ public class ShWebpageContent {
     @Nullable
     private ArrayList<ShRoom> rooms;
 
-    /**
-     * States if the webpage was loaded successfully.
-     */
-    private boolean loadingSuccessful;
-
 
     /**
      * Constructor instantiates a new webpage content.
@@ -82,11 +77,11 @@ public class ShWebpageContent {
                 e.printStackTrace();
             }
 
-            if (loadingSuccessful) {
-                //System.out.println("Seite erfolgreich geladen!" + shWebpageInterface.getDocument());
+            if (shWebpageInterface.isLoadingSuccessful()) {
                 document = shWebpageInterface.getDocument();
                 callback.onPageLoadComplete(true);
-            } else {
+            }
+            else {
                 System.out.println("Fehler beim Laden der Seite.");
                 callback.onPageLoadComplete(false);
             }
@@ -113,62 +108,23 @@ public class ShWebpageContent {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 // Get the HTML of the website and give it to the handleHtml method.
-                loadingSuccessful = true;
                 System.out.println("fin");
 
-                // Achtung
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    // Gets the html code of the loaded website and calls the handleHtml method in which the html code is then available.
-                    view.loadUrl("javascript:window.Android.handleHtml(document.documentElement.outerHTML);");
-                });
-            }
-
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                super.onReceivedError(view, request, error);
-                loadingSuccessful = false;
-                System.out.println("error");
-                latch.countDown();
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String irl, Bitmap favicon) {
-                super.onPageStarted(view, irl, favicon);
-                loadingSuccessful = false;
-                System.out.println("started");
-
-            }
-
-            @Override
-            public void onReceivedHttpError(WebView view, WebResourceRequest irl, WebResourceResponse favicon) {
-                super.onReceivedHttpError(view, irl, favicon);
-                loadingSuccessful = false;
-                System.out.println("http");
-                latch.countDown();
-            }
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler irl, SslError favicon) {
-                super.onReceivedSslError(view, irl, favicon);
-                loadingSuccessful = false;
-                System.out.println("Ssl");
-                latch.countDown();
-            }
-
-            @Override
-            public void onUnhandledKeyEvent(WebView view, KeyEvent irl) {
-                super.onUnhandledKeyEvent(view, irl);
-                loadingSuccessful = false;
-                System.out.println("key");
-                latch.countDown();
-            }
-
-            @Override
-            public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler irl, String host, String realm) {
-                super.onReceivedHttpAuthRequest(view, irl, host, realm);
-                loadingSuccessful = false;
-                System.out.println("httpAuth");
-                latch.countDown();
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    view.loadUrl("javascript:(function() {" +
+                            "    if (document.readyState === 'complete') {" +
+                            "        console.log('Alle Ressourcen sind geladen.');" +
+                            "        window.Android.handleHtml(document.documentElement.outerHTML);" +
+                            "        Android.notifyPageLoadComplete(true);" +
+                            "    } else {" +
+                            "        window.addEventListener('load', function() {" +
+                            "            console.log('Alle Ressourcen sind geladen (mit onload Event).');" +
+                            "            window.Android.handleHtml(document.documentElement.outerHTML);" +
+                            "            Android.notifyPageLoadComplete(true);" +
+                            "        });" +
+                            "    }" +
+                            "})();");
+                }, 5000);
             }
         });
         webView.loadUrl(url);
@@ -183,7 +139,7 @@ public class ShWebpageContent {
     public ArrayList<ShRoom> getSmartHomeData() {
         if (document != null) {
             System.out.println("Funktioniert");
-            System.out.println("HTML: " + document.html());
+            //System.out.println("HTML: " + document.html());
             ArrayList<ShRoom> test = ShRoomSearch.findAllRooms(document);
             this.rooms = test;
             printElement(this);

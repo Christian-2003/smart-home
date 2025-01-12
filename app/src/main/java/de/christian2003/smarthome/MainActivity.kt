@@ -24,7 +24,7 @@ import de.christian2003.smarthome.data.view.url.UrlViewModel
 class MainActivity : ComponentActivity() {
     private lateinit var webPageContent : ShWebpageContent
     override fun onCreate(savedInstanceState: Bundle?) {
-        webPageContent = ShWebpageContent("https://www.google.com", this, object :
+        webPageContent = ShWebpageContent("https://smarthome.christian2003.de/", this, object :
             ShWebpageContentCallback {
             override fun onPageLoadComplete(success: Boolean) {
                 if (success) {
