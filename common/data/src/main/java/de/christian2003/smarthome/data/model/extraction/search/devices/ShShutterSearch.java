@@ -9,19 +9,62 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import de.christian2003.smarthome.data.model.devices.ShGenericDevice;
 import de.christian2003.smarthome.data.model.devices.ShShutter;
 import de.christian2003.smarthome.data.model.userinformation.InformationTitle;
 import de.christian2003.smarthome.data.model.userinformation.InformationType;
 import de.christian2003.smarthome.data.model.userinformation.UserInformation;
 import de.christian2003.smarthome.data.model.wrapper.RoomDeviceWrapper;
 
-public class ShShutterSearch {
+/**
+ * Class models a search for a shutter for the smart home device.
+ */
+public class ShShutterSearch extends ShGenericDevice {
+    /**
+     * Attribute stores the text for the button to set the percentage to which to close the
+     * shutter.
+     */
+    @Nullable
+    private final String setButtonText;
+
+    /**
+     * Attribute stores the percentage to which the shutter is closed. This is {@code null} if no
+     * percentage is provided.
+     */
+    @Nullable
+    private final String percentage;
+
+    /**
+     * Attribute stores the time at which the shutter was closed? This is {@code null} if no time
+     * is provided.
+     */
+    @Nullable
+    private final String time;
+
+
+    /**
+     * Constructor instantiates a new shutter for the smart home.
+     *
+     * @param name          Name for the shutter.
+     * @param specifier     Specifies the device.
+     * @param setButtonText Text for the button through which to set the percentage to which the
+     *                      shutter is closed.
+     * @param percentage    Percentage to which the shutter is closed.
+     * @param time          Time at which the shutter was closed?
+     */
+    public ShShutterSearch(@NonNull String name, @Nullable String specifier, @Nullable String setButtonText, @Nullable String percentage, @Nullable String time) {
+        super(name, specifier ,null);
+        this.setButtonText = setButtonText;
+        this.percentage = percentage;
+        this.time = time;
+    }
+
     /**
      *Finds the shutters of a room and creates devices for them.
      *
      * @param tableRow      The table row which contains the cells with the shutters.
      * @param name          The name of the room in which the shutter is.
-     * @return              A RoomDeviceWrapper which contains a list of all shutters that were found in the room and a list of all warning/ errors that occurred while finding them.
+     * @return      A RoomDeviceWrapper which contains a list of all shutters that were found in the room and a list of all warning/ errors that occurred while finding them.
      */
     @NonNull
     public static RoomDeviceWrapper createShutterDevice(@NonNull Element tableRow, @NonNull String name) {
@@ -103,7 +146,7 @@ public class ShShutterSearch {
                             wrapper.combineWrapper(findSingleShutter(shutterValues.get(i), name, shutterSpecifier.get(i).ownText()));
                         }
                         for (int i = shutterSpecifier.size(); i < shutterValues.size(); i++) {
-                            wrapper.combineWrapper(findSingleShutter(shutterValues.get(i), name, "Automatic Specifier " + (++i - shutterSpecifier.size())));
+                            wrapper.combineWrapper(findSingleShutter(shutterValues.get(i), name, "Automatic Specifier " + (i + 1 - shutterSpecifier.size())));
                         }
                         String descriptionWarning = "There were more shutters than specifiers. All shutters that could be found were extracted. For the shutters to which no specifiers could be found automatic specifiers were implemented. Please check the website and the documentation.";
                         wrapper.addUserInformation(new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, descriptionWarning))));
@@ -212,4 +255,38 @@ public class ShShutterSearch {
         }
         return formInformation;
     }
+
+    /**
+     * Method returns the text for the button through which to set the percentage to which the
+     * shutter is closed.
+     *
+     * @return  Percentage to which the shutter is closed.
+     */
+    @Nullable
+    public String getSetButtonText() {
+        return setButtonText;
+    }
+
+    /**
+     * Method returns the percentage to which the shutter is closed. This returns {@code null} if no
+     * percentage is provided.
+     *
+     * @return  Percentage to which the shutter is closed.
+     */
+    @Nullable
+    public String getPercentage() {
+        return percentage;
+    }
+
+    /**
+     * Method returns the time at which the shutter was closed. This returns {@code null} if no time
+     * is provided.
+     *
+     * @return  Time at which the shutter was closed
+     */
+    @Nullable
+    public String getTime() {
+        return time;
+    }
+
 }

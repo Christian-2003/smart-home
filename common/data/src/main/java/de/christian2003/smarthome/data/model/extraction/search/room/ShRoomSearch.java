@@ -7,12 +7,16 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 
 import de.christian2003.smarthome.data.model.devices.ShGenericDevice;
+import de.christian2003.smarthome.data.model.devices.ShLight;
+import de.christian2003.smarthome.data.model.devices.ShOpening;
 import de.christian2003.smarthome.data.model.devices.ShShutter;
+import de.christian2003.smarthome.data.model.extraction.search.devices.ShOpeningSearch;
 import de.christian2003.smarthome.data.model.extraction.search.devices.ShShutterSearch;
 import de.christian2003.smarthome.data.model.room.ShInfoText;
 import de.christian2003.smarthome.data.model.room.ShRoom;
@@ -22,7 +26,91 @@ import de.christian2003.smarthome.data.model.userinformation.UserInformation;
 import de.christian2003.smarthome.data.model.wrapper.RoomDeviceWrapper;
 import de.christian2003.smarthome.data.model.wrapper.RoomInfoTextWrapper;
 
-public class ShRoomSearch {
+/**
+ * Class models a search for a room for the smart home.
+ */
+public class ShRoomSearch implements Serializable {
+
+    /**
+     * Attribute stores the name of the room.
+     */
+    @NonNull
+    private final String name;
+
+    /**
+     * Attribute stores a list of info texts for the room. Exemplary info texts could include
+     * temperature, humidity, air pressure, ...
+     */
+    @NonNull
+    private final ArrayList<ShInfoText> infos;
+
+    /**
+     * Attribute stores a list of smart home devices for the room, e.g. outlets, openings or lights.
+     */
+    @NonNull
+    private final ArrayList<ShGenericDevice> devices;
+
+    /**
+     * Attribute stores a list of all the user information belonging to the room.
+     */
+    @NonNull
+    private final ArrayList<UserInformation> userInformation;
+
+
+    /**
+     * Constructor instantiates a new room.
+     *
+     * @param name              Name for the room.
+     * @param infos             List of info texts for the room.
+     * @param devices           List of smart home devices for the room.
+     * @param userInformation   List of warnings and errors about the room that should be displayed for the user.
+     */
+    public ShRoomSearch(@NonNull String name, @Nullable ArrayList<ShInfoText> infos, @Nullable ArrayList<ShGenericDevice> devices, @Nullable ArrayList<UserInformation> userInformation) {
+        this.name = name;
+        this.infos = infos != null ? infos : new ArrayList<>();
+        this.devices = devices != null ? devices : new ArrayList<>();
+        this.userInformation = userInformation != null ? userInformation : new ArrayList<>();
+    }
+
+    /**
+     * Method returns the name of the room.
+     *
+     * @return  Name of the room.
+     */
+    @NonNull
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Method returns a list of info texts for the room.
+     *
+     * @return  List of info texts for the room.
+     */
+    @NonNull
+    public ArrayList<ShInfoText> getInfos() {
+        return infos;
+    }
+
+    /**
+     * Method returns a list of smart home devices for the room.
+     *
+     * @return  List of smart home devices for the room.
+     */
+    @NonNull
+    public ArrayList<ShGenericDevice> getDevices() {
+        return devices;
+    }
+
+    /**
+     * Method returns a list of information for the user that were generated during parsing.
+     *
+     * @return  List of user information.
+     */
+    @NonNull
+    public ArrayList<UserInformation> getUserInformation() {
+        return userInformation;
+    }
 
     /**
      * Finds all the rooms of the smart home and returns a list containing all of them.
@@ -36,7 +124,7 @@ public class ShRoomSearch {
         ArrayList<ShRoom> shRoomList = new ArrayList<>();
 
         // Find all rooms of the smart home.
-        Elements rooms = document.select("div > div.room");
+        Elements rooms = document.select("div.room");
         //System.out.println("Anzahl Rooms: " + rooms.size());
 
         // Iterates through all rooms and get their properties and devices.
@@ -65,7 +153,7 @@ public class ShRoomSearch {
      */
     @Nullable
     public static Element findRoomName(@NonNull Element room) {
-        return room.select("div > span.roomName").first();
+        return room.select("div span.roomName").first();
     }
 
     /**
@@ -79,7 +167,8 @@ public class ShRoomSearch {
     public static ShRoom parseContentTable(@NonNull Element room, @NonNull String roomName) {
 
         // Get the content table and its elements.
-        Element contentTable = room.selectFirst("span.roomName ~ table");
+        //Element contentTable = room.selectFirst("span.roomName ~ table");
+        Element contentTable = room.selectFirst("table");
         if (contentTable != null) {
             Elements tableRows = contentTable.select("tr");
 
@@ -91,13 +180,24 @@ public class ShRoomSearch {
                 // Find the different info texts and devices of the room.
                 for (Element tableRow: tableRows) {
                     Set<String> classNames = tableRow.classNames();
-                    if (classNames.contains("temperature")) {
-                        RoomInfoTextWrapper roomInformationWrapper = ShInfoTextSearch.createTemperatureInfoText(tableRow);
+                    if (classNames.contains("infoText")) {
+                        RoomInfoTextWrapper roomInformationWrapper = ShInfoTextSearch.createInfoText(tableRow);
                         shInfoTexts.addAll(roomInformationWrapper.getInfoTexts());
                         userInformation.addAll(roomInformationWrapper.getUserInformation());
                     }
                     else if (classNames.contains("shutter")) {
                         RoomDeviceWrapper roomDeviceWrapper = ShShutterSearch.createShutterDevice(tableRow, roomName);
+                        shGenericDevices.addAll(roomDeviceWrapper.getDevices());
+                        userInformation.addAll(roomDeviceWrapper.getUserInformation());
+                    }
+                    else if (classNames.contains("opening")) {
+                        RoomDeviceWrapper roomDeviceWrapper = ShOpeningSearch.createOpeningDevice(tableRow, roomName);
+                        shGenericDevices.addAll(roomDeviceWrapper.getDevices());
+                        userInformation.addAll(roomDeviceWrapper.getUserInformation());
+                    }
+                    else if (classNames.contains("status")) {
+                        System.out.println("Status Aufgerufen");
+                        RoomDeviceWrapper roomDeviceWrapper = ShStatusSearch.gatherStatusContent(tableRow, roomName);
                         shGenericDevices.addAll(roomDeviceWrapper.getDevices());
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
                     }
@@ -124,12 +224,18 @@ public class ShRoomSearch {
      */
     public static void printOutRoom(@NonNull ShRoom room) {
         System.out.println("Room name: " + room.getName() + "Länge Infos: " + room.getInfos().size());
-        for (ShInfoText shInfoText : room.getInfos()) {
+        for (ShInfoText shInfoText: room.getInfos()) {
             System.out.println("\tLabel: " + shInfoText.getLabel() + ", Specifier " + shInfoText.getSpecifier() + ", Text: " + shInfoText.getText());
         }
-        for (ShGenericDevice shGenericDevice : room.getDevices()) {
+        for (ShGenericDevice shGenericDevice: room.getDevices()) {
             if (shGenericDevice instanceof ShShutter) {
                 System.out.println("\tShutter Name: " + shGenericDevice.getName() + ", Specifier: " + ((ShShutter) shGenericDevice).getSpecifier() + ", ButtonText: " + ((ShShutter) shGenericDevice).getSetButtonText() + ", Percentage: " + ((ShShutter) shGenericDevice).getPercentage() + ", Time: " + ((ShShutter) shGenericDevice).getTime());
+            }
+            if (shGenericDevice instanceof ShOpening) {
+                System.out.println("\tOpening Name: " + shGenericDevice.getName() + ", Specifier: " + ((ShOpening) shGenericDevice).getSpecifier() + ", ImageUri: " + (shGenericDevice).getImageUri() + ", Type: " + ((ShOpening) shGenericDevice).getOpeningType() + ", Time: ");
+            }
+            if (shGenericDevice instanceof ShLight) {
+                System.out.println("\tLight Name: " + shGenericDevice.getName() + ", Specifier: " + ((ShLight) shGenericDevice).getSpecifier() + ", ImageUri: " + (shGenericDevice).getImageUri() + ", OnButton: " + ((ShLight) shGenericDevice).getOnButtonText() + ", OffButton: " + ((ShLight) shGenericDevice).getOffButtonText() + ", MilliAmp: " + ((ShLight) shGenericDevice).getMilliAmp());
             }
         }
     }
