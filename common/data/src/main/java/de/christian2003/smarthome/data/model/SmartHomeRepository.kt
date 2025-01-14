@@ -13,7 +13,10 @@ import de.christian2003.smarthome.data.model.room.ShRoom
 /**
  * Class implements the repository through which the app access all data.
  */
-class SmartHomeRepository(context: Context) {
+class SmartHomeRepository(
+    private val context: Context,
+    private val callback: ShWebpageContentCallback?
+) {
 
     /**
      * Attribute stores the shared preferences from which to source configuration data.
@@ -55,6 +58,7 @@ class SmartHomeRepository(context: Context) {
             Log.e("Smart Home Repo", "Cannot load data")
         }
         isLoading = false
+        callback?.onPageLoadComplete(success)
     }
 
 
@@ -71,7 +75,21 @@ class SmartHomeRepository(context: Context) {
          */
         fun getInstance(context: Context): SmartHomeRepository {
             if (INSTANCE == null) {
-                INSTANCE = SmartHomeRepository(context)
+                INSTANCE = SmartHomeRepository(context, null)
+            }
+            return INSTANCE!!
+        }
+
+
+        /**
+         * Method returns the singleton instance of the repository.
+         */
+        fun getInstance(context: Context, callback: ShWebpageContentCallback): SmartHomeRepository {
+            if (INSTANCE == null) {
+                INSTANCE = SmartHomeRepository(context, callback)
+            }
+            else if (!INSTANCE!!.isLoading) {
+                callback.onPageLoadComplete(true)
             }
             return INSTANCE!!
         }
