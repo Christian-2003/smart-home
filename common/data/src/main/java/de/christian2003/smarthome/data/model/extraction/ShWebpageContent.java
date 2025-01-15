@@ -137,7 +137,8 @@ public class ShWebpageContent {
         if (document != null) {
             System.out.println("Funktioniert");
             //System.out.println("HTML: " + document.html());
-            ArrayList<ShRoom> test = ShRoomSearch.findAllRooms(document);
+            ShRoomSearch shRoomSearch = new ShRoomSearch();
+            ArrayList<ShRoom> test = shRoomSearch.findAllRooms(document);
             this.rooms = test;
             printElement(this);
             return test;
