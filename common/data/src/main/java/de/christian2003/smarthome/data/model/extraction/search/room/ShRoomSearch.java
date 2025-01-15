@@ -167,7 +167,6 @@ public class ShRoomSearch implements Serializable {
     public static ShRoom parseContentTable(@NonNull Element room, @NonNull String roomName) {
 
         // Get the content table and its elements.
-        //Element contentTable = room.selectFirst("span.roomName ~ table");
         Element contentTable = room.selectFirst("table");
         if (contentTable != null) {
             Elements tableRows = contentTable.select("tr");

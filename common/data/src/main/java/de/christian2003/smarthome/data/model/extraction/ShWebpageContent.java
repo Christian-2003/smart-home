@@ -61,11 +61,8 @@ public class ShWebpageContent {
      * @param url           The url of the webpage that should be read.
      */
     public ShWebpageContent(String url, Context context, ShWebpageContentCallback callback) {
-        System.out.println("Test2");
         CountDownLatch latch = new CountDownLatch(1);
         ShWebpageInterface shWebpageInterface = new ShWebpageInterface(latch);
-
-        System.out.println("Test3");
 
         new Thread(()-> {
 
