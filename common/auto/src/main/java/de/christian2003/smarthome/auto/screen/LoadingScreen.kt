@@ -7,12 +7,8 @@ import androidx.car.app.model.Pane
 import androidx.car.app.model.PaneTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
-import androidx.lifecycle.lifecycleScope
 import de.christian2003.smarthome.data.model.SmartHomeRepository
 import de.christian2003.smarthome.data.model.extraction.ShWebpageContentCallback
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class LoadingScreen(carContext: CarContext): Screen(carContext) {
 
