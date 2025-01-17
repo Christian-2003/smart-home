@@ -52,4 +52,6 @@
     <string name="info_title_unknown">Unknown error</string>
 
     <string name="car_loading">Loading…</string>
+    <string name="car_details_subtext">Click to see more details</string>
+    <string name="car_main_text">{label}: {text}</string>
 </resources>
