@@ -61,11 +61,8 @@ public class ShWebpageContent {
      * @param url           The url of the webpage that should be read.
      */
     public ShWebpageContent(String url, Context context, ShWebpageContentCallback callback) {
-        System.out.println("Test2");
         CountDownLatch latch = new CountDownLatch(1);
         ShWebpageInterface shWebpageInterface = new ShWebpageInterface(latch);
-
-        System.out.println("Test3");
 
         new Thread(()-> {
 
@@ -140,7 +137,8 @@ public class ShWebpageContent {
         if (document != null) {
             System.out.println("Funktioniert");
             //System.out.println("HTML: " + document.html());
-            ArrayList<ShRoom> test = ShRoomSearch.findAllRooms(document);
+            ShRoomSearch shRoomSearch = new ShRoomSearch();
+            ArrayList<ShRoom> test = shRoomSearch.findAllRooms(document);
             this.rooms = test;
             printElement(this);
             return test;

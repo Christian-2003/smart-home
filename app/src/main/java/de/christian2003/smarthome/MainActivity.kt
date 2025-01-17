@@ -27,8 +27,6 @@ import de.christian2003.smarthome.data.view.url.UrlViewModel
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //Nachricht an Björn: Habe den Code in die SmartHomeRepository-Klasse bewegt. Hier gehört
-        //der nämlich nicht hin. Lösche den Kommentar bitte sobald du die Nachricht gelesen hast!
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
