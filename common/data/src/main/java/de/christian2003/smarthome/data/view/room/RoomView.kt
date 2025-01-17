@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.viewModelFactory
 import de.christian2003.smarthome.data.R
 import de.christian2003.smarthome.data.model.devices.ShLight
 import de.christian2003.smarthome.data.model.devices.ShOpening
@@ -76,7 +77,7 @@ fun RoomView(
                     is ShOutlet -> ListRowOutlet(item)
                     is ShShutter -> ListRowShutter(item)
                     is ShInfoText -> ListRowText(item)
-                    is UserInformation -> ListRowWarning(item)
+                    is UserInformation -> ListRowWarning(item, viewModel.showWarnings, viewModel.showErrors)
                 }
             }
         }
@@ -320,12 +321,16 @@ fun ListRowText(
  * Composable displays a warning or error message.
  *
  * @param information   Information to display as warning or error.
+ * @param showWarnings  Whether to display warnings.
+ * @param showErrors    Whether to display errors.
  */
 @Composable
 fun ListRowWarning(
-    information: UserInformation
+    information: UserInformation,
+    showWarnings: Boolean,
+    showErrors: Boolean
 ) {
-    if (information.informationType == InformationType.WARNING) {
+    if (information.informationType == InformationType.WARNING && showWarnings) {
         SmartHomeInfoCard(
             message = information.informationTitle.getText(LocalContext.current),
             expandedMessage = information.description,
@@ -334,7 +339,7 @@ fun ListRowWarning(
             backgroundColor = MaterialTheme.colorScheme.primaryContainer
         )
     }
-    else if (information.informationType == InformationType.ERROR) {
+    else if (information.informationType == InformationType.ERROR && showErrors) {
         SmartHomeInfoCard(
             message = information.informationTitle.getText(LocalContext.current),
             expandedMessage = information.description,

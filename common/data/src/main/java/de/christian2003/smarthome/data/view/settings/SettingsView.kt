@@ -2,6 +2,7 @@ package de.christian2003.smarthome.data.view.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -10,8 +11,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -64,6 +67,7 @@ fun SettingsView(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
+            //Connection:
             SettingsTitle(title = stringResource(R.string.settings_connection))
             SettingsItemButton(
                 setting = stringResource(R.string.settings_connection_url),
@@ -73,6 +77,25 @@ fun SettingsView(
                 setting = stringResource(R.string.settings_connection_cert),
                 info = stringResource(R.string.settings_connection_cert_info),
                 onClick = onNavigateToCert)
+
+            //Customization:
+            SettingsTitle(title = stringResource(R.string.settings_customization))
+            SettingsItemSwitch(
+                setting = stringResource(R.string.settings_customization_warnings),
+                info = stringResource(R.string.settings_customization_warnings_info),
+                checked = viewModel.showWarnings,
+                onCheckedChanged = { checked ->
+                    viewModel.updateShowWarnings(checked)
+                }
+            )
+            SettingsItemSwitch(
+                setting = stringResource(R.string.settings_customization_errors),
+                info = stringResource(R.string.settings_customization_errors_info),
+                checked = viewModel.showErrors,
+                onCheckedChanged = { checked ->
+                    viewModel.updateShowErrors(checked)
+                }
+            )
         }
     }
 }
@@ -134,6 +157,57 @@ fun SettingsItemButton(
             text = info,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+
+/**
+ * Composable displays an item button.
+ *
+ * @param setting           Title for the setting.
+ * @param info              Info for the setting.
+ * @param checked           Whether the switch is checked.
+ * @param onCheckedChanged  Callback to invoke once the checked state changes.
+ */
+@Composable
+fun SettingsItemSwitch(
+    setting: String,
+    info: String,
+    checked: Boolean,
+    onCheckedChanged: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onCheckedChanged(!checked)
+            }
+            .padding(
+                vertical = dimensionResource(R.dimen.space_vertical_between),
+                horizontal = dimensionResource(R.dimen.space_horizontal)
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = dimensionResource(R.dimen.space_horizontal_between))
+        ) {
+            Text(
+                text = setting,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = info,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChanged
         )
     }
 }
