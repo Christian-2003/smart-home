@@ -13,6 +13,7 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -97,6 +98,9 @@ public class ShWebpageContent {
         System.out.println("CearetWebView");
         WebView webView = new WebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
+
+        webView.clearCache(true);
+        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         // Provide the data of the website that was loaded in the webView in the java code.
         webView.addJavascriptInterface(shWebpageInterface, "Android");
