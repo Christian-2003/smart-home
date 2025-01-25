@@ -20,12 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.viewmodel.viewModelFactory
 import de.christian2003.smarthome.data.R
 import de.christian2003.smarthome.data.model.devices.ShLight
 import de.christian2003.smarthome.data.model.devices.ShOpening
 import de.christian2003.smarthome.data.model.devices.ShOutlet
 import de.christian2003.smarthome.data.model.devices.ShShutter
+import de.christian2003.smarthome.data.model.devices.ShUnknownDevice
 import de.christian2003.smarthome.data.model.room.ShInfoText
 import de.christian2003.smarthome.data.model.userinformation.InformationType
 import de.christian2003.smarthome.data.model.userinformation.UserInformation
@@ -78,6 +78,7 @@ fun RoomView(
                     is ShShutter -> ListRowShutter(item)
                     is ShInfoText -> ListRowText(item)
                     is UserInformation -> ListRowWarning(item, viewModel.showWarnings, viewModel.showErrors)
+                    is ShUnknownDevice -> ListRowUnknown(item)
                 }
             }
         }
@@ -281,6 +282,36 @@ fun ListRowShutter(
             ) {
                 Text(device.setButtonText!!)
             }
+        }
+    }
+}
+
+
+/**
+ * Composable displays an unknown device.
+ *
+ * @param device    Unknown device to display.
+ */
+@Composable
+fun ListRowUnknown(
+    device: ShUnknownDevice
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                vertical = dimensionResource(R.dimen.space_vertical),
+                horizontal = dimensionResource(R.dimen.space_horizontal)
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = if (device.specifier != null) { device.specifier!! } else { device.name },
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
