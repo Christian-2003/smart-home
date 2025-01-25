@@ -18,6 +18,7 @@ import de.christian2003.smarthome.data.model.devices.ShOpening;
 import de.christian2003.smarthome.data.model.devices.ShShutter;
 import de.christian2003.smarthome.data.model.extraction.search.devices.ShOpeningSearch;
 import de.christian2003.smarthome.data.model.extraction.search.devices.ShShutterSearch;
+import de.christian2003.smarthome.data.model.extraction.search.devices.ShUnknownDeviceSearch;
 import de.christian2003.smarthome.data.model.room.ShInfoText;
 import de.christian2003.smarthome.data.model.room.ShRoom;
 import de.christian2003.smarthome.data.model.userinformation.InformationTitle;
@@ -126,6 +127,11 @@ public class ShRoomSearch implements Serializable {
                     }
                     else if (classNames.contains("status")) {
                         RoomDeviceWrapper roomDeviceWrapper = ShStatusSearch.gatherStatusContent(tableRow, roomName);
+                        shGenericDevices.addAll(roomDeviceWrapper.getDevices());
+                        userInformation.addAll(roomDeviceWrapper.getUserInformation());
+                    }
+                    else {
+                        RoomDeviceWrapper roomDeviceWrapper = ShUnknownDeviceSearch.findUnknownDevice(tableRow, roomName);
                         shGenericDevices.addAll(roomDeviceWrapper.getDevices());
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
                     }

@@ -148,7 +148,7 @@ public class ShStatusSearch {
         }
         else {
             if (statusElementContent != null) {
-                return ShUnknownDeviceSearch.findUnknownDevice(statusElementContent, statusElementName + " " + roomName);
+                return ShUnknownDeviceSearch.gatherUnknownDeviceProperties(statusElementContent, statusElementName + " " + roomName);
             }
             else {
                 String warningDescription = "There was a different amount of status element contents and specifiers for them. All elements were extracted but for the element " + statusElementName + " no corresponding content could be found. Please check the website and the documentation.";
