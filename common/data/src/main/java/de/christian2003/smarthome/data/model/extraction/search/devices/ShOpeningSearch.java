@@ -22,27 +22,7 @@ import de.christian2003.smarthome.data.model.wrapper.RoomDeviceWrapper;
 /**
  * Class models a search for an opening in the house (i.e. a door or window).
  */
-public class ShOpeningSearch extends ShGenericDevice {
-
-    /**
-     * The {@link ShOpeningType} of the opening.
-     */
-    @NonNull
-    private final ShOpeningType openingType;
-
-    /**
-     * Constructor instantiates a new door / window.
-     *
-     * @param name  Name for the door / window.
-     * @param openingType   The type of the opening (window / door).
-     * @param specifier     Specifies the opening.
-     * @param imageUri      String that represents the URI to the image for the door / window.
-     */
-    public ShOpeningSearch(@NonNull String name, @NonNull ShOpeningType openingType, @Nullable String specifier, @Nullable String imageUri) {
-        super(name, specifier, imageUri);
-        this.openingType = openingType;
-    }
-
+public class ShOpeningSearch{
     /**
      * Finds the openings of a room and creates devices for them.
      *
@@ -124,14 +104,12 @@ public class ShOpeningSearch extends ShGenericDevice {
             }
             // No image source found for opening but object can be created anyways.
             else {
-                System.out.println("Source Empty");
                 String warningDescription = "An image node could be found but not source for the image. The opening could be created anyways. Please check the website and the documentation.";
                 return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShOpening(openingName, openingType, specifier, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
             }
         }
         // No image found for opening but object can be created anyways.
         else {
-            System.out.println("keine Image node");
             String warningDescription = "No image could be found for the opening but it could be created anyways. Please check the website and the documentation.";
             return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShOpening(openingName, openingType, specifier, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
         }
@@ -214,15 +192,5 @@ public class ShOpeningSearch extends ShGenericDevice {
             String warningDescription = "No table was found in the inner table. The table should contain rows with the openings. No openings could be found. Please check the website and the documentation.";
             return new RoomDeviceWrapper(new ArrayList<>(), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
         }
-    }
-
-    /**
-     * Method returns the {@link ShOpeningType} of the opening.
-     *
-     * @return The {@link ShOpeningType} of the opening.
-     */
-    @NonNull
-    public ShOpeningType getOpeningType() {
-        return openingType;
     }
 }

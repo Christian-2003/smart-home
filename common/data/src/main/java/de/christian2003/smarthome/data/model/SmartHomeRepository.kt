@@ -35,6 +35,10 @@ class SmartHomeRepository(
      */
     private val webpageContent = ShWebpageContent(preferences.getString("server_url", ""), context, webpageContentCallback)
 
+    // Kommentar für Chrissi: Hier webpageContent.getLoadingInformation aufrufen.
+    // Wenn keine UserInofrmation Elemente enthalten sind, hat alles geklappt, ansonsten sind die Fehler in der Liste und die Webseite konnte nicht geladen werden, also dann kein smartHomeData aufrufen.
+    // PS: Aktualisiere deine getText Methode in InformationTitle.
+
     /**
      * Attribute indicates whether the webpage content is loading.
      */

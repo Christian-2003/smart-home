@@ -29,7 +29,6 @@ public class ShWebpageInterface {
     /**
      * States if the page was loaded successfully.
      */
-    @Nullable
     private boolean loadingSuccessful;
 
 
@@ -49,7 +48,6 @@ public class ShWebpageInterface {
      */
     @JavascriptInterface
     public void handleHtml(String html) {
-        System.out.println("HandleHtml");
         createDocument(html);
     }
 

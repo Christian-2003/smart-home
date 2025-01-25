@@ -10,7 +10,9 @@ import de.christian2003.smarthome.data.R;
  */
 public enum InformationTitle implements Serializable {
     HtmlElementNotLocated,
-    NoMilliAmpInformation;
+    NoMilliAmpInformation,
+    LoadingInterruption,
+    UnknownError;
 
 
     /**

@@ -2,40 +2,25 @@ package de.christian2003.smarthome.data.model.extraction;
 
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.net.http.SslError;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.KeyEvent;
-import android.webkit.HttpAuthHandler;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import de.christian2003.smarthome.data.model.cert.CertHandler;
 import de.christian2003.smarthome.data.model.extraction.search.room.ShRoomSearch;
 import de.christian2003.smarthome.data.model.room.ShRoom;
+import de.christian2003.smarthome.data.model.userinformation.InformationTitle;
+import de.christian2003.smarthome.data.model.userinformation.InformationType;
+import de.christian2003.smarthome.data.model.userinformation.UserInformation;
 
 
 /**
@@ -55,6 +40,11 @@ public class ShWebpageContent {
     @Nullable
     private ArrayList<ShRoom> rooms;
 
+    /**
+     * Contains errors that occur while loading the website.
+     */
+    @NonNull
+    private final ArrayList<UserInformation> loadingInformation;
 
     /**
      * Constructor instantiates a new webpage content.
@@ -64,15 +54,18 @@ public class ShWebpageContent {
     public ShWebpageContent(String url, Context context, ShWebpageContentCallback callback) {
         CountDownLatch latch = new CountDownLatch(1);
         ShWebpageInterface shWebpageInterface = new ShWebpageInterface(latch);
+        loadingInformation = new ArrayList<>();
 
         new Thread(()-> {
 
-            new Handler(Looper.getMainLooper()).post(() -> createWebView(url, context, shWebpageInterface, latch));
+            new Handler(Looper.getMainLooper()).post(() -> createWebView(url, context, shWebpageInterface));
 
             try {
                 latch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            }
+            catch (InterruptedException interruptedException) {
+                String errorDescription = "There was an interruption while loading the website. \nError message:\n" + interruptedException.getMessage();
+                loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.LoadingInterruption, errorDescription));
             }
 
             if (shWebpageInterface.isLoadingSuccessful()) {
@@ -80,7 +73,6 @@ public class ShWebpageContent {
                 callback.onPageLoadComplete(true);
             }
             else {
-                System.out.println("Fehler beim Laden der Seite.");
                 callback.onPageLoadComplete(false);
             }
         }).start();
@@ -92,10 +84,8 @@ public class ShWebpageContent {
      * @param url   The url of the webpage that should be loaded.
      * @param context   The current context.
      * @param shWebpageInterface    Handling the parsing of the code of the loaded website to a document.
-     * @param latch     Latch to notify when the website is loaded or an error occurred.
      */
-    private void createWebView(String url, Context context, ShWebpageInterface shWebpageInterface, CountDownLatch latch) {
-        System.out.println("CearetWebView");
+    private void createWebView(String url, Context context, ShWebpageInterface shWebpageInterface)  {
         WebView webView = new WebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
 
@@ -109,8 +99,6 @@ public class ShWebpageContent {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 // Get the HTML of the website and give it to the handleHtml method.
-                System.out.println("fin");
-
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     view.loadUrl("javascript:(function() {" +
                             "    if (document.readyState === 'complete') {" +
@@ -128,6 +116,15 @@ public class ShWebpageContent {
                 }, 5000);
             }
         });
+
+        CertHandler certHandler = new CertHandler(context);
+        try {
+            HttpsURLConnection.setDefaultSSLSocketFactory(certHandler.getSSLContext().getSocketFactory());
+        }
+        catch (Exception e) {
+            loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.UnknownError, "An unknown error occurred while loading the website with the certificate. \nError message:\n" + e.getMessage()));
+            System.out.println("cerHandlerEx");
+        }
         webView.loadUrl(url);
     }
 
@@ -139,66 +136,25 @@ public class ShWebpageContent {
     @Nullable
     public ArrayList<ShRoom> getSmartHomeData() {
         if (document != null) {
-            System.out.println("Funktioniert");
-            //System.out.println("HTML: " + document.html());
             ShRoomSearch shRoomSearch = new ShRoomSearch();
-            ArrayList<ShRoom> test = shRoomSearch.findAllRooms(document);
-            this.rooms = test;
-            printElement(this);
-            return test;
+            ArrayList<ShRoom> rooms = shRoomSearch.findAllRooms(document);
+            this.rooms = rooms;
+            return rooms;
         }
         else {
-            System.out.println("Dok null");
             return null;
         }
     }
 
-    /*
-    public ArrayList<ShRoom> getDummyData() {
-        // Dummy InfoTexts.
-        ShInfoText infoText1 = new ShInfoText("Temperature", null,"30");
-        ShInfoText infoText2 = new ShInfoText("Humidity", "Flur", "90");
-        ShInfoText infoText3 = new ShInfoText("Air pressure", null,"80");
-        ShInfoText infoText4 = new ShInfoText("Temperature", "WZ" ,"30");
-        ShInfoText infoText5 = new ShInfoText("Temperature", "Flur","23");
-        ShInfoText infoText6 = new ShInfoText("Temperature", null,"12");
-
-        ArrayList<ShInfoText> infoTextArrayList1 = new ArrayList<>();
-        infoTextArrayList1.add(infoText1);
-        infoTextArrayList1.add(infoText2);
-        infoTextArrayList1.add(infoText3);
-
-        ArrayList<ShInfoText> infoTextArrayList2 = new ArrayList<>();
-        infoTextArrayList2.add(infoText4);
-
-        ArrayList<ShInfoText> infoTextArrayList3 = new ArrayList<>();
-        infoTextArrayList3.add(infoText5);
-
-        ArrayList<ShInfoText> infoTextArrayList4 = new ArrayList<>();
-        infoTextArrayList4.add(infoText6);
-
-        // Dummy devices.
-        ShGenericDevice device1 = new ShOpening("Window1", null);
-        ShGenericDevice device2 = new ShOpening("Window2", null);
-
-        ShGenericDevice device3 = new ShShutter("Shutter1", null, "90", "9");
-
-        ArrayList<ShGenericDevice> deviceArrayList1 = new ArrayList<>();
-        deviceArrayList1.add(device1);
-        deviceArrayList1.add(device2);
-
-        ArrayList<ShGenericDevice> deviceArrayList2 = new ArrayList<>();
-        deviceArrayList2.add(device3);
-
-        // Dummy list of rooms for testing.
-        ArrayList<ShRoom> dummyRooms = new ArrayList<>();
-        dummyRooms.add(new ShRoom("Test-Room1",  null, deviceArrayList2));
-        dummyRooms.add(new ShRoom("Test-Room2", infoTextArrayList1, null));
-        dummyRooms.add(new ShRoom("Test-Room3", infoTextArrayList2, deviceArrayList1));
-        dummyRooms.add(new ShRoom("Test-Room4", infoTextArrayList3, null));
-        dummyRooms.add(new ShRoom("Test-Room5", infoTextArrayList4, null));
-        return dummyRooms;
-    }*/
+    /**
+     * Gets the list of errors that occurred while loading the webpage.
+     *
+     * @return  List with the errors that occurred while loading the webpage.
+     */
+    @NonNull
+    public ArrayList<UserInformation> getLoadingInformation() {
+        return loadingInformation;
+    }
 
     /**
      * Prints all the rooms and their properties that belong to the ShWebpageContent object.

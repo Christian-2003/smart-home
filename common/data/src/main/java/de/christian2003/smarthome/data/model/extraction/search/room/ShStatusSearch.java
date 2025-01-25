@@ -20,41 +20,6 @@ import de.christian2003.smarthome.data.model.userinformation.UserInformation;
 import de.christian2003.smarthome.data.model.wrapper.RoomDeviceWrapper;
 
 public class ShStatusSearch {
-    public static RoomDeviceWrapper createStatus(@NonNull Element tableRow, @NonNull String roomName) {
-        Element firstDataCell = tableRow.selectFirst("tr > td");
-
-        // Find the data cell which contains the status.
-        if (firstDataCell != null) {
-            Element secondDataCell = tableRow.selectFirst("tr > td ~ td");
-            if (secondDataCell != null) {
-
-                // Check if the data cell contains another table. If so the room contains multiple openings that need to be extracted from the table.
-                // Otherwise the room contains only one opening which can be extracted directly from the data cell.
-                Element innerTable = secondDataCell.selectFirst("table");
-                if (innerTable != null) {
-
-                    return gatherStatusContent(innerTable, roomName);
-                }
-                else {
-                    // Implement find unknown element method
-                    //temporary
-                    return new RoomDeviceWrapper(new ArrayList<>(), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, "Temporary return. Unknown element"))));
-                    //return findSingleOpening(secondDataCell, firstDataCell.ownText() + " " + roomName, openingType, null);
-                }
-            }
-            else {
-                // No second data cell was found which should contain the opening(s).
-                String warningDescription = "No second data cells were found in the table which should contain a single opening or a table of multiple openings. No openings could be found. Please check the website and the documentation.";
-                return new RoomDeviceWrapper(new ArrayList<>(), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
-            }
-        }
-        else {
-            // No table rows were found in the table.
-            String warningDescription = "No table row was found in the table. The table should contain rows with the openings. No openings could be found. Please check the website and the documentation.";
-            return new RoomDeviceWrapper(new ArrayList<>(), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
-        }
-    }
-
     @NonNull
     public static RoomDeviceWrapper gatherStatusContent(@NonNull Element innerTable, @NonNull String roomName) {
         // Get the table row which contains the specifiers of each status element and the table row with the properties of the elements.
@@ -130,7 +95,7 @@ public class ShStatusSearch {
     }
 
     @NonNull
-    public static RoomDeviceWrapper findSingleStatusElement(@Nullable Element statusElementContent, String statusElementName, @NonNull String roomName) {
+    public static RoomDeviceWrapper findSingleStatusElement(@Nullable Element statusElementContent, @NonNull String statusElementName, @NonNull String roomName) {
         String statusElementNameLowerCase = statusElementName.toLowerCase();
 
         if (statusElementNameLowerCase.contains("fenster")) {

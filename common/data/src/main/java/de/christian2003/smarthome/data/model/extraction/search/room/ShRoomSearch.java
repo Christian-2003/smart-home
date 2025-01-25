@@ -52,7 +52,6 @@ public class ShRoomSearch implements Serializable {
 
         // Find all rooms of the smart home.
         Elements rooms = document.select("div.room");
-        //System.out.println("Anzahl Rooms: " + rooms.size());
 
         // Iterates through all rooms and get their properties and devices.
         for (Element room: rooms) {
@@ -126,7 +125,6 @@ public class ShRoomSearch implements Serializable {
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
                     }
                     else if (classNames.contains("status")) {
-                        System.out.println("Status Aufgerufen");
                         RoomDeviceWrapper roomDeviceWrapper = ShStatusSearch.gatherStatusContent(tableRow, roomName);
                         shGenericDevices.addAll(roomDeviceWrapper.getDevices());
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());

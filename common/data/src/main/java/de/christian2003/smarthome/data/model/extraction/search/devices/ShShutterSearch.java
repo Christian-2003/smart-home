@@ -19,46 +19,7 @@ import de.christian2003.smarthome.data.model.wrapper.RoomDeviceWrapper;
 /**
  * Class models a search for a shutter for the smart home device.
  */
-public class ShShutterSearch extends ShGenericDevice {
-    /**
-     * Attribute stores the text for the button to set the percentage to which to close the
-     * shutter.
-     */
-    @Nullable
-    private final String setButtonText;
-
-    /**
-     * Attribute stores the percentage to which the shutter is closed. This is {@code null} if no
-     * percentage is provided.
-     */
-    @Nullable
-    private final String percentage;
-
-    /**
-     * Attribute stores the time at which the shutter was closed? This is {@code null} if no time
-     * is provided.
-     */
-    @Nullable
-    private final String time;
-
-
-    /**
-     * Constructor instantiates a new shutter for the smart home.
-     *
-     * @param name          Name for the shutter.
-     * @param specifier     Specifies the device.
-     * @param setButtonText Text for the button through which to set the percentage to which the
-     *                      shutter is closed.
-     * @param percentage    Percentage to which the shutter is closed.
-     * @param time          Time at which the shutter was closed?
-     */
-    public ShShutterSearch(@NonNull String name, @Nullable String specifier, @Nullable String setButtonText, @Nullable String percentage, @Nullable String time) {
-        super(name, specifier ,null);
-        this.setButtonText = setButtonText;
-        this.percentage = percentage;
-        this.time = time;
-    }
-
+public class ShShutterSearch {
     /**
      *Finds the shutters of a room and creates devices for them.
      *
@@ -189,13 +150,10 @@ public class ShShutterSearch extends ShGenericDevice {
     private static RoomDeviceWrapper findSingleShutter(@NonNull Element secondDataCell, @NonNull String name, @Nullable String specifier) {
         Element shutterFrom = secondDataCell.selectFirst("td > form");
         if (shutterFrom != null) {
-            System.out.println("Shutter Form gefunden");
-
             // Get the text of the shutter's button.
             String buttonText;
             Element button = shutterFrom.selectFirst("form > button");
             if (button != null) {
-                System.out.println("Shutter input gefunden");
                 buttonText = button.text();
             }
             else {
@@ -255,38 +213,4 @@ public class ShShutterSearch extends ShGenericDevice {
         }
         return formInformation;
     }
-
-    /**
-     * Method returns the text for the button through which to set the percentage to which the
-     * shutter is closed.
-     *
-     * @return  Percentage to which the shutter is closed.
-     */
-    @Nullable
-    public String getSetButtonText() {
-        return setButtonText;
-    }
-
-    /**
-     * Method returns the percentage to which the shutter is closed. This returns {@code null} if no
-     * percentage is provided.
-     *
-     * @return  Percentage to which the shutter is closed.
-     */
-    @Nullable
-    public String getPercentage() {
-        return percentage;
-    }
-
-    /**
-     * Method returns the time at which the shutter was closed. This returns {@code null} if no time
-     * is provided.
-     *
-     * @return  Time at which the shutter was closed
-     */
-    @Nullable
-    public String getTime() {
-        return time;
-    }
-
 }
