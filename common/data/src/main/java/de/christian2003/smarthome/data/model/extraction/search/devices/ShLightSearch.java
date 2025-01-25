@@ -98,7 +98,7 @@ public class ShLightSearch {
     /**
      * Extracts the buttons of the lighting element.
      *
-     * @param secondDataCell        The second data cell of the table row which contains the opening.
+     * @param secondDataCell    The second data cell of the table row which contains the opening.
      * @param specifier     The specifier of the lighting.
      * @return      A String array with the content of the first button, the second button and a possible warning that occurred.
      */
@@ -107,8 +107,34 @@ public class ShLightSearch {
         Element firstButton = secondDataCell.selectFirst("td input[type=button]");
 
         // Check if the buttons of the lighting could be found.
-        if (firstButton != null) {
+        if (firstButton == null) {
+            firstButton = secondDataCell.selectFirst("td button");
 
+            // No button could be found for the lighting.
+            if (firstButton == null) {
+                String warningDescription = "No buttons could be found for the lighting \"" + specifier + "\". Please check the website and the documentation.";
+                return new OnOffButtonWrapper(null, null, new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription));
+            }
+            // Button as a button element.
+            else {
+                String firstButtonText = firstButton.ownText();
+                Element secondButton = secondDataCell.selectFirst("td button ~ button");
+
+                if (secondButton != null) {
+
+                    String secondButtonText = secondButton.ownText();
+
+                    return new OnOffButtonWrapper(firstButtonText, secondButtonText, null);
+                }
+                // Only one button could be found for the lighting.
+                else {
+                    String warningDescription = "Only one button could be found for the lighting \"" + specifier + "\". Please check the website and the documentation.";
+                    return new OnOffButtonWrapper(firstButtonText, null, new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription));
+                }
+            }
+        }
+        // Button as an input element from type button.
+        else {
             String firstButtonText = firstButton.attr("value");
             Element secondButton = secondDataCell.selectFirst("td input[type=button] ~ input[type=button]");
 
@@ -123,11 +149,6 @@ public class ShLightSearch {
                 String warningDescription = "Only one button could be found for the lighting \"" + specifier + "\". Please check the website and the documentation.";
                 return new OnOffButtonWrapper(firstButtonText, null, new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription));
             }
-        }
-        // No button could be found for the lighting.
-        else {
-            String warningDescription = "No buttons could be found for the lighting \"" + specifier + "\". Please check the website and the documentation.";
-            return new OnOffButtonWrapper(null, null, new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription));
         }
     }
 }
