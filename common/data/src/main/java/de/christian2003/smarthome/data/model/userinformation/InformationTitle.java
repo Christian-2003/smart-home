@@ -12,7 +12,8 @@ public enum InformationTitle implements Serializable {
     HtmlElementNotLocated,
     NoMilliAmpInformation,
     LoadingInterruption,
-    UnknownError;
+    UnknownError,
+    UnknownElement;
 
 
     /**

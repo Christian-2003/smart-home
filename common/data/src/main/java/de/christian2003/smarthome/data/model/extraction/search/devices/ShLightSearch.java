@@ -20,8 +20,8 @@ import de.christian2003.smarthome.data.model.wrapper.StringUserInformationWrappe
 /**
  * Class models a search for a light for the smart home.
  */
-
 public class ShLightSearch {
+
     /**
      * Finds a single lighting and further properties of it.
      *
@@ -31,7 +31,7 @@ public class ShLightSearch {
      * @return  A {@link RoomDeviceWrapper} which contains the lighting and a list of the warnings that occurred while gathering the information.
      */
     public static RoomDeviceWrapper findSingleLighting(@NonNull Element secondDataCell, @NonNull String lightingName, @NonNull String specifier) {
-        ArrayList<UserInformation>  userInformation = new ArrayList<>();
+        ArrayList<UserInformation> userInformation = new ArrayList<>();
 
         OnOffButtonWrapper lightingButtonsInformation = findLightingButtons(secondDataCell, specifier);
         if (lightingButtonsInformation.getUserInformation() != null) {

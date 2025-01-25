@@ -12,14 +12,27 @@ import java.util.Collections;
 import de.christian2003.smarthome.data.model.devices.ShLight;
 import de.christian2003.smarthome.data.model.devices.ShOpening;
 import de.christian2003.smarthome.data.model.devices.ShOpeningType;
+import de.christian2003.smarthome.data.model.devices.ShUnknownDevice;
 import de.christian2003.smarthome.data.model.extraction.search.devices.ShLightSearch;
 import de.christian2003.smarthome.data.model.extraction.search.devices.ShOpeningSearch;
+import de.christian2003.smarthome.data.model.extraction.search.devices.ShUnknownDeviceSearch;
 import de.christian2003.smarthome.data.model.userinformation.InformationTitle;
 import de.christian2003.smarthome.data.model.userinformation.InformationType;
 import de.christian2003.smarthome.data.model.userinformation.UserInformation;
 import de.christian2003.smarthome.data.model.wrapper.RoomDeviceWrapper;
 
+/**
+ * Models the search for elements that are part of an status row.
+ */
 public class ShStatusSearch {
+
+    /**
+     * Gathers the content of the status row.
+     *
+     * @param innerTable    The inner table that contains the status elements.
+     * @param roomName      The name of the room to which the status belongs.
+     * @return      A RoomDeviceWrapper which contains a list of all devices that were found in the room and a list of all warning/ errors that occurred while finding them.
+     */
     @NonNull
     public static RoomDeviceWrapper gatherStatusContent(@NonNull Element innerTable, @NonNull String roomName) {
         // Get the table row which contains the specifiers of each status element and the table row with the properties of the elements.
@@ -94,6 +107,14 @@ public class ShStatusSearch {
         }
     }
 
+    /**
+     * Finds the single status elements and their properties.
+     *
+     * @param statusElementContent  The element of the table which contains the device.
+     * @param statusElementName     The name of the status element.
+     * @param roomName      The name of the room to which the element belongs.
+     * @return      A RoomDeviceWrapper which contains a list of all devices that were found in the room and a list of all warning/ errors that occurred while finding them.
+     */
     @NonNull
     public static RoomDeviceWrapper findSingleStatusElement(@Nullable Element statusElementContent, @NonNull String statusElementName, @NonNull String roomName) {
         String statusElementNameLowerCase = statusElementName.toLowerCase();
@@ -126,7 +147,13 @@ public class ShStatusSearch {
             }
         }
         else {
-            return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShLight("TestDevice " + roomName, null,null, null, null, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, ""))));
+            if (statusElementContent != null) {
+                return ShUnknownDeviceSearch.findUnknownDevice(statusElementContent, statusElementName + " " + roomName);
+            }
+            else {
+                String warningDescription = "There was a different amount of status element contents and specifiers for them. All elements were extracted but for the element " + statusElementName + " no corresponding content could be found. Please check the website and the documentation.";
+                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShUnknownDevice(statusElementName + " " + roomName, null,null, null, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
+            }
         }
     }
 }
