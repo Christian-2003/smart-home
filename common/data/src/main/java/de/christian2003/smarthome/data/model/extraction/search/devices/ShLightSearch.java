@@ -28,9 +28,12 @@ public class ShLightSearch {
      * @param secondDataCell    The second data cell of the table row which contains the lighting.
      * @param lightingName   The name of the lighting.
      * @param specifier     The specifier of the lighting.
+     * @param hourDataCell  The data cell which contains the hours.
+     * @param whDataCell    The data cell which contains the wh.
+     *
      * @return  A {@link RoomDeviceWrapper} which contains the lighting and a list of the warnings that occurred while gathering the information.
      */
-    public static RoomDeviceWrapper findSingleLighting(@NonNull Element secondDataCell, @NonNull String lightingName, @NonNull String specifier) {
+    public static RoomDeviceWrapper findSingleLighting(@NonNull Element secondDataCell, @NonNull String lightingName, @NonNull String specifier, @Nullable Element hourDataCell, @Nullable Element whDataCell) {
         ArrayList<UserInformation> userInformation = new ArrayList<>();
 
         OnOffButtonWrapper lightingButtonsInformation = findLightingButtons(secondDataCell, specifier);
@@ -48,7 +51,7 @@ public class ShLightSearch {
             userInformation.add(milliAmp.getUserInformation());
         }
 
-        return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShLight(lightingName, specifier, imageWrapper.getProperty(), lightingButtonsInformation.getOnButton(), lightingButtonsInformation.getOffButton(), milliAmp.getProperty()))), userInformation);
+        return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShLight(lightingName, specifier, imageWrapper.getProperty(), lightingButtonsInformation.getOnButton(), lightingButtonsInformation.getOffButton(), milliAmp.getProperty(), ShLightSearch.findHours(hourDataCell), ShLightSearch.findWh(whDataCell)))), userInformation);
     }
 
     @NonNull
@@ -149,6 +152,38 @@ public class ShLightSearch {
                 String warningDescription = "Only one button could be found for the lighting \"" + specifier + "\". Please check the website and the documentation.";
                 return new OnOffButtonWrapper(firstButtonText, null, new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription));
             }
+        }
+    }
+
+    /**
+     * Finds the hours for an element in the hour data cell.
+     * @param hourDataCell      The data cell which contains the hours.
+     * @return  A string with the hours or null if no hours could be found.
+     */
+    @Nullable
+    public static String findHours(@Nullable Element hourDataCell) {
+        if (hourDataCell != null) {
+            Element hourElement =  hourDataCell.selectFirst("span");
+            return hourElement != null ? hourElement.ownText() : null;
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Finds the wh for an element in the hour data cell.
+     * @param whDataCell      The data cell which contains the wh.
+     * @return  A string with the wh or null if no wh could be found.
+     */
+    @Nullable
+    public static String findWh(@Nullable Element whDataCell) {
+        if (whDataCell != null) {
+            Element whElement =  whDataCell.selectFirst("span");
+            return whElement != null ? whElement.ownText() : null;
+        }
+        else {
+            return null;
         }
     }
 }

@@ -26,6 +26,18 @@ public class ShUnknownDevice extends ShGenericDevice{
     private final String milliAmp;
 
     /**
+     * The hours of the unknown device.
+     */
+    @Nullable
+    private final String hours;
+
+    /**
+     * The wh of the unknown device.
+     */
+    @Nullable
+    private final String wh;
+
+    /**
      * Constructor instantiates a new unknown device.
      *
      * @param name          Name for the unknown device.
@@ -33,12 +45,16 @@ public class ShUnknownDevice extends ShGenericDevice{
      * @param onButtonText  Text for the button to turn on the unknown device.
      * @param offButtonText Text for the button to turn off the unknown device.
      * @param milliAmp      The milli amp of the unknown device.
+     * @param hours The hours of the unknown device.
+     * @param wh    The wh of the unknown device.
      */
-    public ShUnknownDevice (@NonNull String name, @Nullable String imageUri, @Nullable String onButtonText, @Nullable String offButtonText, @Nullable String milliAmp) {
+    public ShUnknownDevice (@NonNull String name, @Nullable String imageUri, @Nullable String onButtonText, @Nullable String offButtonText, @Nullable String milliAmp, @Nullable String hours, @Nullable String wh) {
         super(name, null, imageUri);
         this.onButtonText = onButtonText;
         this.offButtonText = offButtonText;
         this.milliAmp = milliAmp;
+        this.hours = hours;
+        this.wh = wh;
     }
 
     /**
@@ -69,5 +85,25 @@ public class ShUnknownDevice extends ShGenericDevice{
     @Nullable
     public String getMilliAmp() {
         return milliAmp;
+    }
+
+    /**
+     * Method returns the hours of the unknown device.
+     *
+     * @return  The hours of the unknown device.
+     */
+    @Nullable
+    public String getHours() {
+        return hours;
+    }
+
+    /**
+     * Method returns the wh of the unknown device.
+     *
+     * @return  The wh of the unknown device.
+     */
+    @Nullable
+    public String getWh() {
+        return wh;
     }
 }

@@ -100,7 +100,7 @@ public class ShRoomSearch implements Serializable {
         // Get the content table and its elements.
         Element contentTable = room.selectFirst("table");
         if (contentTable != null) {
-            Elements tableRows = contentTable.select("tr");
+            Elements tableRows = contentTable.select("> tbody > tr");
 
             if (!tableRows.isEmpty()) {
                 ArrayList<ShInfoText> shInfoTexts = new ArrayList<>();

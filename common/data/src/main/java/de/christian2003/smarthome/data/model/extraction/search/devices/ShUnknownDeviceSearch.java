@@ -1,6 +1,7 @@
 package de.christian2003.smarthome.data.model.extraction.search.devices;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.jsoup.nodes.Element;
 
@@ -36,11 +37,11 @@ public class ShUnknownDeviceSearch {
             Element secondDataCell = tableRow.selectFirst("td ~ td");
 
             if (secondDataCell != null) {
-                return ShUnknownDeviceSearch.gatherUnknownDeviceProperties(secondDataCell, name);
+                return ShUnknownDeviceSearch.gatherUnknownDeviceProperties(secondDataCell, name, null, null);
             }
             else {
                 String warningDescription = "No second table row with that should contain the properties of the " + name + " could be found. Please check the website and the documentation.";
-                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShUnknownDevice(name, null, null, null, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
+                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShUnknownDevice(name, null, null, null, null, null, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
 
             }
         }
@@ -56,16 +57,18 @@ public class ShUnknownDeviceSearch {
      *
      * @param secondDataCell    The second data cell of the table row which contains the lighting.
      * @param name   The name of the unknown device.
+     * @param hourDataCell  The data cell which contains the hours.
+     * @param whDataCell    The data cell which contains the wh.
      *
      * @return  A {@link RoomDeviceWrapper} which contains the unknown device and a list of the warnings that occurred while gathering the information.
      */
     @NonNull
-    public static RoomDeviceWrapper gatherUnknownDeviceProperties(@NonNull Element secondDataCell, @NonNull String name) {
+    public static RoomDeviceWrapper gatherUnknownDeviceProperties(@NonNull Element secondDataCell, @NonNull String name, @Nullable Element hourDataCell, @Nullable Element whDataCell) {
         OnOffButtonWrapper buttons = ShLightSearch.findLightingButtons(secondDataCell, "");
         StringUserInformationWrapper milliAmp = ShLightSearch.findMilliAmp(secondDataCell);
         StringUserInformationWrapper imageUriWrapper = ShLightSearch.findImage(secondDataCell);
 
         String informationDescription = "This is not a standard element. Some of its properties might be missing.";
-        return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShUnknownDevice(name, imageUriWrapper.getProperty(), buttons.getOnButton(), buttons.getOffButton(), milliAmp.getProperty()))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.INFORMATION, InformationTitle.UnknownElement, informationDescription))));
+        return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShUnknownDevice(name, imageUriWrapper.getProperty(), buttons.getOnButton(), buttons.getOffButton(), milliAmp.getProperty(), ShLightSearch.findHours(hourDataCell), ShLightSearch.findWh(whDataCell)))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.INFORMATION, InformationTitle.UnknownElement, informationDescription))));
     }
 }

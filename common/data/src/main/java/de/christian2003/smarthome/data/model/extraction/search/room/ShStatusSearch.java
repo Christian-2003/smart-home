@@ -45,13 +45,27 @@ public class ShStatusSearch {
             if (secondTableRow != null) {
                 Elements statusElementsContent = secondTableRow.select("tr > td");
 
+                // Only few status have 2 more rows for hours and wh
+                Element thirdTableRow = innerTable.selectFirst("table > tbody > tr + tr + tr");
+                Element fourthTableRow = innerTable.selectFirst("table > tbody > tr + tr + tr + tr");
+                Elements hours = null;
+                Elements wh = null;
+
+                // Check if there are rows that might display hours and wh.
+                if (thirdTableRow != null) {
+                    hours = thirdTableRow.select("tr > td");
+                    if (fourthTableRow != null) {
+                        wh = fourthTableRow.select("tr > td");
+                    }
+                }
+
                 // Check if there is an element specifier for every status element or if there are no specifiers.
                 if (statusElementsContent.size() == statusElementNames.size()) {
                     RoomDeviceWrapper wrapper = new RoomDeviceWrapper(new ArrayList<>(), new ArrayList<>());
 
                     for (int i = 0; i < statusElementNames.size(); i++) {
                         RoomDeviceWrapper temporaryWrapper;
-                        temporaryWrapper = findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i).ownText(), roomName);
+                        temporaryWrapper = findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i).ownText(), roomName, (hours != null && i < hours.size()) ? hours.get(i) : null, (wh != null && i < wh.size()) ? wh.get(i) : null);
 
                         wrapper.addDevices(temporaryWrapper.getDevices());
                         wrapper.addUserInformation(temporaryWrapper.getUserInformation());
@@ -66,10 +80,10 @@ public class ShStatusSearch {
                     if (statusElementsContent.size() > statusElementNames.size()) {
                         for (int i = 0; i < statusElementsContent.size(); i++) {
                             if (statusElementNames.size() >= i) {
-                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i).ownText(), roomName));
+                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i).ownText(), roomName, (hours != null && i < hours.size()) ? hours.get(i) : null, (wh != null && i < wh.size()) ? wh.get(i) : null));
                             }
                             else {
-                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), "Automatic specifier " + (i - statusElementNames.size())+ 1, roomName));
+                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), "Automatic specifier " + (i - statusElementNames.size())+ 1, roomName, (hours != null && i < hours.size()) ? hours.get(i) : null, (wh != null && i < wh.size()) ? wh.get(i) : null));
                             }
                         }
 
@@ -82,10 +96,10 @@ public class ShStatusSearch {
                     else {
                         for (int i = 0; i < statusElementNames.size(); i++) {
                             if (statusElementsContent.size() >= i) {
-                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i).ownText(), roomName));
+                                wrapper.combineWrapper(findSingleStatusElement(statusElementsContent.get(i), statusElementNames.get(i).ownText(), roomName, (hours != null && i < hours.size()) ? hours.get(i) : null, (wh != null && i < wh.size()) ? wh.get(i) : null));
                             }
                             else {
-                                wrapper.combineWrapper(findSingleStatusElement(null, statusElementNames.get(i).ownText(), roomName));
+                                wrapper.combineWrapper(findSingleStatusElement(null, statusElementNames.get(i).ownText(), roomName, (hours != null && i < hours.size()) ? hours.get(i) : null, (wh != null && i < wh.size()) ? wh.get(i) : null));
                             }
                         }
                         String descriptionWarning = "There was a different amount of status elements and specifier for them. All elements that could be found were extracted. If no content was found the element was extracted with its name and specifier. Please check the website and the documentation.";
@@ -113,10 +127,12 @@ public class ShStatusSearch {
      * @param statusElementContent  The element of the table which contains the device.
      * @param statusElementName     The name of the status element.
      * @param roomName      The name of the room to which the element belongs.
+     * @param hourDataCell  The data cell which contains the hours.
+     * @param whDataCell    The data cell which contains the wh.
      * @return      A RoomDeviceWrapper which contains a list of all devices that were found in the room and a list of all warning/ errors that occurred while finding them.
      */
     @NonNull
-    public static RoomDeviceWrapper findSingleStatusElement(@Nullable Element statusElementContent, @NonNull String statusElementName, @NonNull String roomName) {
+    public static RoomDeviceWrapper findSingleStatusElement(@Nullable Element statusElementContent, @NonNull String statusElementName, @NonNull String roomName, @Nullable Element hourDataCell, @Nullable Element whDataCell) {
         String statusElementNameLowerCase = statusElementName.toLowerCase();
 
         if (statusElementNameLowerCase.contains("fenster")) {
@@ -139,20 +155,20 @@ public class ShStatusSearch {
         }
         else if (statusElementNameLowerCase.contains("licht")) {
             if (statusElementContent != null) {
-                return ShLightSearch.findSingleLighting(statusElementContent, "Licht " + roomName, statusElementName);
+                return ShLightSearch.findSingleLighting(statusElementContent, "Licht " + roomName, statusElementName, hourDataCell, whDataCell);
             }
             else {
                 String warningDescription = "There was a different amount of status element contents and specifiers for them. All elements were extracted but for the element " + statusElementName + " no corresponding content could be found. Please check the website and the documentation.";
-                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShLight("Licht " + roomName, statusElementName,null, null, null, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
+                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShLight("Licht " + roomName, statusElementName,null, null, null, null, ShLightSearch.findHours(hourDataCell), ShLightSearch.findWh(whDataCell)))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
             }
         }
         else {
             if (statusElementContent != null) {
-                return ShUnknownDeviceSearch.gatherUnknownDeviceProperties(statusElementContent, statusElementName + " " + roomName);
+                return ShUnknownDeviceSearch.gatherUnknownDeviceProperties(statusElementContent, statusElementName + " " + roomName, hourDataCell, whDataCell);
             }
             else {
                 String warningDescription = "There was a different amount of status element contents and specifiers for them. All elements were extracted but for the element " + statusElementName + " no corresponding content could be found. Please check the website and the documentation.";
-                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShUnknownDevice(statusElementName + " " + roomName, null,null, null, null))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
+                return new RoomDeviceWrapper(new ArrayList<>(Collections.singletonList(new ShUnknownDevice(statusElementName + " " + roomName, null,null, null, null, ShLightSearch.findHours(hourDataCell), ShLightSearch.findWh(whDataCell)))), new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
             }
         }
     }
