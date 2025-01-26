@@ -2,6 +2,7 @@ package de.christian2003.smarthome.auto.screen
 
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
+import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.Action
 import androidx.car.app.model.Pane
 import androidx.car.app.model.PaneTemplate
@@ -17,6 +18,7 @@ import kotlinx.coroutines.withContext
 /**
  * Class implements the loading screen. This screen is displayed to the user while the data loads.
  */
+@ExperimentalCarApi
 class LoadingScreen(carContext: CarContext): Screen(carContext) {
 
     /**

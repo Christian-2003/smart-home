@@ -105,7 +105,7 @@ fun RoomsList(
 ) {
     LazyColumn {
         items(rooms) { room ->
-            if (room.name.contains("Gesamtstatus")) {
+            if (room.isGesamtstatusElement) {
                 RoomsListRowGeneralStatus(
                     generalStatus = room
                 )
