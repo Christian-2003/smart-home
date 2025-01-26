@@ -38,6 +38,10 @@ public class ShRoom implements Serializable {
     @NonNull
     private final ArrayList<UserInformation> userInformation;
 
+    /**
+     * States if the room display the "gesamtstatus".
+     */
+    private final boolean gesamtstatusElement;
 
     /**
      * Constructor instantiates a new room.
@@ -47,11 +51,12 @@ public class ShRoom implements Serializable {
      * @param devices           List of smart home devices for the room.
      * @param userInformation   List of warnings and errors about the room that should be displayed for the user.
      */
-    public ShRoom(@NonNull String name, @Nullable ArrayList<ShInfoText> infos, @Nullable ArrayList<ShGenericDevice> devices, @Nullable ArrayList<UserInformation> userInformation) {
+    public ShRoom(@NonNull String name, @Nullable ArrayList<ShInfoText> infos, @Nullable ArrayList<ShGenericDevice> devices, @Nullable ArrayList<UserInformation> userInformation, boolean gesamtstatusElement) {
         this.name = name;
         this.infos = infos != null ? infos : new ArrayList<>();
         this.devices = devices != null ? devices : new ArrayList<>();
         this.userInformation = userInformation != null ? userInformation : new ArrayList<>();
+        this.gesamtstatusElement = gesamtstatusElement;
     }
 
     /**
@@ -94,4 +99,10 @@ public class ShRoom implements Serializable {
         return userInformation;
     }
 
+    /**
+     * Method returns a boolean that states if the room display the "gesamtstatus".
+     *
+     * @return  Boolean that states if the room display the "gesamtstatus".
+     */
+    public boolean isGesamtstatusElement() {return gesamtstatusElement;}
 }

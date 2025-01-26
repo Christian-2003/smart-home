@@ -61,12 +61,15 @@ public class ShRoomSearch implements Serializable {
             // Check if a name was found for the room.
             if (roomNameEl != null) {
                 String roomName = roomNameEl.text();
+
+                // Check if it was the "room" that displays the "gesamtstatus".
+                // There can only be one "gesamtstatus" element.
                 if (!overallStatus && roomName.toLowerCase().contains("gesamtstatus")) {
                     overallStatus = true;
-                    shRoomList.add(0, parseContentTable(room, roomName));
+                    shRoomList.add(0, parseContentTable(room, roomName, true));
                 }
                 else {
-                    shRoomList.add(parseContentTable(room, roomName));
+                    shRoomList.add(parseContentTable(room, roomName, false));
                 }
             }
             else {
@@ -92,10 +95,12 @@ public class ShRoomSearch implements Serializable {
      *
      * @param room          The element node which contains the name of the room.
      * @param roomName      The name of the room.
+     * @param gesamtstatusElement   States if the room display the "gesamtstatus".
+     *
      * @return              A list of all the info texts of the room and a list with all warnings/ errors that occurred while gathering the information.
      */
     @NonNull
-    public ShRoom parseContentTable(@NonNull Element room, @NonNull String roomName) {
+    public ShRoom parseContentTable(@NonNull Element room, @NonNull String roomName, boolean gesamtstatusElement) {
 
         // Get the content table and its elements.
         Element contentTable = room.selectFirst("table");
@@ -136,18 +141,18 @@ public class ShRoomSearch implements Serializable {
                         userInformation.addAll(roomDeviceWrapper.getUserInformation());
                     }
                 }
-                return new ShRoom(roomName, shInfoTexts, shGenericDevices, userInformation);
+                return new ShRoom(roomName, shInfoTexts, shGenericDevices, userInformation, gesamtstatusElement);
             }
             // Content table was found but it doesn´t contain any rows with information.
             else {
                 String warningDescription = "A room was found but no table containing further information to the room could be found. Please check the code of the website and the documentation.";
-                return new ShRoom(roomName, null, null, new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
+                return new ShRoom(roomName, null, null, new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))), gesamtstatusElement);
             }
         }
         // Room doesn´t contain a content table.
         else {
             String warningDescription = "A room was found but no table containing further information to the room could be found. Please check the code of the website and the documentation.";
-            return new ShRoom(roomName, null, null, new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))));
+            return new ShRoom(roomName, null, null, new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.HtmlElementNotLocated, warningDescription))), gesamtstatusElement);
         }
     }
 
