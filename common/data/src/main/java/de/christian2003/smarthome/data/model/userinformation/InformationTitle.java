@@ -13,7 +13,8 @@ public enum InformationTitle implements Serializable {
     NoMilliAmpInformation,
     LoadingInterruption,
     UnknownError,
-    UnknownElement;
+    UnknownElement,
+    UnknownRoom;
 
 
     /**

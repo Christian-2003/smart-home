@@ -74,6 +74,8 @@ public class ShRoomSearch implements Serializable {
             }
             else {
                 // Div container with the class "room" was found but not title of the room could be found.
+                String warningDescription = "A div container with the class \"room\" was found but not title of the room could be found.";
+                shRoomList.add(new ShRoom("Unknown Room", null, null, new ArrayList<>(Collections.singletonList(new UserInformation(InformationType.WARNING, InformationTitle.UnknownRoom, warningDescription))), false));
             }
         }
         return shRoomList;
