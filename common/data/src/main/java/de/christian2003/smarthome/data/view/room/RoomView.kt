@@ -117,6 +117,18 @@ fun ListRowLight(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            if (device.hours != null) {
+                Text(
+                    text = device.hours!!,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            if (device.wh != null) {
+                Text(
+                    text = device.wh!!,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
         if (device.onButtonText != null) {
             TextButton(
@@ -312,6 +324,24 @@ fun ListRowUnknown(
                 text = if (device.specifier != null) { device.specifier!! } else { device.name },
                 color = MaterialTheme.colorScheme.onSurface
             )
+            if (device.milliAmp != null) {
+                Text(
+                    text = device.milliAmp!!,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            if (device.hours != null) {
+                Text(
+                    text = device.hours!!,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            if (device.wh != null) {
+                Text(
+                    text = device.wh!!,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
