@@ -120,12 +120,11 @@ public class ShWebpageContent {
         CertHandler certHandler = new CertHandler(context);
         try {
             HttpsURLConnection.setDefaultSSLSocketFactory(certHandler.getSSLContext().getSocketFactory());
+            webView.loadUrl(url);
         }
         catch (Exception e) {
             loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.UnknownError, "An unknown error occurred while loading the website with the certificate. \nError message:\n" + e.getMessage()));
-            System.out.println("cerHandlerEx");
         }
-        webView.loadUrl(url);
     }
 
     /**
