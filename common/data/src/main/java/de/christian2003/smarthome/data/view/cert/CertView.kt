@@ -1,11 +1,9 @@
 package de.christian2003.smarthome.data.view.cert
 
-import android.app.Activity
-import android.content.Intent
-import android.graphics.Paint.Align
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.content.Context
+import android.content.ContextWrapper
+import android.security.KeyChain
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,30 +16,18 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,13 +35,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import de.christian2003.smarthome.data.R
 import de.christian2003.smarthome.data.ui.utils.SmartHomeInfoCard
-import kotlinx.coroutines.launch
+
+
+/**
+ * Function extends the Context class to get the base activity of the app.
+ */
+fun Context.getActivity(): ComponentActivity? = when (this) {
+    is ComponentActivity -> this
+    is ContextWrapper -> baseContext.getActivity()
+    else -> null
+}
 
 
 /**
@@ -70,12 +61,7 @@ fun CertView(
     viewModel: CertViewModel,
     onNavigateUp: () -> Unit
 ) {
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.data != null && result.data?.data != null) {
-            viewModel.certUri = result.data?.data
-            viewModel.isPasswordDialogVisible = true
-        }
-    }
+    val activity = LocalContext.current.getActivity()
 
     Scaffold(
         topBar = {
@@ -109,40 +95,47 @@ fun CertView(
             SmartHomeInfoCard(
                 message = stringResource(R.string.cert_info)
             )
-            if (viewModel.isValidCertSelected) {
+            if (viewModel.isCertSelected != null && viewModel.isCertSelected!!) {
                 InputSection(
                     onRemoveCertClicked = {
                         viewModel.removeCert()
                     },
                     onSelectCertClicked = {
-                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                        intent.addCategory(Intent.CATEGORY_OPENABLE)
-                        intent.setType("application/x-pkcs12")
-                        launcher.launch(intent)
+                        KeyChain.choosePrivateKeyAlias(
+                            activity!!,
+                            { alias ->
+                                if (alias != null) {
+                                    viewModel.importCert(alias)
+                                }
+                            },
+                            null,
+                            null,
+                            null,
+                            -1,
+                            null
+                        )
                     }
                 )
             }
-            else {
+            else if (viewModel.isCertSelected != null) {
                 InputSectionError(
                     onSelectCertClicked = {
-                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                        intent.addCategory(Intent.CATEGORY_OPENABLE)
-                        intent.setType("application/x-pkcs12")
-                        launcher.launch(intent)
+                        KeyChain.choosePrivateKeyAlias(
+                            activity!!,
+                            { alias ->
+                                if (alias != null) {
+                                    viewModel.importCert(alias)
+                                }
+                            },
+                            null,
+                            null,
+                            null,
+                            -1,
+                            null
+                        )
                     }
                 )
             }
-        }
-        if (viewModel.isPasswordDialogVisible) {
-            PasswordDialog(
-                onPasswordEntered = { password ->
-                    viewModel.importCertificate(password)
-                    viewModel.isPasswordDialogVisible = false
-                },
-                onDismissed = {
-                    viewModel.isPasswordDialogVisible = false
-                }
-            )
         }
     }
 }
@@ -262,90 +255,6 @@ fun InputSection(
                 onClick = onSelectCertClicked
             ) {
                 Text(stringResource(R.string.button_select_other_cert))
-            }
-        }
-    }
-}
-
-
-/**
- * Composable displays a dialog through which the user can enter a password.
- *
- * @param onPasswordEntered Callback to invoke once a password was entered.
- * @param onDismissed       Callback to invoke once the dialog closes.
- */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
-@Composable
-fun PasswordDialog(
-    onPasswordEntered: (String) -> Unit,
-    onDismissed: () -> Unit
-) {
-    var password by rememberSaveable { mutableStateOf("") }
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    ModalBottomSheet(
-        onDismissRequest = onDismissed,
-        sheetState = sheetState
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dimensionResource(R.dimen.space_horizontal))
-        ) {
-            Text(
-                text = stringResource(R.string.cert_password_info)
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = password,
-                onValueChange = {
-                    password = it
-                },
-                label = {
-                    Text(stringResource(R.string.cert_password_hint))
-                },
-                singleLine = true,
-                visualTransformation = if (passwordVisible) { VisualTransformation.None } else { PasswordVisualTransformation() },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                trailingIcon = {
-                    val image = if (passwordVisible) { painterResource(R.drawable.ic_visible) } else { painterResource(R.drawable.ic_invisible) }
-                    IconButton(
-                        onClick = {
-                            passwordVisible = !passwordVisible
-                        }
-                    ) {
-                        Icon(
-                            painter = image,
-                            contentDescription = ""
-                        )
-                    }
-                }
-            )
-            FlowRow(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(bottom = dimensionResource(R.dimen.space_vertical)),
-                horizontalArrangement = Arrangement.End
-            ) {
-                OutlinedButton(
-                    onClick = onDismissed
-                ) {
-                    Text(stringResource(R.string.button_cancel))
-                }
-                Button(
-                    modifier = Modifier.padding(start = dimensionResource(R.dimen.space_horizontal_between)),
-                    onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                        }.invokeOnCompletion {
-                            onPasswordEntered(password)
-                        }
-                    },
-                    enabled = password.isNotEmpty()
-                ) {
-                    Text(stringResource(R.string.button_ok))
-                }
             }
         }
     }

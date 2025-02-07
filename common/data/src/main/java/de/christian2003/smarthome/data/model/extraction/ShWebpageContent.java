@@ -14,6 +14,7 @@ import org.jsoup.nodes.Document;
 import java.util.concurrent.CountDownLatch;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 
 import de.christian2003.smarthome.data.model.cert.CertHandler;
 import de.christian2003.smarthome.data.model.extraction.search.room.ShRoomSearch;
@@ -57,8 +58,9 @@ public class ShWebpageContent {
         loadingInformation = new ArrayList<>();
 
         new Thread(()-> {
-
-            new Handler(Looper.getMainLooper()).post(() -> createWebView(url, context, shWebpageInterface));
+            CertHandler certHandler = new CertHandler(context);
+            SSLContext sslContext = certHandler.getSSLContext(); //This method must not be called from main thread!
+            new Handler(Looper.getMainLooper()).post(() -> createWebView(url, context, shWebpageInterface, sslContext));
 
             try {
                 latch.await();
@@ -85,7 +87,7 @@ public class ShWebpageContent {
      * @param context   The current context.
      * @param shWebpageInterface    Handling the parsing of the code of the loaded website to a document.
      */
-    private void createWebView(String url, Context context, ShWebpageInterface shWebpageInterface)  {
+    private void createWebView(String url, Context context, ShWebpageInterface shWebpageInterface, SSLContext sslContext)  {
         WebView webView = new WebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
 
@@ -117,9 +119,8 @@ public class ShWebpageContent {
             }
         });
 
-        CertHandler certHandler = new CertHandler(context);
         try {
-            HttpsURLConnection.setDefaultSSLSocketFactory(certHandler.getSSLContext().getSocketFactory());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
             webView.loadUrl(url);
         }
         catch (Exception e) {

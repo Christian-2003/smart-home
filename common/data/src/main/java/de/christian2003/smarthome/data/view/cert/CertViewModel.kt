@@ -1,14 +1,18 @@
 package de.christian2003.smarthome.data.view.cert
 
 import android.app.Application
-import android.net.Uri
+import android.content.Context
+import android.security.KeyChain
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import de.christian2003.smarthome.data.model.cert.CertHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.security.PrivateKey
+import java.security.cert.X509Certificate
 
 
 /**
@@ -17,71 +21,84 @@ import kotlinx.coroutines.launch
 class CertViewModel(application: Application): AndroidViewModel(application) {
 
     /**
-     * Attribute stores the cert handler through which to access / import a certificate.
+     * Attribute stores the preferences in which to store the URL.
      */
-    private val certHandler: CertHandler = CertHandler(getApplication<Application>().applicationContext)
+    private val preferences = getApplication<Application>().getSharedPreferences("smart_home", Context.MODE_PRIVATE)
 
     /**
-     * Attribute stores the URI to the certificate selected by the user.
+     * Attribute stores whether a certificate is selected.
      */
-    var certUri: Uri? = null
-
-    /**
-     * Attribute stores whether a valid certificate is selected.
-     */
-    var isValidCertSelected: Boolean by mutableStateOf(false)
-
-    /**
-     * Attribute stores whether the dialog to enter the certificate password is visible.
-     */
-    var isPasswordDialogVisible: Boolean by mutableStateOf(false)
+    var isCertSelected: Boolean? by mutableStateOf(null)
 
 
     /**
      * Method initializes the view model.
      */
     fun init() {
-        isValidCertSelected = isCertAvailable()
+        isCertAvailable()
     }
 
 
     /**
-     * Method imports the certificate whose URI is stored in "certUri" with the specified password.
+     * Method imports a new certificate with the alias specified.
      *
-     * @param password  Password for the certificate to import.
+     * @param alias Alias of the certificate to import.
      */
-    fun importCertificate(password: String) = viewModelScope.launch {
-        if (certUri != null) {
-            certHandler.importNewCertFromUri(certUri!!, password)
-            isValidCertSelected = isCertAvailable()
+    fun importCert(alias: String) = viewModelScope.launch(Dispatchers.IO) {
+        val context = getApplication<Application>().applicationContext
+        val key: PrivateKey? = KeyChain.getPrivateKey(context, alias)
+        if (key != null) {
+            val chain: Array<X509Certificate>? = KeyChain.getCertificateChain(context, alias)
+            if (chain != null) {
+                val editor = preferences.edit()
+                editor.putString("cert_alias", alias)
+                editor.apply()
+                isCertAvailable()
+            }
+            else {
+                Log.e("Certificates", "Chain is null")
+            }
+        }
+        else {
+            Log.e("Certificates", "Key is null")
         }
     }
 
-    /**
-     * Method removes the certificate that is currently imported within the app.
-     */
-    fun removeCert() = viewModelScope.launch {
-        try {
-            certHandler.removeCert()
-        }
-        catch (e: Exception) {
-            //Ignore
-        }
-        isValidCertSelected = isCertAvailable()
-    }
 
     /**
-     * Method determines whether a certificate is currently imported within the app.
-     *
-     * @return  Whether a valid certificate is imported.
+     * Method removes the certificate from the app.
      */
-    private fun isCertAvailable(): Boolean {
-        return try {
-            certHandler.sslContext != null
+    fun removeCert() {
+        val editor = preferences.edit()
+        editor.remove("cert_alias")
+        editor.apply()
+        isCertSelected = false
+    }
+
+
+    /**
+     * Method determines whether a certificate is available.
+     */
+    private fun isCertAvailable() = viewModelScope.launch(Dispatchers.IO) {
+        val alias: String? = preferences.getString("cert_alias", null)
+        val context: Context = getApplication<Application>().applicationContext
+        var result: Boolean
+        if (alias != null) {
+            try {
+                val privateKey: PrivateKey? = KeyChain.getPrivateKey(context, alias)
+                val chain: Array<X509Certificate>? = KeyChain.getCertificateChain(context, alias)
+
+                result = privateKey != null && chain != null
+            }
+            catch(e: Exception) {
+                Log.e("Certificates", "Cert is unavailable: ${e.message}")
+                result = false
+            }
         }
-        catch (e: Exception) {
-            false
+        else {
+            result = false
         }
+        isCertSelected = result
     }
 
 }
