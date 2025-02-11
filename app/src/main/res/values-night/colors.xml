@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <color name="splash_background">#FF16130B</color> <!-- surfaceDark -->
+    <color name="splash_foreground">#FFE2C46D</color> <!-- primaryDark -->
+    <color name="splash_tint">#FFEAE1D4</color> <!-- onSurfaceDark -->
+</resources>

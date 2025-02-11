@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,12 +25,23 @@ import de.christian2003.smarthome.data.view.settings.SettingsView
 import de.christian2003.smarthome.data.view.settings.SettingsViewModel
 import de.christian2003.smarthome.data.view.url.UrlView
 import de.christian2003.smarthome.data.view.url.UrlViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val splashScreen = installSplashScreen()
+        var keepSplashScreen = true
+        splashScreen.setKeepOnScreenCondition { keepSplashScreen }
+        lifecycleScope.launch {
+            delay(1000)
+            keepSplashScreen = false
+        }
+
         enableEdgeToEdge()
         setContent {
             SmartHome()

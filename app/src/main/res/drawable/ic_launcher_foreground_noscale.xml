@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+  <group
+    android:name="icon"
+    android:scaleX="0.5"
+    android:scaleY="0.5"
+    android:translateX="12"
+    android:translateY="12">
+
+    <path
+      android:name="house"
+      android:pathData="M34,40H36C36.552,40 37,39.552 37,39V20.938C37,20.659 36.883,20.392 36.678,20.203L24.678,9.126C24.295,8.773 23.705,8.773 23.322,9.126L11.322,20.203C11.117,20.392 11,20.659 11,20.938L11,39C11,39.552 11.448,40 12,40H14"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/splash_foreground"
+      android:strokeLineCap="round"/>
+
+    <group
+      android:name="phone">
+
+      <path
+          android:name="phone_outline"
+          android:pathData="M18,26V43C18,43.552 18.448,44 19,44H29C29.552,44 30,43.552 30,43V26C30,25.448 29.552,25 29,25H19C18.448,25 18,25.448 18,26Z"
+          android:strokeWidth="2"
+          android:fillColor="#00000000"
+          android:strokeColor="@color/splash_foreground"/>
+
+      <path
+          android:name="phone_button"
+          android:pathData="M23,40H25"
+          android:strokeWidth="2"
+          android:fillColor="#00000000"
+          android:strokeColor="@color/splash_foreground"
+          android:strokeLineCap="round"/>
+
+    </group>
+
+    <path
+        android:name="signal_1"
+        android:pathData="M30,10.5C32.5,10.5 35,13 35,15.5"
+        android:strokeWidth="2"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/splash_foreground"
+        android:strokeAlpha="0"
+        android:strokeLineCap="round"/>
+
+
+    <path
+      android:name="signal_2"
+      android:pathData="M31,7C34.5,7 38.5,11 38.5,14.5"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/splash_foreground"
+        android:strokeAlpha="0"
+      android:strokeLineCap="round"/>
+
+    <path
+      android:name="signal_3"
+      android:pathData="M32,3.5C37,3.5 42,8.5 42,13.5"
+      android:strokeWidth="2"
+      android:strokeAlpha="0"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/splash_foreground"
+      android:strokeLineCap="round"/>
+
+  </group>
+
+</vector>
