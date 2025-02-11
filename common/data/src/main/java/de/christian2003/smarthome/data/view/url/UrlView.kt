@@ -45,7 +45,9 @@ import de.christian2003.smarthome.data.ui.utils.SmartHomeInfoCard
 @Composable
 fun UrlView(
     viewModel: UrlViewModel,
-    onNavigateUp: () -> Unit
+    isFirstOnStack: Boolean,
+    onNavigateUp: () -> Unit,
+    onNavigateToNext: () -> Unit
 ) {
     val context = LocalContext.current
     val saveSuccess = stringResource(R.string.url_save_success)
@@ -61,14 +63,16 @@ fun UrlView(
                     )
                 },
                 navigationIcon = {
-                    IconButton(
-                        onClick = onNavigateUp
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_back),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = ""
-                        )
+                    if (!isFirstOnStack) {
+                        IconButton(
+                            onClick = onNavigateUp
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_back),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                contentDescription = ""
+                            )
+                        }
                     }
                 }
             )
@@ -87,6 +91,7 @@ fun UrlView(
             InputSection(
                 url = viewModel.url,
                 isUrlValid = viewModel.isUrlValid,
+                isFirstOnStack = isFirstOnStack,
                 onUrlChanged = {
                     viewModel.url = it
                     viewModel.isUrlValid()
@@ -99,7 +104,12 @@ fun UrlView(
                     else {
                         Toast.makeText(context, saveError, Toast.LENGTH_LONG).show()
                     }
-                    onNavigateUp()
+                    if (isFirstOnStack) {
+                        onNavigateToNext()
+                    }
+                    else {
+                        onNavigateUp()
+                    }
                 }
             )
         }
@@ -121,6 +131,7 @@ fun UrlView(
 fun InputSection(
     url: String,
     isUrlValid: Boolean,
+    isFirstOnStack: Boolean,
     onUrlChanged: (String) -> Unit,
     onCancelClicked: () -> Unit,
     onSaveClicked: () -> Unit,
@@ -174,7 +185,7 @@ fun InputSection(
                 onClick = onSaveClicked,
                 enabled = isUrlValid && url.isNotEmpty()
             ) {
-                Text(stringResource(R.string.button_save))
+                Text(if (isFirstOnStack) { stringResource(R.string.button_next) } else {stringResource(R.string.button_save)})
             }
         }
     }

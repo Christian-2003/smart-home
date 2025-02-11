@@ -3,6 +3,7 @@ package de.christian2003.smarthome.data.view.cert
 import android.content.Context
 import android.content.ContextWrapper
 import android.security.KeyChain
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -59,7 +60,10 @@ fun Context.getActivity(): ComponentActivity? = when (this) {
 @Composable
 fun CertView(
     viewModel: CertViewModel,
-    onNavigateUp: () -> Unit
+    isFirstOnStack: Boolean,
+    isConfiguration: Boolean,
+    onNavigateUp: () -> Unit,
+    onNavigateToNext: () -> Unit
 ) {
     val activity = LocalContext.current.getActivity()
 
@@ -73,14 +77,16 @@ fun CertView(
                     )
                 },
                 navigationIcon = {
-                    IconButton(
-                        onClick = onNavigateUp
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_back),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = ""
-                        )
+                    if (!isFirstOnStack) {
+                        IconButton(
+                            onClick = onNavigateUp
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_back),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                contentDescription = ""
+                            )
+                        }
                     }
                 }
             )
@@ -90,12 +96,14 @@ fun CertView(
             modifier = Modifier
                 .padding(innerPadding)
                 .imePadding()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SmartHomeInfoCard(
                 message = stringResource(R.string.cert_info)
             )
             if (viewModel.isCertSelected != null && viewModel.isCertSelected!!) {
+                Log.d("Cert", "InputSection")
                 InputSection(
                     onRemoveCertClicked = {
                         viewModel.removeCert()
@@ -118,6 +126,7 @@ fun CertView(
                 )
             }
             else if (viewModel.isCertSelected != null) {
+                Log.d("Cert", "InputSectionError")
                 InputSectionError(
                     onSelectCertClicked = {
                         KeyChain.choosePrivateKeyAlias(
@@ -135,6 +144,19 @@ fun CertView(
                         )
                     }
                 )
+            }
+            else {
+                Log.d("Cert", "No input section")
+            }
+            if (isConfiguration) {
+                Button(
+                    onClick = {
+                        onNavigateToNext()
+                    },
+                    enabled = viewModel.isCertSelected != null && viewModel.isCertSelected!!
+                ) {
+                    Text(stringResource(R.string.button_next))
+                }
             }
         }
     }

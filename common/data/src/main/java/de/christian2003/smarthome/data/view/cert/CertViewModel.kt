@@ -99,6 +99,7 @@ class CertViewModel(application: Application): AndroidViewModel(application) {
             result = false
         }
         isCertSelected = result
+        Log.d("Cert", "IsCertSelected = $isCertSelected")
     }
 
 }

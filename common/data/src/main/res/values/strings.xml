@@ -43,6 +43,7 @@
     <string name="button_cancel">Cancel</string>
     <string name="button_save">Save</string>
     <string name="button_ok">Okay</string>
+    <string name="button_next">Next</string>
     <string name="button_select_cert">Select certificate</string>
     <string name="button_select_other_cert">Select other certificate</string>
     <string name="button_remove_cert">Remove certificate</string>

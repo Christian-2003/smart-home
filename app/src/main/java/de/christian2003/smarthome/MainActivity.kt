@@ -42,18 +42,34 @@ class MainActivity : ComponentActivity() {
 fun SmartHome() {
     val navController = rememberNavController()
 
+    val preferences = LocalContext.current.getSharedPreferences("smart_home", Context.MODE_PRIVATE)
+    val serverUrl: String? = preferences.getString("server_url", null)
+    var hasServerUrl: Boolean = !serverUrl.isNullOrEmpty()
+    var hasCert: Boolean = preferences.getString("cert_alias", null) != null
+
+    val startDestination: String = if(!hasServerUrl) {
+        "settings/url"
+    } else if (!hasCert) {
+        "settings/cert"
+    } else {
+        "main"
+    }
+
     val mainViewModel: MainViewModel = viewModel()
-    mainViewModel.init(SmartHomeRepository.getInstance(LocalContext.current))
 
     val settingsViewModel: SettingsViewModel = viewModel()
     settingsViewModel.init()
 
+    val urlViewModel: UrlViewModel = viewModel()
+    val certViewModel: CertViewModel = viewModel()
+
     SmartHomeTheme {
         NavHost(
             navController = navController,
-            startDestination = "main"
+            startDestination = startDestination
         ) {
             composable("main") {
+                mainViewModel.init(SmartHomeRepository.getInstance(LocalContext.current))
                 MainView(
                     viewModel = mainViewModel,
                     onNavigateToSettings = {
@@ -97,22 +113,36 @@ fun SmartHome() {
                 )
             }
             composable("settings/url") {
-                val urlViewModel: UrlViewModel = viewModel()
                 urlViewModel.init()
                 UrlView(
                     viewModel = urlViewModel,
+                    isFirstOnStack = !hasServerUrl,
                     onNavigateUp = {
                         navController.navigateUp()
+                    },
+                    onNavigateToNext = {
+                        hasServerUrl = true
+                        if (!hasCert) {
+                            navController.navigate("settings/cert")
+                        }
+                        else {
+                            navController.navigate("main")
+                        }
                     }
                 )
             }
             composable("settings/cert") {
-                val certViewModel: CertViewModel = viewModel()
                 certViewModel.init()
                 CertView(
                     viewModel = certViewModel,
+                    isFirstOnStack = !hasCert && hasServerUrl,
+                    isConfiguration = !hasCert,
                     onNavigateUp = {
                         navController.navigateUp()
+                    },
+                    onNavigateToNext = {
+                        hasCert = true
+                        navController.navigate("main")
                     }
                 )
             }

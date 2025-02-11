@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.androidx.car.app)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.core.splashscreen)
     implementation(project(":common:data"))
     implementation(project(":common:auto"))
 
