@@ -2,8 +2,13 @@ package de.christian2003.smarthome.data.model.extraction;
 
 
 import android.content.Context;
+import android.net.http.SslError;
 import android.os.Handler;
 import android.os.Looper;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -117,6 +122,33 @@ public class ShWebpageContent {
                             "})();");
                 }, 5000);
             }
+
+            // Network error
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                int errorCode = error.getErrorCode();
+                String errorMessage = "A network error has occurred. Please check your internet connection and restart the app. Error code: " + errorCode;
+                loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.NetworkError, errorMessage));
+            }
+
+            // HTTP error
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+                int statusCode = errorResponse.getStatusCode();
+                String errorMessage = "An HTTP error has occurred. Please fix it and restart the app. Status code: " + statusCode;
+                loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.HttpError, errorMessage));
+            }
+
+            // SSL error
+            @Override
+            public void onReceivedSslError (WebView view, SslErrorHandler handler, SslError error) {
+                super.onReceivedSslError(view, handler, error);
+                String errorMessage = "An SSL error has occurred. Please fix it and restart the app. SSL error: " + error.toString();
+                loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.SslError, errorMessage));
+            }
+
         });
 
         try {
