@@ -25,6 +25,15 @@
     <string name="settings_customization_warnings_info">Show warnings when displaying a smart home room</string>
     <string name="settings_customization_errors">Show errors</string>
     <string name="settings_customization_errors_info">Show errors when displaying a smart home room</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_github">GitHub</string>
+    <string name="settings_about_github_info">Show app on GitHub</string>
+    <string name="settings_about_system">More Info</string>
+    <string name="settings_about_system_info">Show app in system settings</string>
+    <string name="settings_about_licenses">Open source software</string>
+    <string name="settings_about_licenses_info">Show all open source software used</string>
+    <string name="settings_info_version">Version {arg}</string>
+    <string name="settings_info_copyright">© {arg} Björn Wiedorn, Christian Steinbring</string>
 
     <string name="url_title">Configure Server URL</string>
     <string name="url_input_server">Server URL</string>
@@ -38,10 +47,11 @@
     <string name="cert_error_invalid">No certificate selected or invalid password entered.</string>
     <string name="cert_error_remove">Could not remove certificate</string>
     <string name="cert_selected">You have selected a certificate and entered a valid password.</string>
-
     <string name="cert_password_hint">Certificate password</string>
     <string name="cert_password_info">Please enter the password for the client certificate</string>
     <string name="cert_password_error_empty">Please enter a password</string>
+
+    <string name="licenses_title">Used Software</string>
 
     <string name="button_cancel">Cancel</string>
     <string name="button_save">Save</string>

@@ -282,7 +282,7 @@ fun EmptyPlaceholder(
                 painter = icon,
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = "",
-                modifier = Modifier.size(dimensionResource(R.dimen.image_large))
+                modifier = Modifier.size(dimensionResource(R.dimen.image_extra_large))
             )
             Text(
                 text = title,

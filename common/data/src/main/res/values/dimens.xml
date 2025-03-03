@@ -6,11 +6,15 @@
     <dimen name="space_vertical_between">10dp</dimen>
     <dimen name="space_horizontal">30dp</dimen>
     <dimen name="space_horizontal_between">15dp</dimen>
+    <dimen name="space_horizontal_between_small">5dp</dimen>
 
     <dimen name="corners_default">30dp</dimen>
 
     <dimen name="borders_default">1dp</dimen>
 
-    <dimen name="image_large">136dp</dimen>
+    <dimen name="image_extra_large">136dp</dimen>
+    <dimen name="image_large">64dp</dimen>
+    <dimen name="image_medium">24dp</dimen>
+    <dimen name="image_small">16dp</dimen>
 
 </resources>

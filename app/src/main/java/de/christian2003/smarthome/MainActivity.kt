@@ -17,6 +17,8 @@ import de.christian2003.smarthome.data.model.SmartHomeRepository
 import de.christian2003.smarthome.data.ui.theme.SmartHomeTheme
 import de.christian2003.smarthome.data.view.cert.CertView
 import de.christian2003.smarthome.data.view.cert.CertViewModel
+import de.christian2003.smarthome.data.view.licenses.LicensesView
+import de.christian2003.smarthome.data.view.licenses.LicensesViewModel
 import de.christian2003.smarthome.data.view.main.MainView
 import de.christian2003.smarthome.data.view.main.MainViewModel
 import de.christian2003.smarthome.data.view.room.RoomView
@@ -122,6 +124,9 @@ fun SmartHome() {
                     },
                     onNavigateToCert = {
                         navController.navigate("settings/cert")
+                    },
+                    onNavigateToLicenses = {
+                        navController.navigate("settings/licenses")
                     }
                 )
             }
@@ -156,6 +161,17 @@ fun SmartHome() {
                     onNavigateToNext = {
                         hasCert = true
                         navController.navigate("main")
+                    }
+                )
+            }
+            composable("settings/licenses") {
+                val licensesViewModel: LicensesViewModel = viewModel()
+                licensesViewModel.init()
+
+                LicensesView(
+                    viewModel = viewModel(),
+                    navigateUp = {
+                        navController.navigateUp()
                     }
                 )
             }
