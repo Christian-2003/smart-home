@@ -62,7 +62,7 @@ class SmartHomeRepository(
     private fun onWebpageContentLoaded(success: Boolean) {
         if (success) {
             rooms = webpageContent.smartHomeData!!.toList()
-            infos = webpageContent.loadingInformation.toList()
+            infos = webpageContent.loadingInformation.toList().distinct()
             Log.d("Smart Home Repo", "Successfully loaded data")
         }
         else {

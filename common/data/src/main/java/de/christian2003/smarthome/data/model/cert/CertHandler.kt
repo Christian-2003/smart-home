@@ -32,6 +32,20 @@ class CertHandler(
      */
     fun getSSLContext(): SSLContext? {
         try {
+            val alias = preferences.getString("cert_alias", null) ?: return null
+            val keyManager = KeyChainKeyManager(context, alias)
+
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(arrayOf(keyManager), null, null)
+            return sslContext
+        } catch (e: Exception) {
+            Log.e("Certificates", "Cannot create SSLContext object: ${e.message}")
+        }
+        return null
+
+
+        /*
+        try {
             val alias: String? = preferences.getString("cert_alias", null)
             if (alias != null) {
                 val key: PrivateKey? = KeyChain.getPrivateKey(context, alias)
@@ -61,6 +75,7 @@ class CertHandler(
         }
 
         return null
+        */
     }
 
 }

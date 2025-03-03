@@ -53,6 +53,13 @@
 
     <string name="info_title_html_element_not_located">Could not locate HTML element</string>
     <string name="info_title_no_milli_amp_information">No amperage information</string>
+    <string name="info_title_loading_interruption">Loading interruption</string>
+    <string name="info_title_network_error">Network error</string>
+    <string name="info_title_http_error">HTTP error</string>
+    <string name="info_title_ssl_error">SSL error</string>
+    <string name="info_title_unknown_error">Unknown error</string>
+    <string name="info_title_unknown_element">Unknown element</string>
+    <string name="info_title_unknown_room">Unknown room</string>
     <string name="info_title_unknown">Unknown error</string>
 
     <string name="car_loading">Loading…</string>

@@ -1,8 +1,9 @@
 package de.christian2003.smarthome.data.model.userinformation;
 
 import androidx.annotation.NonNull;
-
+import androidx.annotation.Nullable;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Call models the information that can be displayed for the user.
@@ -92,6 +93,23 @@ public class UserInformation implements Serializable {
      */
     public void setDescriptionVisible(boolean descriptionVisible) {
         this.descriptionVisible = descriptionVisible;
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(informationType, informationTitle, description);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof UserInformation) {
+            UserInformation userInformation = (UserInformation)obj;
+            return userInformation.getInformationType() == informationType
+                    && userInformation.getInformationTitle() == informationTitle
+                    && userInformation.getDescription().equals(description);
+        }
+        return false;
     }
 
 }

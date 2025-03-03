@@ -46,8 +46,9 @@ fun SmartHomeInfoCard(
     Column(
         modifier = Modifier
             .padding(
-                vertical = dimensionResource(R.dimen.space_vertical),
-                horizontal = dimensionResource(R.dimen.space_horizontal)
+                start = dimensionResource(R.dimen.space_horizontal),
+                end = dimensionResource(R.dimen.space_horizontal),
+                bottom = dimensionResource(R.dimen.space_vertical)
             )
             .fillMaxWidth()
             .clip(RoundedCornerShape(dimensionResource(R.dimen.corners_default)))
