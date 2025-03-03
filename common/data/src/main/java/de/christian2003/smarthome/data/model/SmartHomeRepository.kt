@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import de.christian2003.smarthome.data.model.extraction.ShWebpageContent
 import de.christian2003.smarthome.data.model.extraction.ShWebpageContentCallback
 import de.christian2003.smarthome.data.model.room.ShRoom
+import de.christian2003.smarthome.data.model.userinformation.UserInformation
 
 
 /**
@@ -49,6 +50,11 @@ class SmartHomeRepository(
      */
     var rooms: List<ShRoom> by mutableStateOf(emptyList())
 
+    /**
+     * Attribute stores the list of errors occurring when the webpage is loaded.
+     */
+    var infos: List<UserInformation> by mutableStateOf(emptyList())
+
 
     /**
      * Method is called once the webpage content loads.
@@ -56,6 +62,7 @@ class SmartHomeRepository(
     private fun onWebpageContentLoaded(success: Boolean) {
         if (success) {
             rooms = webpageContent.smartHomeData!!.toList()
+            infos = webpageContent.loadingInformation.toList()
             Log.d("Smart Home Repo", "Successfully loaded data")
         }
         else {

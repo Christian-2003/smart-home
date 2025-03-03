@@ -7,6 +7,9 @@
     <string name="main_menu_settings">Settings</string>
     <string name="main_title">Welcome</string>
     <string name="main_rooms">Rooms</string>
+    <string name="main_loading">Fetching data. This might take some seconds…</string>
+    <string name="main_empty_title">No data</string>
+    <string name="main_empty_text">Available rooms in your smart home are displayed here.</string>
 
     <string name="room_label">{label}</string>
     <string name="room_label_specifier">{label} ({specifier})</string>

@@ -3,11 +3,13 @@ package de.christian2003.smarthome.data.view.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,12 +25,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import de.christian2003.smarthome.data.R
 import de.christian2003.smarthome.data.model.room.ShRoom
+import de.christian2003.smarthome.data.model.userinformation.UserInformation
+import de.christian2003.smarthome.data.view.room.ListRowWarning
 
 
 /**
@@ -75,17 +81,46 @@ fun MainView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (viewModel.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.padding(vertical = dimensionResource(R.dimen.space_vertical))
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.space_vertical))
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.main_loading),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .padding(
+                            horizontal = dimensionResource(R.dimen.space_horizontal),
+                            vertical = dimensionResource(R.dimen.space_vertical)
+                        )
                 )
+
             }
             else {
-                RoomsList(
-                    rooms = viewModel.rooms,
-                    onRoomClicked = { room ->
-                        onNavigateToRoom(viewModel.rooms.indexOf(room))
-                    }
-                )
+                if (viewModel.rooms.isEmpty() && (viewModel.infos.isEmpty() || (viewModel.infos.isNotEmpty() && !viewModel.showErrors && !viewModel.showWarnings))) {
+                    EmptyPlaceholder(
+                        title = stringResource(R.string.main_empty_title),
+                        text = stringResource(R.string.main_empty_text),
+                        icon = painterResource(R.drawable.el_rooms),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                else {
+                    RoomsList(
+                        rooms = viewModel.rooms,
+                        infos = viewModel.infos,
+                        onRoomClicked = { room ->
+                            onNavigateToRoom(viewModel.rooms.indexOf(room))
+                        },
+                        showWarnings = viewModel.showWarnings,
+                        showErrors = viewModel.showErrors
+                    )
+                }
             }
         }
     }
@@ -101,9 +136,19 @@ fun MainView(
 @Composable
 fun RoomsList(
     rooms: List<ShRoom>,
-    onRoomClicked: (ShRoom) -> Unit
+    infos: List<UserInformation>,
+    onRoomClicked: (ShRoom) -> Unit,
+    showWarnings: Boolean,
+    showErrors: Boolean
 ) {
     LazyColumn {
+        items(infos) { information ->
+            ListRowWarning(
+                information = information,
+                showWarnings = showWarnings,
+                showErrors = showErrors
+            )
+        }
         items(rooms) { room ->
             if (room.isGesamtstatusElement) {
                 RoomsListRowGeneralStatus(
@@ -210,6 +255,47 @@ fun RoomsListRowGeneralStatus(
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
+        }
+    }
+}
+
+
+
+@Composable
+fun EmptyPlaceholder(
+    title: String,
+    text: String,
+    icon: Painter,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier.padding(
+            horizontal = dimensionResource(R.dimen.space_horizontal),
+            vertical = dimensionResource(R.dimen.space_vertical)
+        )
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                painter = icon,
+                tint = MaterialTheme.colorScheme.primary,
+                contentDescription = "",
+                modifier = Modifier.size(dimensionResource(R.dimen.image_large))
+            )
+            Text(
+                text = title,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = text,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

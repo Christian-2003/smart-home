@@ -11,4 +11,6 @@
 
     <dimen name="borders_default">1dp</dimen>
 
+    <dimen name="image_large">136dp</dimen>
+
 </resources>
