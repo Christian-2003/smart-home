@@ -2,8 +2,10 @@ package de.christian2003.smarthome.data.model.cert
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.security.KeyChain
 import android.util.Log
 import java.security.MessageDigest
+import java.security.PrivateKey
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
 
@@ -42,6 +44,26 @@ class CertHandler(
         } else {
             SslTrustResponse(SslTrustStatus.Untrusted, cert)
         }
+    }
+
+
+    fun getClientCert(): ClientCert? {
+        val alias: String? = preferences.getString("cert_alias", null)
+        if (alias != null) {
+            try {
+                val key: PrivateKey? = KeyChain.getPrivateKey(context, alias)
+                val chain: Array<X509Certificate>? = KeyChain.getCertificateChain(context, alias)
+
+                if (key != null && chain != null) {
+                    return ClientCert(
+                        key = key,
+                        chain = chain
+                    )
+                }
+            }
+            catch (e: Exception) { /* Ignore */ }
+        }
+        return null
     }
 
 

@@ -6,6 +6,7 @@ import android.net.http.SslError;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.webkit.ClientCertRequest;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -25,6 +26,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
 import de.christian2003.smarthome.data.model.cert.CertHandler;
+import de.christian2003.smarthome.data.model.cert.ClientCert;
 import de.christian2003.smarthome.data.model.cert.SslTrustResponse;
 import de.christian2003.smarthome.data.model.cert.SslTrustStatus;
 import de.christian2003.smarthome.data.model.extraction.search.room.ShRoomSearch;
@@ -150,6 +152,18 @@ public class ShWebpageContent {
                 loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.HttpError, errorMessage));
             }
 
+
+            @Override
+            public void onReceivedClientCertRequest(WebView view, ClientCertRequest request) {
+                CertHandler handler = new CertHandler(context);
+                ClientCert clientCert = handler.getClientCert();
+                if (clientCert != null) {
+                    request.proceed(clientCert.getKey(), clientCert.getChain());
+                }
+                else {
+                    request.ignore();
+                }
+            }
 
             // SSL error
             @Override
