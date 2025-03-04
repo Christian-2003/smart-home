@@ -74,7 +74,9 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
 
     fun restartToFetchData() = viewModelScope.launch {
-        repository.restartFetchingData()
+        if (!isLoading) {
+            repository.restartFetchingData()
+        }
     }
 
 }

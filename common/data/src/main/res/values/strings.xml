@@ -45,7 +45,7 @@
     <string name="settings_about_licenses">Open source software</string>
     <string name="settings_about_licenses_info">Show all open source software used</string>
     <string name="settings_info_version">Version {arg}</string>
-    <string name="settings_info_copyright">© {arg} Björn Wiedorn, Christian Steinbring</string>
+    <string name="settings_info_copyright">© 2024-{arg} Björn Wiedorn, Christian Steinbring</string>
 
     <string name="url_title">Configure Server URL</string>
     <string name="url_input_server">Server URL</string>

@@ -82,6 +82,18 @@ fun MainView(
                 },
                 actions = {
                     IconButton(
+                        onClick = {
+                            viewModel.restartToFetchData()
+                        },
+                        enabled = !viewModel.isLoading
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_refresh),
+                            tint = if (!viewModel.isLoading) { MaterialTheme.colorScheme.onSurface } else { MaterialTheme.colorScheme.onSurface.copy(0.5f) },
+                            contentDescription = ""
+                        )
+                    }
+                    IconButton(
                         onClick = onNavigateToSettings
                     ) {
                         Icon(

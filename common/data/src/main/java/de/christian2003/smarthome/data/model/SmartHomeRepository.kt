@@ -52,13 +52,21 @@ class SmartHomeRepository(
      */
     var infos: List<UserInformation> by mutableStateOf(emptyList())
 
+    /**
+     * Attribute stores the SSL trust response.
+     */
     var sslTrustResponse: SslTrustResponse? by mutableStateOf(null)
 
 
+    /**
+     * Method starts to reload the data.
+     */
     fun restartFetchingData() {
-        isLoading = true
-        this.sslTrustResponse = null
-        webpageContent = ShWebpageContent(preferences.getString("server_url", ""), context, webpageContentCallback)
+        if (!isLoading) {
+            isLoading = true
+            this.sslTrustResponse = null
+            webpageContent = ShWebpageContent(preferences.getString("server_url", ""), context, webpageContentCallback)
+        }
     }
 
 
