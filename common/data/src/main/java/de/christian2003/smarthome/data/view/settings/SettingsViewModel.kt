@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import com.google.android.material.color.utilities.DynamicColor
 
 
 /**
@@ -28,6 +29,16 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
      */
     var showErrors: Boolean by mutableStateOf(true)
 
+    /**
+     * Attribute stores whether to allow unsafe SSL connections.
+     */
+    var allowUnsafeSsl: Boolean by mutableStateOf(false)
+
+    /**
+     * Attribute stores whether to use dynamic colors.
+     */
+    var useDynamicTheme: Boolean by mutableStateOf(false)
+
 
     /**
      * Method initializes the view model.
@@ -35,6 +46,8 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
     fun init() {
         showWarnings = preferences.getBoolean("show_warnings", true)
         showErrors = preferences.getBoolean("show_errors", true)
+        allowUnsafeSsl = preferences.getBoolean("unsafe_cert_validation", false)
+        useDynamicTheme = preferences.getBoolean("dynamic_theme", false)
     }
 
 
@@ -56,6 +69,26 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
     fun updateShowErrors(showErrors: Boolean) {
         this.showErrors = showErrors
         preferences.edit().putBoolean("show_errors", showErrors).apply()
+    }
+
+    /**
+     * Method updates whether to allow unsafe SSL connections.
+     *
+     * @param allowUnsafeSsl    Whether to allow unsafe SSL connections.
+     */
+    fun updateAllowUnsafeSsl(allowUnsafeSsl: Boolean) {
+        this.allowUnsafeSsl = allowUnsafeSsl
+        preferences.edit().putBoolean("unsafe_cert_validation", allowUnsafeSsl).apply()
+    }
+
+    /**
+     * Method updates whether to use dynamic theme colors.
+     *
+     * @param useDynamicTheme   Whether to use dynamic theme colors.
+     */
+    fun updateUseDynamicTheme(useDynamicTheme: Boolean) {
+        this.useDynamicTheme = useDynamicTheme
+        preferences.edit().putBoolean("dynamic_theme", useDynamicTheme).apply()
     }
 
 }

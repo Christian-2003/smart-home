@@ -84,7 +84,9 @@ fun SmartHome(
     val urlViewModel: UrlViewModel = viewModel()
     val certViewModel: CertViewModel = viewModel()
 
-    SmartHomeTheme {
+    SmartHomeTheme(
+        dynamicColor = preferences.getBoolean("dynamic_theme", false)
+    ) {
         NavHost(
             navController = navController,
             startDestination = startDestination

@@ -27,7 +27,12 @@
     <string name="settings_connection_url_info">Edit the server URL</string>
     <string name="settings_connection_cert">Client certificate</string>
     <string name="settings_connection_cert_info">Select the client certificate</string>
+    <string name="settings_connection_ssl">Allow all SSL certificates</string>
+    <string name="settings_connection_ssl_info">Establish HTTPS connections without checking server certificates</string>
     <string name="settings_customization">Customization</string>
+    <string name="settings_customization_theme">Use dynamic theme colors</string>
+    <string name="settings_customization_theme_info">Apply system colors to the app</string>
+    <string name="settings_customization_theme_toast">Restart the app to apply the changes</string>
     <string name="settings_customization_warnings">Show warnings</string>
     <string name="settings_customization_warnings_info">Show warnings when displaying a smart home room</string>
     <string name="settings_customization_errors">Show errors</string>

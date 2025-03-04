@@ -3,6 +3,7 @@ package de.christian2003.smarthome.data.view.settings
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,7 @@ fun SettingsView(
     onNavigateToLicenses: () -> Unit
 ) {
     val context = LocalContext.current
+    val toastTheme = stringResource(R.string.settings_customization_theme_toast)
 
     Scaffold(
         topBar = {
@@ -107,11 +109,30 @@ fun SettingsView(
                 prefixIcon = painterResource(R.drawable.ic_cert),
                 suffixIcon = painterResource(R.drawable.ic_next)
             )
+            SettingsItemSwitch(
+                setting = stringResource(R.string.settings_connection_ssl),
+                info = stringResource(R.string.settings_connection_ssl_info),
+                checked = viewModel.allowUnsafeSsl,
+                onCheckedChanged = { checked ->
+                    viewModel.updateAllowUnsafeSsl(checked)
+                },
+                prefixIcon = painterResource(R.drawable.ic_ssl)
+            )
 
             HorizontalDivider()
 
             //Customization:
             SettingsTitle(title = stringResource(R.string.settings_customization))
+            SettingsItemSwitch(
+                setting = stringResource(R.string.settings_customization_theme),
+                info = stringResource(R.string.settings_customization_theme_info),
+                checked = viewModel.useDynamicTheme,
+                onCheckedChanged = { checked ->
+                    viewModel.updateUseDynamicTheme(checked)
+                    Toast.makeText(context, toastTheme, Toast.LENGTH_SHORT).show()
+                },
+                prefixIcon = painterResource(R.drawable.ic_theme)
+            )
             SettingsItemSwitch(
                 setting = stringResource(R.string.settings_customization_warnings),
                 info = stringResource(R.string.settings_customization_warnings_info),

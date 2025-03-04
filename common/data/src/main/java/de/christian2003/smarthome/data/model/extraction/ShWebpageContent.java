@@ -153,26 +153,21 @@ public class ShWebpageContent {
 
             // SSL error
             @Override
-            public void onReceivedSslError (WebView view, SslErrorHandler handler, SslError error) {
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 //super.onReceivedSslError(view, handler, error);
-                Log.d("Certs", "onReceivedSslError called");
                 X509Certificate cert = error.getCertificate().getX509Certificate();
                 CertHandler certHandler = new CertHandler(context);
                 if (cert == null) {
-                    Log.d("Certs", "X.509-Certificate is null");
                     loadingInformation.add(new UserInformation(InformationType.WARNING, InformationTitle.SslError, error.toString()));
                     sslTrustResponse = new SslTrustResponse(SslTrustStatus.Untrusted, null);
                     handler.cancel();
                 }
                 else {
-                    Log.d("Certs", "X.509-Certificate is not null");
                     sslTrustResponse = certHandler.validateCert(cert);
                     if (sslTrustResponse.getStatus() == SslTrustStatus.Trusted) {
-                        Log.d("Certs", "X.509-Certificate is trusted");
                         handler.proceed();
                     }
                     else {
-                        Log.d("Certs", "X.509-Certificate is strange " + sslTrustResponse.getStatus());
                         loadingInformation.add(new UserInformation(InformationType.WARNING, InformationTitle.SslError, error.toString()));
                         handler.cancel();
                     }
