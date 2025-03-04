@@ -146,7 +146,8 @@ public class ShWebpageContent {
             public void onReceivedSslError (WebView view, SslErrorHandler handler, SslError error) {
                 super.onReceivedSslError(view, handler, error);
                 String errorMessage = "An SSL error has occurred. Please fix it and restart the app. SSL error: " + error.toString();
-                loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.SslError, errorMessage));
+                loadingInformation.add(new UserInformation(InformationType.WARNING, InformationTitle.SslError, errorMessage));
+                handler.proceed(); //This accepts the server certificate.
             }
 
         });
