@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.http.SslError;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -14,6 +15,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import org.jsoup.nodes.Document;
 import java.util.concurrent.CountDownLatch;
@@ -22,6 +25,8 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
 import de.christian2003.smarthome.data.model.cert.CertHandler;
+import de.christian2003.smarthome.data.model.cert.SslTrustResponse;
+import de.christian2003.smarthome.data.model.cert.SslTrustStatus;
 import de.christian2003.smarthome.data.model.extraction.search.room.ShRoomSearch;
 import de.christian2003.smarthome.data.model.room.ShRoom;
 import de.christian2003.smarthome.data.model.userinformation.InformationTitle;
@@ -52,6 +57,8 @@ public class ShWebpageContent {
     @NonNull
     private final ArrayList<UserInformation> loadingInformation;
 
+    private SslTrustResponse sslTrustResponse;
+
     /**
      * Constructor instantiates a new webpage content.
      *
@@ -77,10 +84,10 @@ public class ShWebpageContent {
 
             if (shWebpageInterface.isLoadingSuccessful()) {
                 document = shWebpageInterface.getDocument();
-                callback.onPageLoadComplete(true);
+                callback.onPageLoadComplete(true, sslTrustResponse);
             }
             else {
-                callback.onPageLoadComplete(false);
+                callback.onPageLoadComplete(false, sslTrustResponse);
             }
         }).start();
     }
@@ -123,6 +130,7 @@ public class ShWebpageContent {
                 }, 5000);
             }
 
+
             // Network error
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
@@ -131,6 +139,7 @@ public class ShWebpageContent {
                 String errorMessage = "A network error has occurred. Please check your internet connection and restart the app. Error code: " + errorCode;
                 loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.NetworkError, errorMessage));
             }
+
 
             // HTTP error
             @Override
@@ -141,15 +150,34 @@ public class ShWebpageContent {
                 loadingInformation.add(new UserInformation(InformationType.ERROR, InformationTitle.HttpError, errorMessage));
             }
 
+
             // SSL error
             @Override
             public void onReceivedSslError (WebView view, SslErrorHandler handler, SslError error) {
-                super.onReceivedSslError(view, handler, error);
-                String errorMessage = "An SSL error has occurred. Please fix it and restart the app. SSL error: " + error.toString();
-                loadingInformation.add(new UserInformation(InformationType.WARNING, InformationTitle.SslError, errorMessage));
-                handler.proceed(); //This accepts the server certificate.
+                //super.onReceivedSslError(view, handler, error);
+                Log.d("Certs", "onReceivedSslError called");
+                X509Certificate cert = error.getCertificate().getX509Certificate();
+                CertHandler certHandler = new CertHandler(context);
+                if (cert == null) {
+                    Log.d("Certs", "X.509-Certificate is null");
+                    loadingInformation.add(new UserInformation(InformationType.WARNING, InformationTitle.SslError, error.toString()));
+                    sslTrustResponse = new SslTrustResponse(SslTrustStatus.Untrusted, null);
+                    handler.cancel();
+                }
+                else {
+                    Log.d("Certs", "X.509-Certificate is not null");
+                    sslTrustResponse = certHandler.validateCert(cert);
+                    if (sslTrustResponse.getStatus() == SslTrustStatus.Trusted) {
+                        Log.d("Certs", "X.509-Certificate is trusted");
+                        handler.proceed();
+                    }
+                    else {
+                        Log.d("Certs", "X.509-Certificate is strange " + sslTrustResponse.getStatus());
+                        loadingInformation.add(new UserInformation(InformationType.WARNING, InformationTitle.SslError, error.toString()));
+                        handler.cancel();
+                    }
+                }
             }
-
         });
 
         try {

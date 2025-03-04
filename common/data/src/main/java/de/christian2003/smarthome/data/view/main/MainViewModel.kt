@@ -7,9 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import de.christian2003.smarthome.data.model.SmartHomeRepository
+import de.christian2003.smarthome.data.model.cert.SslTrustResponse
 import de.christian2003.smarthome.data.model.room.ShRoom
 import de.christian2003.smarthome.data.model.userinformation.UserInformation
+import kotlinx.coroutines.launch
 
 
 /**
@@ -53,6 +56,8 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
      */
     var infos: List<UserInformation> by mutableStateOf(emptyList())
 
+    var sslTrustResponse: SslTrustResponse? by mutableStateOf(null)
+
 
     /**
      * Method initializes the view model.
@@ -64,6 +69,12 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         this.isLoading = repository.isLoading
         this.rooms = repository.rooms
         this.infos = repository.infos
+        this.sslTrustResponse = repository.sslTrustResponse
+    }
+
+
+    fun restartToFetchData() = viewModelScope.launch {
+        repository.restartFetchingData()
     }
 
 }

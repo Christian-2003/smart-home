@@ -1,14 +1,12 @@
 package de.christian2003.smarthome.data.model.cert
 
 import android.content.Context
-import android.security.KeyChain
+import android.content.SharedPreferences
 import android.util.Log
-import java.security.KeyStore
-import java.security.PrivateKey
+import java.security.MessageDigest
 import java.security.cert.X509Certificate
-import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManagerFactory
+
 
 class CertHandler(
 
@@ -23,6 +21,29 @@ class CertHandler(
      * Attribute stores the preferences in which the certificate alias is stored.
      */
     private val preferences = context.getSharedPreferences("smart_home", Context.MODE_PRIVATE)
+
+
+    fun validateCert(cert: X509Certificate): SslTrustResponse {
+        if (preferences.getBoolean("unsafe_cert_validation", false)) {
+            return SslTrustResponse(SslTrustStatus.Trusted, cert) //Skip validation if unsafe cert validation is enabled.
+        }
+        val fingerprint = getCertFingerprint(cert)
+        return if (isCertTrusted(fingerprint)) {
+            SslTrustResponse(SslTrustStatus.Trusted, cert)
+        } else {
+            SslTrustResponse(SslTrustStatus.Untrusted, cert)
+        }
+    }
+
+
+    fun saveCert(cert: X509Certificate) {
+        val trustedCerts: MutableSet<String> = preferences.getStringSet("trusted_certs", emptySet())!!.toMutableSet()
+        trustedCerts.add(getCertFingerprint(cert))
+        val editor: SharedPreferences.Editor = preferences.edit()
+        editor.putStringSet("trusted_certs", trustedCerts)
+        editor.apply()
+    }
+
 
     /**
      * Method returns the SSL context to use for client authentication. This can return null if no
@@ -76,6 +97,33 @@ class CertHandler(
 
         return null
         */
+    }
+
+
+    private fun isCertTrusted(fingerprint: String): Boolean {
+        val trustedCerts: Set<String>? = preferences.getStringSet("trusted_certs", emptySet())
+        trustedCerts!!.forEach { cert ->
+            Log.d("CertHandler", "Trusted Fingerprint: $cert")
+        }
+        Log.d("CertHandler", "Cert Fingerprint: $fingerprint")
+        return trustedCerts!!.contains(fingerprint)
+    }
+
+
+    private fun getCertFingerprint(cert: X509Certificate): String {
+        try {
+            val md = MessageDigest.getInstance("SHA-256")
+            val publicKey = md.digest(cert.encoded)
+
+            val hexString = StringBuilder()
+            for (b in publicKey) {
+                hexString.append(String.format("%02X:", b))
+            }
+            return hexString.substring(0, hexString.length - 1)
+        }
+        catch (e: Exception) {
+            return ""
+        }
     }
 
 }

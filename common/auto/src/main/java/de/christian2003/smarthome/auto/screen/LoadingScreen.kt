@@ -29,7 +29,7 @@ class LoadingScreen(carContext: CarContext): Screen(carContext) {
     /**
      * Attribute stores a callback that is invoked once the data is loaded.
      */
-    private var callback = ShWebpageContentCallback { success ->
+    private var callback = ShWebpageContentCallback { success, sslTrustResponse ->
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
                 if (success && repository != null) {

@@ -46,7 +46,11 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            SmartHome()
+            SmartHome(
+                onFinishActivity = {
+                    this.finish()
+                }
+            )
         }
     }
 
@@ -54,7 +58,9 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun SmartHome() {
+fun SmartHome(
+    onFinishActivity: () -> Unit
+) {
     val navController = rememberNavController()
 
     val preferences = LocalContext.current.getSharedPreferences("smart_home", Context.MODE_PRIVATE)
@@ -92,7 +98,8 @@ fun SmartHome() {
                     },
                     onNavigateToRoom = { position ->
                         navController.navigate("room/$position")
-                    }
+                    },
+                    onFinishActivity = onFinishActivity
                 )
             }
             composable("room/{position}") { backStackEntry ->

@@ -10,6 +10,13 @@
     <string name="main_loading">Fetching data. This might take some seconds…</string>
     <string name="main_empty_title">No data</string>
     <string name="main_empty_text">Available rooms in your smart home are displayed here.</string>
+    <string name="main_cert_info">The SSL certificate of the server is untrusted. Please validate and trust the certificate in order to continue.</string>
+    <string name="main_cert_subject">Issued to:</string>
+    <string name="main_cert_issuer">Issued from:</string>
+    <string name="main_cert_valid">Valid until:</string>
+    <string name="main_cert_fingerprint">Fingerprint:</string>
+    <string name="main_cert_unknown">No server certificate provided</string>
+    <string name="main_cert_untrust">You need to trust the certificate</string>
 
     <string name="room_label">{label}</string>
     <string name="room_label_specifier">{label} ({specifier})</string>
@@ -60,6 +67,7 @@
     <string name="button_select_cert">Select certificate</string>
     <string name="button_select_other_cert">Select other certificate</string>
     <string name="button_remove_cert">Remove certificate</string>
+    <string name="button_trust_cert">Trust</string>
 
     <string name="info_title_html_element_not_located">Could not locate HTML element</string>
     <string name="info_title_no_milli_amp_information">No amperage information</string>

@@ -1,10 +1,15 @@
 package de.christian2003.smarthome.data.view.main
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,13 +17,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,15 +35,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import de.christian2003.smarthome.data.R
+import de.christian2003.smarthome.data.model.cert.CertHandler
+import de.christian2003.smarthome.data.model.cert.SslTrustResponse
+import de.christian2003.smarthome.data.model.cert.SslTrustStatus
 import de.christian2003.smarthome.data.model.room.ShRoom
 import de.christian2003.smarthome.data.model.userinformation.UserInformation
+import de.christian2003.smarthome.data.ui.utils.SmartHomeInfoCard
 import de.christian2003.smarthome.data.view.room.ListRowWarning
+import kotlinx.coroutines.selects.OnCancellationConstructor
+import java.security.cert.X509Certificate
 
 
 /**
@@ -49,8 +65,12 @@ import de.christian2003.smarthome.data.view.room.ListRowWarning
 fun MainView(
     viewModel: MainViewModel,
     onNavigateToSettings: () -> Unit,
-    onNavigateToRoom: (Int) -> Unit
+    onNavigateToRoom: (Int) -> Unit,
+    onFinishActivity: () -> Unit
 ) {
+    val context = LocalContext.current
+    val untrustCertErrorMessage = stringResource(R.string.main_cert_untrust)
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -80,7 +100,22 @@ fun MainView(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (viewModel.isLoading) {
+            if (viewModel.sslTrustResponse != null && viewModel.sslTrustResponse!!.status != SslTrustStatus.Trusted) {
+                SslCert(
+                    sslTrustResponse = viewModel.sslTrustResponse!!,
+                    onTrustCert = { cert ->
+                        val certHandler = CertHandler(context)
+                        certHandler.saveCert(cert)
+                        Log.d("MainView", "Saved cert")
+                        viewModel.restartToFetchData()
+                    },
+                    onCancel = {
+                        Toast.makeText(context, untrustCertErrorMessage, Toast.LENGTH_SHORT).show()
+                        onFinishActivity()
+                    }
+                )
+            }
+            else if (viewModel.isLoading) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.weight(1f)
@@ -99,7 +134,6 @@ fun MainView(
                             vertical = dimensionResource(R.dimen.space_vertical)
                         )
                 )
-
             }
             else {
                 if (viewModel.rooms.isEmpty() && (viewModel.infos.isEmpty() || (viewModel.infos.isNotEmpty() && !viewModel.showErrors && !viewModel.showWarnings))) {
@@ -298,4 +332,100 @@ fun EmptyPlaceholder(
             )
         }
     }
+}
+
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun SslCert(
+    sslTrustResponse: SslTrustResponse,
+    onTrustCert: (X509Certificate) -> Unit,
+    onCancel: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+    ) {
+        SmartHomeInfoCard(message = stringResource(R.string.main_cert_info))
+        if (sslTrustResponse.cert == null) {
+            SmartHomeInfoCard(
+                message = stringResource(R.string.main_cert_unknown),
+                iconResource = R.drawable.ic_error,
+                backgroundColor = MaterialTheme.colorScheme.errorContainer,
+                foregroundColor = MaterialTheme.colorScheme.onErrorContainer
+            )
+        }
+        else {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        horizontal = dimensionResource(R.dimen.space_horizontal),
+                        vertical = dimensionResource(R.dimen.space_vertical)
+                    )
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(dimensionResource(R.dimen.corners_default)))
+                    .border(
+                        width = dimensionResource(R.dimen.borders_default),
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(dimensionResource(R.dimen.corners_default))
+                    )
+                    .background(MaterialTheme.colorScheme.surfaceContainer)
+                    .padding(
+                        vertical = dimensionResource(R.dimen.space_vertical),
+                        horizontal = dimensionResource(R.dimen.space_horizontal)
+                    )
+            ) {
+                CertItem(
+                    title = stringResource(R.string.main_cert_subject),
+                    content = sslTrustResponse.cert.subjectDN.toString()
+                )
+                CertItem(
+                    title = stringResource(R.string.main_cert_issuer),
+                    content = sslTrustResponse.cert.issuerDN.toString()
+                )
+                CertItem(
+                    title = stringResource(R.string.main_cert_valid),
+                    content = sslTrustResponse.cert.notAfter.toString()
+                )
+                FlowRow(
+                    modifier = Modifier.align(Alignment.End),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    OutlinedButton(
+                        onClick = onCancel
+                    ) {
+                        Text(stringResource(R.string.button_cancel))
+                    }
+                    Button(
+                        modifier = Modifier.padding(start = dimensionResource(R.dimen.space_horizontal_between)),
+                        onClick = {
+                            onTrustCert(sslTrustResponse.cert)
+                        }
+                    ) {
+                        Text(stringResource(R.string.button_trust_cert))
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun CertItem(
+    title: String,
+    content: String
+) {
+    Text(
+        text = title,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.padding(top = dimensionResource(R.dimen.space_vertical_between))
+    )
+    Text(
+        text = content,
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.space_vertical_between))
+    )
 }

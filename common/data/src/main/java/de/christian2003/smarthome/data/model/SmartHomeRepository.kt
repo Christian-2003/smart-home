@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import de.christian2003.smarthome.data.model.cert.SslTrustResponse
 import de.christian2003.smarthome.data.model.extraction.ShWebpageContent
 import de.christian2003.smarthome.data.model.extraction.ShWebpageContentCallback
 import de.christian2003.smarthome.data.model.room.ShRoom
@@ -27,18 +28,14 @@ class SmartHomeRepository(
     /**
      * Attribute stores the callback invoked once the smart home webpage is loaded.
      */
-    private val webpageContentCallback = ShWebpageContentCallback { success ->
-        onWebpageContentLoaded(success)
+    private val webpageContentCallback = ShWebpageContentCallback { success, sslTrustResponse ->
+        onWebpageContentLoaded(success, sslTrustResponse)
     }
 
     /**
      * Attribute stores the webpage content through which all data is loaded.
      */
-    private val webpageContent = ShWebpageContent(preferences.getString("server_url", ""), context, webpageContentCallback)
-
-    // Kommentar für Chrissi: Hier webpageContent.getLoadingInformation aufrufen.
-    // Wenn keine UserInofrmation Elemente enthalten sind, hat alles geklappt, ansonsten sind die Fehler in der Liste und die Webseite konnte nicht geladen werden, also dann kein smartHomeData aufrufen.
-    // PS: Aktualisiere deine getText Methode in InformationTitle.
+    private var webpageContent = ShWebpageContent(preferences.getString("server_url", ""), context, webpageContentCallback)
 
     /**
      * Attribute indicates whether the webpage content is loading.
@@ -55,11 +52,20 @@ class SmartHomeRepository(
      */
     var infos: List<UserInformation> by mutableStateOf(emptyList())
 
+    var sslTrustResponse: SslTrustResponse? by mutableStateOf(null)
+
+
+    fun restartFetchingData() {
+        isLoading = true
+        this.sslTrustResponse = null
+        webpageContent = ShWebpageContent(preferences.getString("server_url", ""), context, webpageContentCallback)
+    }
+
 
     /**
      * Method is called once the webpage content loads.
      */
-    private fun onWebpageContentLoaded(success: Boolean) {
+    private fun onWebpageContentLoaded(success: Boolean, sslTrustResponse: SslTrustResponse?) {
         if (success) {
             rooms = webpageContent.smartHomeData!!.toList()
             infos = webpageContent.loadingInformation.toList().distinct()
@@ -68,8 +74,9 @@ class SmartHomeRepository(
         else {
             Log.e("Smart Home Repo", "Cannot load data")
         }
+        this.sslTrustResponse = sslTrustResponse
         isLoading = false
-        callback?.onPageLoadComplete(success)
+        callback?.onPageLoadComplete(success, sslTrustResponse)
     }
 
 
@@ -100,7 +107,7 @@ class SmartHomeRepository(
                 INSTANCE = SmartHomeRepository(context, callback)
             }
             else if (!INSTANCE!!.isLoading) {
-                callback.onPageLoadComplete(true)
+                callback.onPageLoadComplete(true, INSTANCE!!.sslTrustResponse)
             }
             return INSTANCE!!
         }
