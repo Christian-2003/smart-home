@@ -78,7 +78,7 @@ class RoomScreen(
             is ShOpening -> buildRowOpening(device)
             is ShOutlet -> buildRowOutlet(device)
             is ShShutter -> buildRowShutter(device)
-            else -> Row.Builder().setTitle("").build()
+            else -> Row.Builder().setTitle("Unknown Device").build()
         }
     }
 
