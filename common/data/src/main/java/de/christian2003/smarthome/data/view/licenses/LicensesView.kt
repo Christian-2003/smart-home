@@ -34,8 +34,8 @@ import de.christian2003.smarthome.data.model.licenses.License
 /**
  * View displays a list of all licenses used by the app.
  *
- * @param viewModel         View model for the view.
- * @param onNavigateBack    Callback invoked to navigate up on the navigation stack.
+ * @param viewModel     View model for the view.
+ * @param navigateUp    Callback invoked to navigate up on the navigation stack.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

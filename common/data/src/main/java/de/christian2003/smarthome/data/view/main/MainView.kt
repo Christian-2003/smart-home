@@ -59,6 +59,7 @@ import java.security.cert.X509Certificate
  * @param viewModel             View model for the view.
  * @param onNavigateToSettings  Callback to invoke in order to navigate to the settings
  * @param onNavigateToRoom      Callback to invoke in order to navigate to a specific room.
+ * @param onFinishActivity      Callback invoked once the activity (i.e. the entire app) should close.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -306,7 +307,14 @@ fun RoomsListRowGeneralStatus(
 }
 
 
-
+/**
+ * Composable displays an empty placeholder indicating that there is no data available.
+ *
+ * @param title     Title for the placeholder.
+ * @param text      Text for the placeholder.
+ * @param icon      Icon for the placeholder.
+ * @param modifier  Modifier.
+ */
 @Composable
 fun EmptyPlaceholder(
     title: String,
@@ -347,6 +355,13 @@ fun EmptyPlaceholder(
 }
 
 
+/**
+ * Composable displays an SSL certificate that the user needs to trust in order to proceed.
+ *
+ * @param sslTrustResponse  Trust response.
+ * @param onTrustCert       Callback invoked once the user trusts the certificate.
+ * @param onCancel          Callback invoked once the user does not trust the certificate.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SslCert(
@@ -423,6 +438,12 @@ fun SslCert(
 }
 
 
+/**
+ * Composable displays a certificate item.
+ *
+ * @param title     Title for the certificate item.
+ * @param content   Content of the certificate item.
+ */
 @Composable
 private fun CertItem(
     title: String,

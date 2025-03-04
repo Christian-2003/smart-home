@@ -8,6 +8,9 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
 
 
+/**
+ * Class implements the certificate handler which manages all certificates within the app.
+ */
 class CertHandler(
 
     /**
@@ -23,6 +26,12 @@ class CertHandler(
     private val preferences = context.getSharedPreferences("smart_home", Context.MODE_PRIVATE)
 
 
+    /**
+     * Method validates the certificate passed.
+     *
+     * @param cert  Certificate to validate.
+     * @return      Response indicating the result of the validation.
+     */
     fun validateCert(cert: X509Certificate): SslTrustResponse {
         if (preferences.getBoolean("unsafe_cert_validation", false)) {
             return SslTrustResponse(SslTrustStatus.Trusted, cert) //Skip validation if unsafe cert validation is enabled.
@@ -36,6 +45,12 @@ class CertHandler(
     }
 
 
+    /**
+     * Method saves the certificate passed. Certificates saved with this are considered as trusted
+     * by the user.
+     *
+     * @param cert  Certificate to save / trust.
+     */
     fun saveCert(cert: X509Certificate) {
         val trustedCerts: MutableSet<String> = preferences.getStringSet("trusted_certs", emptySet())!!.toMutableSet()
         trustedCerts.add(getCertFingerprint(cert))
@@ -100,6 +115,12 @@ class CertHandler(
     }
 
 
+    /**
+     * Method tests whether the certificate, whose fingerprint is passed, is trusted.
+     *
+     * @param fingerprint   Fingerprint of the certificate to test.
+     * @return              Whether the certificate is trusted.
+     */
     private fun isCertTrusted(fingerprint: String): Boolean {
         val trustedCerts: Set<String>? = preferences.getStringSet("trusted_certs", emptySet())
         trustedCerts!!.forEach { cert ->
@@ -110,6 +131,12 @@ class CertHandler(
     }
 
 
+    /**
+     * Method returns the fingerprint for the certificate passed.
+     *
+     * @param cert  Certificate for which to return it's fingerprint.
+     * @return      Fingerprint of the certificate passed.
+     */
     private fun getCertFingerprint(cert: X509Certificate): String {
         try {
             val md = MessageDigest.getInstance("SHA-256")

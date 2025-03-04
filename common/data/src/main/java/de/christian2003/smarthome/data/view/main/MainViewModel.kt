@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.christian2003.smarthome.data.model.SmartHomeRepository
 import de.christian2003.smarthome.data.model.cert.SslTrustResponse
@@ -56,6 +55,9 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
      */
     var infos: List<UserInformation> by mutableStateOf(emptyList())
 
+    /**
+     * Attribute stores the SSL trust response.
+     */
     var sslTrustResponse: SslTrustResponse? by mutableStateOf(null)
 
 
@@ -73,6 +75,9 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     }
 
 
+    /**
+     * Method starts to reload the data from the server.
+     */
     fun restartToFetchData() = viewModelScope.launch {
         if (!isLoading) {
             repository.restartFetchingData()

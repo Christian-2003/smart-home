@@ -16,8 +16,17 @@ import de.christian2003.smarthome.data.model.userinformation.UserInformation
  * Class implements the repository through which the app access all data.
  */
 class SmartHomeRepository(
+
+    /**
+     * Attribute stores the context for the repository.
+     */
     private val context: Context,
+
+    /**
+     * Attribute stores the callback to invoke once the data has been fetched from the server.
+     */
     private val callback: ShWebpageContentCallback?
+
 ) {
 
     /**

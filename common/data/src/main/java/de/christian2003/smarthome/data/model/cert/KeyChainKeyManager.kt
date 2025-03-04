@@ -9,10 +9,20 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.X509KeyManager
 
 
+/**
+ * Class implements a key manager for the key chain that is required for web requests with a custom
+ * client certificate.
+ */
 class KeyChainKeyManager(
 
+    /**
+     * Context for the key manager.
+     */
     private val context: Context,
 
+    /**
+     * Alias of the certificate to use.
+     */
     private val alias: String
 
 ): X509KeyManager {
