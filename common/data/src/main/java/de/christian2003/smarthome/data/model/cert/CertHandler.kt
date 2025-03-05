@@ -54,6 +54,10 @@ class CertHandler(
                 val key: PrivateKey? = KeyChain.getPrivateKey(context, alias)
                 val chain: Array<X509Certificate>? = KeyChain.getCertificateChain(context, alias)
 
+                Log.d("CertHandler", "getClientCert(): Key = $key")
+                Log.d("CertHandler", "getClientCert(): Chain = $chain")
+
+
                 if (key != null && chain != null) {
                     return ClientCert(
                         key = key,
@@ -61,7 +65,9 @@ class CertHandler(
                     )
                 }
             }
-            catch (e: Exception) { /* Ignore */ }
+            catch (e: Exception) {
+                Log.e("CertHandler", "Exception occurred: ${e.message}")
+            }
         }
         return null
     }

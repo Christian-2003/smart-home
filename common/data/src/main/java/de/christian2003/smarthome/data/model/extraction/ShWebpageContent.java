@@ -4,6 +4,7 @@ package de.christian2003.smarthome.data.model.extraction;
 import android.content.Context;
 import android.net.http.SslError;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 import android.webkit.ClientCertRequest;
@@ -21,8 +22,8 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import org.jsoup.nodes.Document;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
 import de.christian2003.smarthome.data.model.cert.CertHandler;
@@ -155,14 +156,24 @@ public class ShWebpageContent {
 
             @Override
             public void onReceivedClientCertRequest(WebView view, ClientCertRequest request) {
-                CertHandler handler = new CertHandler(context);
-                ClientCert clientCert = handler.getClientCert();
-                if (clientCert != null) {
-                    request.proceed(clientCert.getKey(), clientCert.getChain());
-                }
-                else {
-                    request.ignore();
-                }
+                Log.d("CertHandler", "onReceivedClientCertRequest");
+                AtomicReference<ClientCert> clientCert = new AtomicReference<>();
+
+                HandlerThread handlerThread = new HandlerThread("KeyChainThread");
+                handlerThread.start();
+                Handler handler = new Handler(handlerThread.getLooper());
+                handler.post(() -> {
+                    CertHandler certHandler = new CertHandler(context);
+                    clientCert.set(certHandler.getClientCert());
+                    if (clientCert.get() != null) {
+                        Log.d("CertHandler", "clientCert != null");
+                        request.proceed(clientCert.get().getKey(), clientCert.get().getChain());
+                    }
+                    else {
+                        Log.d("CertHandler", "clientCert == null");
+                        request.ignore();
+                    }
+                });
             }
 
             // SSL error
@@ -190,7 +201,7 @@ public class ShWebpageContent {
         });
 
         try {
-            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+            //HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
             webView.loadUrl(url);
         }
         catch (Exception e) {
@@ -226,16 +237,4 @@ public class ShWebpageContent {
         return loadingInformation;
     }
 
-    /**
-     * Prints all the rooms and their properties that belong to the ShWebpageContent object.
-     *
-     * @param shWebpageContent          The object which has attribute that contains all the rooms of the smart home and their properties.
-     */
-    public static void printElement(@NonNull ShWebpageContent shWebpageContent) {
-        System.out.println("Länge: " + shWebpageContent.rooms.size());
-        for (ShRoom room: shWebpageContent.rooms) {
-            ShRoomSearch.printOutRoom(room);
-        }
-    }
 }
-
